@@ -66,8 +66,7 @@ grant select (
   sizes,
   colors,
   source_type,
-  created_at,
-  updated_at
+  created_at
 ) on table public.inventory to anon;
 
 create table if not exists public.business_settings (
