@@ -5,18 +5,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        cream: "#F8F3E8",
-        burgundy: "#681A2D",
-        wine: "#3B111C",
-        gold: "#B48A43",
-        ink: "#201A1B",
+        cream: "#F8F2E8",
+        burgundy: "#5A1020",
+        wine: "#3A0B16",
+        gold: "#C9A227",
+        marble: "#D8E1EA",
+        rose: "#B21F35",
+        ink: "#1C1C1C",
       },
       fontFamily: {
         sans: ["Inter", "Aptos", "Segoe UI", "Arial", "sans-serif"],
         display: ["Georgia", "Times New Roman", "serif"],
       },
       boxShadow: {
-        soft: "0 12px 30px rgba(59, 17, 28, 0.08)",
+        soft: "0 14px 36px rgba(90, 16, 32, 0.09)",
       },
     },
   },

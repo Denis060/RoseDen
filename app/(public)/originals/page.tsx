@@ -3,5 +3,5 @@ import { ProductGrid } from "@/components/public-products";
 
 export const metadata: Metadata = { title: "RoseDen Originals", description: "Discover one-of-one redesigned and original RoseDen pieces." };
 export default function OriginalsPage() {
-  return <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6"><p className="text-xs font-bold uppercase tracking-wider text-gold">One of one</p><h1 className="mt-2 font-display text-5xl font-semibold text-wine">RoseDen Originals</h1><p className="mb-10 mt-4 max-w-2xl text-black/55">Redesigned, upcycled, and limited pieces made for women who do not want to look like everyone else.</p><ProductGrid originalsOnly /></main>;
+  return <main><section className="bg-burgundy px-4 py-12 text-white sm:px-6"><div className="mx-auto max-w-6xl"><h1 className="font-display text-5xl font-semibold">RoseDen Originals</h1><p className="mt-4 max-w-2xl text-white/70">Redesigned, upcycled, and limited pieces made for women who do not want to look like everyone else.</p></div></section><div className="h-3 stripe-accent" /><section className="mx-auto max-w-6xl px-4 py-12 sm:px-6"><ProductGrid originalsOnly /></section></main>;
 }

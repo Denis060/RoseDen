@@ -4,5 +4,5 @@ import { ProductGrid } from "@/components/public-products";
 export const metadata: Metadata = { title: "Shop", description: "Shop RoseDen Atelier ready-made fashion and new arrivals." };
 
 export default function ShopPage() {
-  return <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6"><p className="text-xs font-bold uppercase tracking-wider text-gold">RoseDen collection</p><h1 className="mt-2 font-display text-5xl font-semibold text-wine">Shop new arrivals</h1><p className="mb-10 mt-4 max-w-xl text-black/55">Browse published pieces currently available or reserved. Message us on WhatsApp to confirm your size, color, and delivery plan.</p><ProductGrid /></main>;
+  return <main><section className="marble-surface border-b border-white px-4 py-12 sm:px-6"><div className="mx-auto max-w-6xl"><h1 className="font-display text-5xl font-semibold text-burgundy">Shop new arrivals</h1><p className="mt-4 max-w-xl text-black/60">Browse available RoseDen pieces and order directly through WhatsApp with the product details already included.</p></div></section><section className="mx-auto max-w-6xl px-4 py-12 sm:px-6"><ProductGrid /></section></main>;
 }
