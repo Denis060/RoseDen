@@ -1,0 +1,7 @@
+node_modules/
+.next/
+.env.local
+.vercel/
+.codex-qa/
+tsconfig.tsbuildinfo
+npm-debug.log*
