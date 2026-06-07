@@ -56,7 +56,6 @@ grant select (
   photo_url,
   supplier_photo_url,
   shop_photo_url,
-  try_on_media_url,
   color,
   size,
   is_public,
