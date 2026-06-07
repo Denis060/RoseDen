@@ -11,7 +11,7 @@ function ProgressBar({ value, max, tone = "burgundy" }: { value: number; max: nu
   return <div className="mt-2 h-2 overflow-hidden rounded-full bg-black/5"><div className={`h-full rounded-full ${color}`} style={{ width: `${width}%` }} /></div>;
 }
 
-export default function ReportsPage() {
+export default function AdminReportsPage() {
   const { data } = useData();
   const month = new Date().toISOString().slice(0, 7);
   const sales = data.orders.filter((order) => order.status !== "cancelled" && order.createdAt.startsWith(month));

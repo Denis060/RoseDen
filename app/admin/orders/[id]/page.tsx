@@ -21,7 +21,7 @@ export default function OrderDetailPage() {
   const order = data.orders.find((entry) => entry.id === params.id);
 
   if (!order) {
-    return <div><Link href="/orders" className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-burgundy"><ArrowLeft size={18} />Orders</Link><Empty>Order not found.</Empty></div>;
+    return <div><Link href="/admin/orders" className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-burgundy"><ArrowLeft size={18} />Orders</Link><Empty>Order not found.</Empty></div>;
   }
 
   const customer = data.customers.find((entry) => entry.id === order.customerId);
@@ -75,7 +75,7 @@ export default function OrderDetailPage() {
   return (
     <div className="space-y-5">
       <div>
-        <Link href="/orders" className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-burgundy"><ArrowLeft size={18} />Orders</Link>
+        <Link href="/admin/orders" className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-burgundy"><ArrowLeft size={18} />Orders</Link>
         <div className="flex items-start justify-between gap-3">
           <div><p className="text-[10px] font-bold uppercase tracking-wider text-gold">{order.type} - {order.channel}</p><h1 className="mt-1 font-display text-3xl font-semibold text-wine">{order.description}</h1><p className="mt-2 text-sm capitalize text-black/50">{order.status}</p></div>
           <button onClick={editModal.show} className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-burgundy text-white" aria-label="Edit order"><Pencil size={19} /></button>

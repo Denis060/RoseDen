@@ -9,7 +9,7 @@ import { money, shortDate } from "@/lib/format";
 
 const categories = ["transport", "inventory purchase", "rent", "electricity", "internet", "tailoring labor", "marketing", "food", "other"];
 
-export default function ExpensesPage() {
+export default function AdminExpensesPage() {
   const { data, addExpense, remove } = useData();
   const modal = useModal();
   const month = new Date().toISOString().slice(0, 7);

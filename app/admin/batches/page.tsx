@@ -9,7 +9,7 @@ import { SalesChannel } from "@/lib/types";
 
 const channels: SalesChannel[] = ["WhatsApp Status", "Facebook", "TikTok", "Instagram", "Website"];
 
-export default function BatchesPage() {
+export default function AdminBatchesPage() {
   const { data, addBatch } = useData();
   const modal = useModal();
 

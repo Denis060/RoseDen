@@ -51,7 +51,7 @@ export default function InventoryDetailPage() {
   const item = data.inventory.find((entry) => entry.id === params.id);
 
   if (!item) {
-    return <div><Link href="/inventory" className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-burgundy"><ArrowLeft size={18} />Inventory</Link><Empty>Product not found.</Empty></div>;
+    return <div><Link href="/admin/inventory" className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-burgundy"><ArrowLeft size={18} />Inventory</Link><Empty>Product not found.</Empty></div>;
   }
 
   const stockEntries = data.stockEntries.filter((entry) => entry.inventoryId === item.id);
@@ -115,6 +115,14 @@ export default function InventoryDetailPage() {
         shopPhotoUrl,
         tryOnUrl: String(form.get("tryOnUrl")),
         batchId: String(form.get("batchId")) || undefined,
+        isPublic: form.get("isPublic") === "on",
+        isFeatured: form.get("isFeatured") === "on",
+        publicStatus: String(form.get("publicStatus")) as "available" | "reserved" | "sold" | "hidden",
+        publicDescription: String(form.get("publicDescription")),
+        slug: String(form.get("slug")),
+        sizes: String(form.get("sizes")).split(",").map((value) => value.trim()).filter(Boolean),
+        colors: String(form.get("colors")).split(",").map((value) => value.trim()).filter(Boolean),
+        sourceType: String(form.get("sourceType")) as "ready-made" | "original" | "tailoring-sample",
       });
       modal.hide();
     } catch (cause) {
@@ -125,7 +133,7 @@ export default function InventoryDetailPage() {
   return (
     <div className="space-y-5">
       <div>
-        <Link href="/inventory" className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-burgundy"><ArrowLeft size={18} />Inventory</Link>
+        <Link href="/admin/inventory" className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-burgundy"><ArrowLeft size={18} />Inventory</Link>
         <div className="overflow-hidden rounded-3xl bg-white shadow-soft">
           <div className="grid h-64 place-items-center bg-burgundy/5">{photo ? <img src={photo} alt={item.name} className="h-full w-full object-cover" /> : <ImageIcon size={52} className="text-burgundy/20" />}</div>
           <div className="p-5"><div className="flex items-start justify-between gap-3"><div><p className="text-xs capitalize text-gold">{item.category}</p><h1 className="mt-1 font-display text-3xl font-semibold text-wine">{item.name}</h1><p className="mt-2 text-sm text-black/50">{item.color || "No color"} - {item.size || "No size"}</p></div><button onClick={openEdit} className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-burgundy text-white" aria-label="Edit product"><Pencil size={19} /></button></div><div className="mt-4 flex items-end justify-between"><div><p className="text-xs text-black/45">Selling price</p><p className="text-xl font-bold text-burgundy">{money(item.sellingPrice)}</p></div><div className="text-right"><p className="text-xs text-black/45">Unit cost</p><p className="font-semibold">{money(item.costPrice)}</p></div></div></div>
@@ -140,7 +148,7 @@ export default function InventoryDetailPage() {
 
       <section className="rounded-2xl bg-white p-4 shadow-soft"><h2 className="flex items-center gap-2 font-display text-xl font-semibold text-wine"><History size={19} className="text-gold" />Stock history</h2><div className="mt-3 space-y-2">{stockEntries.length === 0 && <p className="text-sm text-black/45">No stock entries recorded.</p>}{stockEntries.map((entry) => <div key={entry.id} className="flex items-center justify-between rounded-xl bg-cream p-3"><div><p className="text-sm font-semibold">+{entry.quantity} units</p><p className="text-xs text-black/45">{shortDate(entry.stockedAt)} - {entry.supplier || "No supplier"}</p></div><p className="text-sm font-bold">{money(entry.unitCost)} each</p></div>)}</div></section>
 
-      <section><h2 className="font-display text-xl font-semibold text-wine">Related orders</h2><div className="mt-3 space-y-2">{orders.length === 0 && <Empty>No orders linked to this product.</Empty>}{orders.map((order) => <Link key={order.id} href={`/orders/${order.id}`} className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-soft"><div><p className="font-semibold">{data.customers.find((customer) => customer.id === order.customerId)?.name || "Walk-in customer"}</p><p className="mt-1 text-xs capitalize text-black/45">{order.status} - {order.quantity} item(s)</p></div><p className="font-bold text-burgundy">{money(order.total)}</p></Link>)}</div></section>
+      <section><h2 className="font-display text-xl font-semibold text-wine">Related orders</h2><div className="mt-3 space-y-2">{orders.length === 0 && <Empty>No orders linked to this product.</Empty>}{orders.map((order) => <Link key={order.id} href={`/admin/orders/${order.id}`} className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-soft"><div><p className="font-semibold">{data.customers.find((customer) => customer.id === order.customerId)?.name || "Walk-in customer"}</p><p className="mt-1 text-xs capitalize text-black/45">{order.status} - {order.quantity} item(s)</p></div><p className="font-bold text-burgundy">{money(order.total)}</p></Link>)}</div></section>
 
       {modal.open && <Modal title="Edit product" onClose={modal.hide}><Form onSubmit={submit} submitLabel={uploading ? "Uploading photo..." : "Save product"} submitDisabled={uploading}>
         <div className="rounded-2xl border border-dashed border-burgundy/25 bg-white p-3">
@@ -157,6 +165,7 @@ export default function InventoryDetailPage() {
         <div className="grid grid-cols-2 gap-3"><Select name="category" label="Category" defaultValue={item.category}>{categories.map((category) => <option key={category}>{category}</option>)}</Select><Select name="status" label="Product status" defaultValue={item.status}><option value="available">Available</option><option value="cancelled">Inactive</option></Select><Field name="color" label="Color" defaultValue={item.color} /><Field name="size" label="Size" defaultValue={item.size} /></div>
         <div className="grid grid-cols-2 gap-3"><Field name="costPrice" label="Cost price (NLe)" type="number" min="0" step="0.01" defaultValue={item.costPrice} required /><Field name="sellingPrice" label="Selling price" type="number" min="0" step="0.01" defaultValue={item.sellingPrice} required /><Field name="lowStockAt" label="Low stock alert" type="number" min="0" defaultValue={item.lowStockAt} required /></div>
         <Field name="supplier" label="Supplier / source" defaultValue={item.supplier} />
+        <div className="rounded-2xl border border-gold/25 bg-gold/10 p-4"><p className="font-display text-lg font-semibold text-wine">Website visibility</p><div className="mt-3 grid grid-cols-2 gap-2"><label className="flex min-h-11 items-center gap-2 rounded-xl bg-white px-3 text-sm"><input type="checkbox" name="isPublic" defaultChecked={item.isPublic} className="accent-burgundy" />Show on website</label><label className="flex min-h-11 items-center gap-2 rounded-xl bg-white px-3 text-sm"><input type="checkbox" name="isFeatured" defaultChecked={item.isFeatured} className="accent-burgundy" />Featured product</label></div><div className="mt-3 grid grid-cols-2 gap-3"><Select name="publicStatus" label="Website status" defaultValue={item.publicStatus || "hidden"}><option value="available">Available</option><option value="reserved">Reserved</option><option value="sold">Sold</option><option value="hidden">Hidden</option></Select><Select name="sourceType" label="Source type" defaultValue={item.sourceType || "ready-made"}><option value="ready-made">Ready-made</option><option value="original">RoseDen Original</option><option value="tailoring-sample">Tailoring sample</option></Select></div><Field name="slug" label="Product web code / slug" defaultValue={item.slug || ""} placeholder="adire-wrap-dress" /><Field name="publicDescription" label="Public description" defaultValue={item.publicDescription || ""} /><div className="grid grid-cols-2 gap-3"><Field name="sizes" label="Sizes (comma separated)" defaultValue={(item.sizes || []).join(", ")} /><Field name="colors" label="Colors (comma separated)" defaultValue={(item.colors || []).join(", ")} /></div></div>
         <Field name="supplierPhotoUrl" label="Supplier / model photo URL" type="url" defaultValue={item.supplierPhotoUrl} />
         <Field name="tryOnUrl" label="Try-on photo or video link" type="url" defaultValue={item.tryOnUrl} />
         <Select name="batchId" label="Buying / post batch" defaultValue={item.batchId || ""}><option value="">No batch</option>{data.batches.map((batch) => <option key={batch.id} value={batch.id}>{batch.name}</option>)}</Select>

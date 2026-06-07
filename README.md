@@ -1,6 +1,17 @@
-# RoseDen OS
+# RoseDen Atelier
 
-Mobile-first business operations MVP for **RoseDen Atelier**.
+Public fashion storefront and private mobile-first business operations system for
+**RoseDen Atelier**.
+
+## Routes
+
+- Public website: `/`, `/shop`, `/originals`, `/tailoring`, `/about`, `/contact`
+- Private operations: `/admin`, `/admin/orders`, `/admin/customers`,
+  `/admin/inventory`, `/admin/expenses`, `/admin/reports`
+- Authentication: `/login`
+
+Visitors can browse the public website without signing in. All business records
+and operational tools live under `/admin` and require Supabase authentication.
 
 ## What works
 
@@ -41,7 +52,9 @@ Mobile-first business operations MVP for **RoseDen Atelier**.
 
 5. Open `http://localhost:3000`.
 
-Without environment variables, the app stores changes in the browser's `localStorage`. This is useful for evaluating the MVP immediately.
+Without Supabase environment variables, the admin area uses local demo data for
+development. With Supabase configured, signed-out visitors never receive
+operational data.
 
 ## Supabase setup
 
@@ -51,9 +64,12 @@ Without environment variables, the app stores changes in the browser's `localSto
 4. Run `supabase/migrations/003_business_memory.sql`.
 5. Run `supabase/migrations/004_auth_admin_upgrade.sql`.
 6. Run `supabase/migrations/005_fix_inventory_status_enum_casts.sql`.
-7. Optionally run `supabase/seed.sql`.
-8. In Authentication, create Rosannah's user.
-9. If using an email other than `joinriseafrica@gmail.com`, set its profile to admin:
+7. Run `supabase/migrations/006_phase1_daily_operations.sql`, or use the
+   split scripts in `supabase/phase1_steps` if required.
+8. Run `supabase/migrations/007_public_storefront.sql`.
+9. Optionally run `supabase/seed.sql`.
+10. In Authentication, create Rosannah's user.
+11. If using an email other than `joinriseafrica@gmail.com`, set its profile to admin:
 
    ```sql
    update public.profiles
@@ -61,22 +77,22 @@ Without environment variables, the app stores changes in the browser's `localSto
    where id = (select id from auth.users where email = 'YOUR_EMAIL');
    ```
 
-10. Add the project URL and anon key to `.env.local`:
+12. Add the project URL, anon key, and WhatsApp number to `.env.local`:
 
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_ANON_KEY
+   NEXT_PUBLIC_WHATSAPP_NUMBER=232XXXXXXXX
    ```
 
-The database includes profiles, customers, measurements, suppliers, inventory, orders, order items, expenses, payments, post batches, content, content channels, and leads. Order-item triggers safely reduce stock and mark products reserved or paid. Staff can read and create operational records; destructive deletes are admin-only.
+Migration `007` adds public product publishing fields while restricting anonymous
+visitors to storefront-safe columns. Product costs, suppliers, customers, orders,
+payments, and expenses remain private.
 
 ## Vercel
 
-Import the repository into Vercel, set the two Supabase environment variables, and deploy. The project uses the standard Next.js build command.
-
-## MVP note
-
-The current UI data provider uses local persistence for a frictionless demo. The Supabase schema, browser client, authentication screen, and security policies are included. The next production step is replacing the provider's local mutations with Supabase queries while preserving its existing interface.
+Import the repository into Vercel, set the three environment variables shown
+above, and deploy. The project uses the standard Next.js build command.
 
 ## Product model
 

@@ -56,6 +56,14 @@ function upgradeData(saved: Partial<AppData>): AppData {
       reservedQuantity: item.reservedQuantity ?? 0,
       soldQuantity: item.soldQuantity ?? 0,
       totalQuantity: item.totalQuantity ?? item.quantity,
+      isPublic: item.isPublic ?? false,
+      isFeatured: item.isFeatured ?? false,
+      publicStatus: item.publicStatus || "hidden",
+      publicDescription: item.publicDescription || "",
+      slug: item.slug || "",
+      sizes: item.sizes || (item.size ? [item.size] : []),
+      colors: item.colors || (item.color ? [item.color] : []),
+      sourceType: item.sourceType || "ready-made",
     })),
     orders: (saved.orders || seedData.orders).map((order) => ({
       ...order,
@@ -111,6 +119,14 @@ function mapInventory(row: any, summary?: any): InventoryItem {
     reservedQuantity: reserved,
     soldQuantity: sold,
     totalQuantity: Number(summary?.total_quantity ?? available + reserved + sold),
+    isPublic: Boolean(row.is_public),
+    isFeatured: Boolean(row.is_featured),
+    publicStatus: row.public_status || "hidden",
+    publicDescription: row.public_description || "",
+    slug: row.slug || "",
+    sizes: row.sizes || (row.size ? [row.size] : []),
+    colors: row.colors || (row.color ? [row.color] : []),
+    sourceType: row.source_type || "ready-made",
   };
 }
 
@@ -145,7 +161,7 @@ function mapStockEntry(row: any): StockEntry {
 }
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<AppData>(seedData);
+  const [data, setData] = useState<AppData>(hasSupabaseConfig ? emptyData : seedData);
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
@@ -559,6 +575,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
           shop_photo_url: item.shopPhotoUrl,
           try_on_url: item.tryOnUrl,
           batch_id: item.batchId || null,
+          is_public: item.isPublic,
+          is_featured: item.isFeatured,
+          public_status: item.publicStatus,
+          public_description: item.publicDescription,
+          slug: item.slug || null,
+          sizes: item.sizes,
+          colors: item.colors,
+          source_type: item.sourceType,
         }).select("id").single();
         if (error) throw error;
         if (item.quantity > 0) {
@@ -609,6 +633,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
           shop_photo_url: item.shopPhotoUrl || null,
           try_on_url: item.tryOnUrl || null,
           batch_id: item.batchId || null,
+          is_public: item.isPublic,
+          is_featured: item.isFeatured,
+          public_status: item.publicStatus,
+          public_description: item.publicDescription,
+          slug: item.slug || null,
+          sizes: item.sizes,
+          colors: item.colors,
+          source_type: item.sourceType,
         }).eq("id", inventoryId);
         if (error) throw error;
         await refresh();

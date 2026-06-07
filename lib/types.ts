@@ -63,6 +63,14 @@ export type InventoryItem = {
   reservedQuantity: number;
   soldQuantity: number;
   totalQuantity: number;
+  isPublic?: boolean;
+  isFeatured?: boolean;
+  publicStatus?: "available" | "reserved" | "sold" | "hidden";
+  publicDescription?: string;
+  slug?: string;
+  sizes?: string[];
+  colors?: string[];
+  sourceType?: "ready-made" | "original" | "tailoring-sample";
 };
 
 export type Expense = {

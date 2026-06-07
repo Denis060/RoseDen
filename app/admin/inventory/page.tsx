@@ -73,7 +73,7 @@ export default function InventoryPage() {
                 <div><p className="text-xs text-black/45">Cost {money(item.costPrice)} • {item.supplier}</p><p className="mt-1 flex items-center gap-1 text-[10px] text-black/35"><History size={11} />{data.stockEntries.filter((entry) => entry.inventoryId === item.id).length} stock entries</p></div>
                 <div className="flex items-center gap-2"><button onClick={() => { setRestockId(item.id); restockModal.show(); }} className="flex h-10 items-center gap-1.5 rounded-xl bg-burgundy px-3 text-xs font-semibold text-white"><RotateCcw size={14} />Restock</button><div className="flex items-center rounded-xl border border-black/10"><button onClick={() => adjustInventory(item.id, -1)} className="grid h-10 w-9 place-items-center"><Minus size={15} /></button><span className={`min-w-7 text-center font-bold ${low ? "text-gold" : "text-burgundy"}`}>{item.quantity}</span><button onClick={() => adjustInventory(item.id, 1)} className="grid h-10 w-9 place-items-center"><Plus size={15} /></button></div></div>
               </div>
-              <Link href={`/inventory/${item.id}`} className="mx-4 mb-4 flex h-11 items-center justify-center rounded-xl border border-burgundy/15 font-semibold text-burgundy">Open product details</Link>
+              <Link href={`/admin/inventory/${item.id}`} className="mx-4 mb-4 flex h-11 items-center justify-center rounded-xl border border-burgundy/15 font-semibold text-burgundy">Open product details</Link>
             </article>
           );
         })}

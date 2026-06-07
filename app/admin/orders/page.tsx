@@ -150,7 +150,7 @@ function OrdersContent() {
                 <p className="flex items-center gap-1 text-xs text-black/45"><CalendarDays size={14} />{order.deliveryPlan} • {shortDate(order.dueDate)}</p>
                 <select value={order.status} onChange={(event) => updateOrderStatus(order.id, event.target.value as OrderStatus)} className="h-10 rounded-xl bg-burgundy/10 px-3 text-xs font-bold capitalize text-burgundy">{statuses.map((status) => <option key={status}>{status}</option>)}</select>
               </div>
-              <Link href={`/orders/${order.id}`} className="mt-3 flex h-11 items-center justify-center rounded-xl border border-burgundy/15 font-semibold text-burgundy">Open order details</Link>
+              <Link href={`/admin/orders/${order.id}`} className="mt-3 flex h-11 items-center justify-center rounded-xl border border-burgundy/15 font-semibold text-burgundy">Open order details</Link>
             </article>
           );
         })}

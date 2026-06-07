@@ -49,7 +49,7 @@ export default function CustomersPage() {
                 <button onClick={() => remove("customers", customer.id)} className="p-2 text-black/25" aria-label="Delete customer"><Trash2 size={17} /></button>
               </div>
               <div className="mt-4 grid grid-cols-3 border-t border-black/5 pt-3 text-center"><div><p className="text-xs text-black/45">Orders</p><p className="font-bold text-burgundy">{orders.length}</p></div><div><p className="text-xs text-black/45">Paid</p><p className="font-bold text-burgundy">{money(spent)}</p></div><div><p className="flex items-center justify-center gap-1 text-xs text-black/45"><Ruler size={12} />Bust</p><p className="font-bold text-burgundy">{customer.measurements?.bust || "-"} in</p></div></div>
-              <Link href={`/customers/${customer.id}`} className="mt-3 flex h-11 items-center justify-center rounded-xl border border-burgundy/15 font-semibold text-burgundy">Open customer details</Link>
+              <Link href={`/admin/customers/${customer.id}`} className="mt-3 flex h-11 items-center justify-center rounded-xl border border-burgundy/15 font-semibold text-burgundy">Open customer details</Link>
             </article>
           );
         })}
