@@ -5,3 +5,5 @@ node_modules/
 .codex-qa/
 tsconfig.tsbuildinfo
 npm-debug.log*
+
+.vercel
