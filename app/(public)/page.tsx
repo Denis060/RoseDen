@@ -37,30 +37,30 @@ export default function HomePage() {
   return (
     <main>
       <section className="bg-white">
-        <div className="mx-auto grid min-h-[680px] max-w-7xl lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="flex flex-col justify-center px-5 py-14 sm:px-10 lg:px-16">
-            <h1 className="max-w-xl font-display text-[42px] font-semibold leading-[0.98] text-burgundy sm:text-7xl">
+        <div className="mx-auto grid min-h-[420px] max-w-7xl grid-cols-[48%_52%] sm:min-h-[560px] lg:min-h-[680px] lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="z-10 flex flex-col justify-center px-4 py-8 sm:px-8 sm:py-12 lg:px-16">
+            <h1 className="max-w-xl font-display text-[27px] font-semibold leading-[0.98] tracking-[-0.02em] text-burgundy min-[430px]:text-[30px] sm:text-5xl lg:text-7xl">
               Styled in Makeni. Made for your moment.
             </h1>
-            <p className="mt-6 max-w-lg text-base leading-7 text-black/65 sm:text-lg">
+            <p className="mt-4 max-w-lg text-[12px] leading-[1.45] text-black/65 min-[430px]:text-sm sm:mt-6 sm:text-base sm:leading-7 lg:text-lg">
               Tailored pieces, curated fashion, and one-of-one RoseDen Originals for women who love to stand out.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Link href="/shop" className="flex h-14 items-center justify-center gap-2 rounded-full bg-gold px-7 font-bold text-burgundy">
-                Shop New Arrivals <ArrowRight size={18} />
+            <div className="mt-5 flex max-w-[250px] flex-col gap-2 sm:mt-8 sm:max-w-none sm:flex-row sm:flex-wrap sm:gap-3">
+              <Link href="/shop" className="flex h-10 items-center justify-center gap-1.5 rounded-md bg-gold px-3 text-[11px] font-bold text-white sm:h-14 sm:rounded-full sm:px-7 sm:text-base">
+                Shop New Arrivals <ArrowRight size={14} />
               </Link>
-              <a href={whatsappLink("Hello RoseDen Atelier, I would like to see your latest arrivals.")} target="_blank" rel="noreferrer" className="flex h-14 items-center justify-center gap-2 rounded-full bg-burgundy px-7 font-bold text-white">
-                <MessageCircle size={18} />Order on WhatsApp
+              <a href={whatsappLink("Hello RoseDen Atelier, I would like to see your latest arrivals.")} target="_blank" rel="noreferrer" className="flex h-10 items-center justify-center gap-1.5 rounded-md bg-burgundy px-3 text-[11px] font-bold text-white sm:h-14 sm:rounded-full sm:px-7 sm:text-base">
+                <MessageCircle size={14} />Order on WhatsApp
               </a>
-              <Link href="/tailoring" className="flex h-14 items-center justify-center gap-2 rounded-full border border-burgundy/20 px-7 font-bold text-burgundy">
-                <Scissors size={18} />Book Tailoring
+              <Link href="/tailoring" className="flex h-10 items-center justify-center gap-1.5 rounded-md border border-gold px-3 text-[11px] font-bold text-burgundy sm:h-14 sm:rounded-full sm:px-7 sm:text-base">
+                <Scissors size={14} />Book Tailoring
               </Link>
             </div>
           </div>
-          <div className="relative min-h-[420px] overflow-hidden lg:min-h-full">
-            <Image src={boutiqueImage} alt="RoseDen-inspired boutique interior with gold mannequin and clothing rack" fill priority className="object-cover object-[62%_center]" />
-            <div className="absolute inset-y-0 left-0 hidden w-24 bg-gradient-to-r from-white to-transparent lg:block" />
-            <div className="absolute bottom-5 right-5 rounded-2xl bg-white/90 px-4 py-3 shadow-soft backdrop-blur">
+          <div className="relative min-h-full overflow-hidden">
+            <Image src={boutiqueImage} alt="RoseDen-inspired boutique interior with gold mannequin and clothing rack" fill priority className="object-cover object-[67%_center]" />
+            <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white to-transparent sm:w-20" />
+            <div className="absolute bottom-3 right-3 hidden rounded-2xl bg-white/90 px-4 py-3 shadow-soft backdrop-blur sm:block">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-gold">RoseDen Atelier</p>
               <p className="mt-1 text-sm font-semibold text-burgundy">Tailored · Curated · Original</p>
             </div>
@@ -70,11 +70,11 @@ export default function HomePage() {
 
       <div className="h-3 stripe-accent" />
 
-      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-        <div className="mb-8 flex items-end justify-between gap-4">
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-14">
+        <div className="mb-5 flex items-end justify-between gap-4 sm:mb-8">
           <div>
-            <h2 className="font-display text-4xl font-semibold text-burgundy sm:text-5xl">New arrivals</h2>
-            <p className="mt-2 text-sm text-black/55">Fresh pieces available to order now.</p>
+            <h2 className="font-display text-3xl font-semibold uppercase text-burgundy sm:text-5xl sm:normal-case">New arrivals</h2>
+            <p className="mt-1 text-xs text-black/55 sm:mt-2 sm:text-sm">Fresh pieces available to order now.</p>
           </div>
           <Link href="/shop" className="shrink-0 text-sm font-bold text-burgundy">View all →</Link>
         </div>
