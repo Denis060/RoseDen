@@ -52,18 +52,18 @@ export function PublicHeader() {
 export function PublicFooter() {
   return (
     <footer className="bg-burgundy px-4 py-10 text-white">
-      <div className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-3">
+      <div className="mx-auto grid max-w-6xl grid-cols-3 gap-3 sm:gap-8">
         <div>
-          <p className="font-display text-2xl font-semibold">RoseDen Atelier</p>
-          <p className="mt-3 max-w-xs text-sm text-white/70">Styled in Makeni. Tailored, curated, and original.</p>
+          <p className="font-display text-sm font-semibold sm:text-2xl">RoseDen Atelier</p>
+          <p className="mt-2 max-w-xs text-[8px] leading-relaxed text-white/70 sm:mt-3 sm:text-sm">Styled in Makeni. Tailored, curated, and original.</p>
         </div>
         <div>
-          <p className="font-semibold text-gold">Visit</p>
-          <p className="mt-3 text-sm text-white/75">Makeni, Bombali District<br />Sierra Leone</p>
+          <p className="text-[10px] font-semibold text-gold sm:text-base">Visit</p>
+          <p className="mt-2 text-[8px] leading-relaxed text-white/75 sm:mt-3 sm:text-sm">Makeni, Bombali District<br />Sierra Leone</p>
         </div>
         <div>
-          <p className="font-semibold text-gold">Explore</p>
-          <div className="mt-3 flex flex-wrap gap-4 text-sm text-white/80">
+          <p className="text-[10px] font-semibold text-gold sm:text-base">Explore</p>
+          <div className="mt-2 flex flex-wrap gap-2 text-[8px] text-white/80 sm:mt-3 sm:gap-4 sm:text-sm">
             <Link href="/shop">Shop</Link>
             <Link href="/tailoring">Tailoring</Link>
             <Link href="/contact">Contact</Link>
