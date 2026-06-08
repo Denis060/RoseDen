@@ -27,12 +27,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen w-full overflow-x-hidden bg-cream text-ink">
       <header className="sticky top-0 z-30 border-b border-burgundy/10 bg-cream/95 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-2 px-4 py-3 sm:px-6">
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <Link href="/admin" className="leading-none"><span className="font-display text-xl font-bold text-burgundy">RoseDen Atelier</span><span className="mt-1 block text-[9px] uppercase tracking-[0.22em] text-gold">Tailored · Curated · Original</span></Link>
-          <div className="flex items-center gap-2">
-            <Link href="/admin/reports" className="rounded-full border border-burgundy/15 bg-white px-3 py-2 text-xs font-semibold text-burgundy">Reports</Link>
+          <div className="grid w-full grid-cols-3 gap-2 sm:flex sm:w-auto sm:items-center">
+            <Link href="/admin/reports" className="rounded-full border border-burgundy/15 bg-white px-3 py-2 text-center text-xs font-semibold text-burgundy">Reports</Link>
             <Link href="/admin/batches" className="hidden rounded-full border border-burgundy/15 bg-white px-3 py-2 text-xs font-semibold text-burgundy sm:block">Buying trips</Link>
-            <Link href="/admin/website" className="rounded-full border border-burgundy/15 bg-white px-3 py-2 text-xs font-semibold text-burgundy"><span className="hidden sm:inline">Edit </span>Website</Link>
+            <Link href="/admin/website" className="rounded-full bg-gold px-3 py-2 text-center text-xs font-bold text-burgundy">Edit Website</Link>
             {userEmail && <button onClick={handleSignOut} className="rounded-full bg-burgundy px-3 py-2 text-xs font-semibold text-white">Sign out</button>}
           </div>
         </div>

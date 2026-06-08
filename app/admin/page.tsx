@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Banknote, CircleDollarSign, Clock3, Megaphone, PackageSearch, Plus, TrendingUp } from "lucide-react";
+import { ArrowRight, Banknote, CircleDollarSign, Clock3, Megaphone, PackageSearch, Plus, Settings2, TrendingUp } from "lucide-react";
 import { useData } from "@/components/data-provider";
 import { IconBox } from "@/components/icons";
 import { money, shortDate } from "@/lib/format";
@@ -25,6 +25,13 @@ export default function Dashboard() {
         <Link href="/admin/orders?status=1" className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-burgundy px-5 font-semibold text-white shadow-soft"><Megaphone size={20} /> Record status/social order</Link>
         <Link href="/admin/orders?new=1" className="flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-burgundy/20 bg-white px-5 font-semibold text-burgundy"><Plus size={20} /> Regular sale or order</Link>
       </div>
+      <Link href="/admin/website" className="mb-7 flex items-center justify-between rounded-2xl border border-gold/30 bg-white p-4 shadow-soft">
+        <div className="flex items-center gap-3">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gold text-burgundy"><Settings2 size={22} /></span>
+          <div><p className="font-display text-lg font-semibold text-wine">Manage Website</p><p className="mt-0.5 text-xs text-black/50">Change photos, words, contact details, and social links.</p></div>
+        </div>
+        <ArrowRight className="shrink-0 text-burgundy" size={20} />
+      </Link>
       <section className="grid grid-cols-2 gap-3">
         {[
           ["Today’s sales", money(todaySales), Banknote],
