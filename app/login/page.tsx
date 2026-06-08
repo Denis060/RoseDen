@@ -27,7 +27,14 @@ function LoginForm() {
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email")).trim().toLowerCase();
     const password = String(form.get("password"));
-    const result = await supabase.auth.signInWithPassword({ email, password });
+    let result;
+    try {
+      result = await supabase.auth.signInWithPassword({ email, password });
+    } catch {
+      setMessage("The connection stopped during sign-in. Check your internet and tap Sign in again.");
+      setBusy(false);
+      return;
+    }
     if (result.error) {
       setMessage(result.error.message === "Invalid login credentials"
         ? "The email or password does not match. Tap Show password and check every character."

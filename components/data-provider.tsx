@@ -278,28 +278,49 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   useEffect(() => {
+    let active = true;
+
     async function init() {
       if (!supabase) {
         const saved = localStorage.getItem("roseden-data");
         if (saved) setData(upgradeData(JSON.parse(saved)));
-        setReady(true);
-        setLoading(false);
+        if (active) {
+          setReady(true);
+          setLoading(false);
+        }
         return;
       }
 
-      const { data: sessionData } = await supabase.auth.getSession();
-      setUser(sessionData.session?.user || null);
-      setReady(true);
-      if (!sessionData.session?.user) {
-        setLoading(false);
+      try {
+        const { data: sessionData, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (active) {
+          setUser(sessionData.session?.user || null);
+          setReady(true);
+          if (!sessionData.session?.user) setLoading(false);
+        }
+      } catch (error) {
+        console.error("Could not restore RoseDen session", error);
+        if (active) {
+          setUser(null);
+          setReady(true);
+          setLoading(false);
+          setConnectionError("Your saved sign-in could not be restored. Please sign in again.");
+        }
       }
     }
 
     init();
     const authListener = supabase?.auth.onAuthStateChange((_event, session) => {
+      if (!active) return;
       setUser(session?.user || null);
+      setReady(true);
+      if (!session?.user) setLoading(false);
     });
-    return () => authListener?.data.subscription.unsubscribe();
+    return () => {
+      active = false;
+      authListener?.data.subscription.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
