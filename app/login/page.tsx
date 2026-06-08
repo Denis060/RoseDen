@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Field } from "@/components/ui";
 
@@ -11,6 +12,7 @@ function LoginForm() {
   const params = useSearchParams();
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleAuth(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -24,13 +26,17 @@ function LoginForm() {
       return;
     }
     const form = new FormData(event.currentTarget);
-    const email = String(form.get("email"));
+    const email = String(form.get("email")).trim().toLowerCase();
     const password = String(form.get("password"));
     const result = authMode === "signup"
       ? await supabase.auth.signUp({ email, password, options: { data: { full_name: "RoseDen Admin" } } })
       : await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
-    if (result.error) setMessage(result.error.message);
+    if (result.error) {
+      setMessage(result.error.message === "Invalid login credentials"
+        ? "The email or password does not match. Tap Show password and check every character."
+        : result.error.message);
+    }
     else if (authMode === "signup" && !result.data.session) setMessage("Account created. Check your email, then return here to sign in.");
     else router.replace(params.get("next")?.startsWith("/admin") ? params.get("next")! : "/admin");
   }
@@ -42,7 +48,12 @@ function LoginForm() {
         <div className="mb-7 mt-5 text-center"><div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-burgundy font-display text-2xl font-bold text-white">R</div><h1 className="mt-4 font-display text-3xl font-bold text-wine">RoseDen OS</h1><p className="mt-1 text-sm text-black/50">Private staff sign in</p></div>
         <form onSubmit={handleAuth} className="space-y-4">
           <Field name="email" label="Email" type="email" defaultValue="joinriseafrica@gmail.com" required />
-          <Field name="password" label="Password" type="password" required />
+          <div>
+            <Field name="password" label="Password" type={showPassword ? "text" : "password"} autoComplete="current-password" required />
+            <button type="button" onClick={() => setShowPassword((current) => !current)} className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-burgundy">
+              {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}{showPassword ? "Hide password" : "Show password"}
+            </button>
+          </div>
           {message && <p className="rounded-xl bg-gold/10 p-3 text-sm text-wine">{message}</p>}
           <button disabled={busy} value="login" className="h-13 w-full rounded-2xl bg-burgundy px-5 py-4 font-semibold text-white disabled:opacity-60">Sign in</button>
           <button disabled={busy} value="signup" className="h-12 w-full rounded-2xl border border-burgundy/20 bg-white px-5 font-semibold text-burgundy disabled:opacity-60">Create account</button>
