@@ -43,7 +43,7 @@ export default function HomePage() {
         <div className="mx-auto grid min-h-[420px] max-w-7xl grid-cols-[48%_52%] sm:min-h-[560px] lg:min-h-[680px] lg:grid-cols-[0.9fr_1.1fr]">
           <div className="z-10 flex flex-col justify-center px-4 py-8 sm:px-8 sm:py-12 lg:px-16">
             <h1 className="max-w-xl font-display text-[27px] font-semibold leading-[0.98] tracking-[-0.02em] text-burgundy min-[430px]:text-[30px] sm:text-5xl lg:text-7xl">
-              Styled in Makeni. Made for your moment.
+              Styled for you. Made for your moment.
             </h1>
             <p className="mt-4 max-w-lg text-[12px] leading-[1.45] text-black/65 min-[430px]:text-sm sm:mt-6 sm:text-base sm:leading-7 lg:text-lg">
               Tailored pieces, curated fashion, and one-of-one RoseDen Originals for women who love to stand out.

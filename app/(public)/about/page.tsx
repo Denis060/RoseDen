@@ -1,6 +1,49 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, Heart, Lightbulb, Sparkles } from "lucide-react";
 
-export const metadata: Metadata = { title: "About", description: "The story of RoseDen Atelier, Rosannah, Ibrahim, and fashion from Makeni." };
+export const metadata: Metadata = { title: "About RoseDen", description: "Meet the people and ideas behind RoseDen Atelier." };
+
 export default function AboutPage() {
-  return <main className="mx-auto max-w-5xl px-4 py-14 sm:px-6"><p className="text-xs font-bold uppercase tracking-wider text-gold">Our story</p><h1 className="mt-3 max-w-3xl font-display text-5xl font-semibold text-wine">A fashion business rooted in Makeni and built for a wider world.</h1><div className="mt-12 grid gap-8 md:grid-cols-2"><div className="rounded-[32px] bg-burgundy p-8 text-white"><h2 className="font-display text-3xl font-semibold">Rosannah</h2><p className="mt-4 leading-7 text-white/65">Leads the fashion: styling, tailoring, sourcing, customer relationships, and the creative direction behind every RoseDen piece.</p></div><div className="rounded-[32px] bg-white p-8 shadow-soft"><h2 className="font-display text-3xl font-semibold text-wine">Ibrahim</h2><p className="mt-4 leading-7 text-black/60">Builds the systems: technology, data, analytics, and the digital connection that helps RoseDen serve customers in Sierra Leone and the diaspora.</p></div></div><p className="mt-12 text-lg leading-8 text-black/60">Together, RoseDen Atelier combines a trusted local boutique experience with the tools of a modern, technology-enabled fashion business. The goal is simple: make it easier for customers to discover something beautiful and easier for RoseDen to deliver it well.</p></main>;
+  return (
+    <main>
+      <section className="bg-white">
+        <div className="mx-auto grid max-w-6xl grid-cols-[46%_54%] items-stretch">
+          <div className="flex flex-col justify-center px-4 py-10 sm:px-10 sm:py-20">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Our story</p>
+            <h1 className="mt-3 font-display text-[32px] font-semibold leading-[0.98] text-burgundy sm:text-6xl">Fashion with heart, personality, and purpose.</h1>
+            <p className="mt-4 text-xs leading-5 text-black/60 sm:text-base sm:leading-7">RoseDen brings together creative styling, thoughtful tailoring, carefully chosen pieces, and one-of-one Originals.</p>
+          </div>
+          <div className="relative min-h-[390px] sm:min-h-[620px]">
+            <Image src="/images/showcase/arrival-burgundy.png" alt="RoseDen fashion look" fill priority className="object-cover" />
+          </div>
+        </div>
+      </section>
+      <div className="h-3 stripe-accent" />
+
+      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
+        <h2 className="font-display text-3xl font-semibold text-burgundy sm:text-5xl">The people behind RoseDen</h2>
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-6">
+          <article className="overflow-hidden rounded-2xl bg-white shadow-soft">
+            <div className="relative aspect-[4/3]"><Image src="/images/roseden-boutique-concept.png" alt="Inside RoseDen Atelier" fill className="object-cover object-[70%_center]" /></div>
+            <div className="p-4 sm:p-6"><Heart className="text-gold" size={20} /><h3 className="mt-3 font-display text-xl font-semibold text-burgundy sm:text-3xl">Rosannah</h3><p className="mt-2 text-[11px] leading-5 text-black/55 sm:text-sm sm:leading-6">The eye for fashion, styling, sourcing, tailoring, and the personal customer experience.</p></div>
+          </article>
+          <article className="overflow-hidden rounded-2xl bg-marble shadow-soft">
+            <div className="relative aspect-[4/3]"><Image src="/images/showcase/original-patchwork.png" alt="RoseDen Original fashion piece" fill className="object-cover" /></div>
+            <div className="p-4 sm:p-6"><Lightbulb className="text-gold" size={20} /><h3 className="mt-3 font-display text-xl font-semibold text-burgundy sm:text-3xl">Ibrahim</h3><p className="mt-2 text-[11px] leading-5 text-black/55 sm:text-sm sm:leading-6">The systems, technology, data, and digital tools helping RoseDen grow and serve customers better.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section className="marble-surface px-4 py-10 sm:px-6 sm:py-16">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid grid-cols-3 gap-2">
+            {["arrival-blue.png", "original-gold.png", "arrival-cream.png"].map((image) => <div key={image} className="relative aspect-[3/4] overflow-hidden rounded-xl border-2 border-white"><Image src={`/images/showcase/${image}`} alt="RoseDen fashion" fill className="object-cover" /></div>)}
+          </div>
+          <div className="mx-auto mt-8 max-w-2xl text-center"><Sparkles className="mx-auto text-gold" /><h2 className="mt-3 font-display text-3xl font-semibold text-burgundy">Local style. Modern ambition.</h2><p className="mt-3 text-sm leading-6 text-black/60">RoseDen is building a boutique experience that feels personal in-store and effortless online, connecting customers in Sierra Leone and beyond.</p><Link href="/shop" className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-burgundy px-6 text-sm font-bold text-white">Explore the collection <ArrowRight size={16} /></Link></div>
+        </div>
+      </section>
+    </main>
+  );
 }
