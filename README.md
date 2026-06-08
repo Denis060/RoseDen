@@ -140,3 +140,10 @@ Do not rerun or edit migrations `001` through `005`. Migration `006` adds:
 If the Supabase SQL Editor reports an unterminated dollar-quoted string, use
 the four smaller scripts in `supabase/phase1_steps` instead. Run them in
 number order, then run `supabase/verify_phase1.sql`.
+
+## Phase 2 database update
+
+Run `supabase/migrations/008_phase2_buying_trips.sql` after migration `007`.
+It links expenses to buying trips and adds trip status/allocation settings. The
+admin buying-trip detail page then calculates landed cost, markup, margin,
+expected profit, and actual delivered-sales profit.

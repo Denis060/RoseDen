@@ -79,6 +79,7 @@ export type Expense = {
   category: string;
   amount: number;
   notes: string;
+  batchId?: string;
 };
 
 export type PostBatch = {
@@ -90,6 +91,8 @@ export type PostBatch = {
   transportCost: number;
   channels: SalesChannel[];
   notes: string;
+  status?: "planned" | "open" | "completed" | "cancelled";
+  allocationMethod?: "per-unit" | "by-cost";
 };
 
 export type StockEntry = {

@@ -6,6 +6,7 @@ import { useData } from "@/components/data-provider";
 import { Field, Form, Modal, PageHeader, useModal } from "@/components/ui";
 import { money, shortDate } from "@/lib/format";
 import { SalesChannel } from "@/lib/types";
+import Link from "next/link";
 
 const channels: SalesChannel[] = ["WhatsApp Status", "Facebook", "TikTok", "Instagram", "Website"];
 
@@ -24,6 +25,8 @@ export default function AdminBatchesPage() {
       transportCost: Number(f.get("transportCost")),
       channels: channels.filter((channel) => f.getAll("channels").includes(channel)),
       notes: String(f.get("notes")),
+      status: "open",
+      allocationMethod: "per-unit",
     });
     modal.hide();
   }
@@ -44,6 +47,7 @@ export default function AdminBatchesPage() {
               <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-cream p-3 text-center"><div><p className="text-[10px] text-black/45">Items posted</p><strong>{products.reduce((sum, item) => sum + item.quantity, 0) + sold}</strong></div><div><p className="text-[10px] text-black/45">Orders</p><strong>{orders.length}</strong></div><div><p className="text-[10px] text-black/45">Sold</p><strong>{sold}</strong></div></div>
               <div className="mt-4 grid grid-cols-2 gap-3"><div><p className="text-xs text-black/45">Trip cost</p><p className="font-bold">{money(batch.totalCost + batch.transportCost)}</p></div><div><p className="text-xs text-black/45">Estimated profit</p><p className={`font-bold ${profit >= 0 ? "text-emerald-700" : "text-burgundy"}`}>{money(profit)}</p></div></div>
               <div className="mt-4 flex flex-wrap gap-1.5">{batch.channels.map((channel) => <span key={channel} className="rounded-full bg-gold/10 px-2.5 py-1 text-[10px] font-semibold text-wine">{channel}</span>)}</div>
+              <Link href={`/admin/batches/${batch.id}`} className="mt-4 flex h-11 items-center justify-center rounded-xl border border-burgundy/15 font-semibold text-burgundy">Open buying trip</Link>
             </article>
           );
         })}

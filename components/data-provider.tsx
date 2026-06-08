@@ -140,11 +140,13 @@ function mapBatch(row: any): PostBatch {
     transportCost: Number(row.transport_cost || 0),
     channels: row.channels || [],
     notes: row.notes || "",
+    status: row.status || "open",
+    allocationMethod: row.allocation_method || "per-unit",
   };
 }
 
 function mapExpense(row: any): Expense {
-  return { id: row.id, date: row.expense_date, category: row.category, amount: Number(row.amount || 0), notes: row.notes || "" };
+  return { id: row.id, date: row.expense_date, category: row.category, amount: Number(row.amount || 0), notes: row.notes || "", batchId: row.batch_id || undefined };
 }
 
 function mapStockEntry(row: any): StockEntry {
@@ -738,6 +740,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           category: item.category,
           amount: item.amount,
           notes: item.notes,
+          batch_id: item.batchId || null,
           created_by: user?.id,
         });
         if (error) throw error;
@@ -756,6 +759,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
           transport_cost: item.transportCost,
           channels: item.channels,
           notes: item.notes,
+          status: item.status || "open",
+          allocation_method: item.allocationMethod || "per-unit",
           created_by: user?.id,
         });
         if (error) throw error;
