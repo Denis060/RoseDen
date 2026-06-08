@@ -391,7 +391,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
     refresh,
     signOut: async () => {
       await supabase?.auth.signOut();
-      setData(seedData);
+      setUser(null);
+      setData(hasSupabaseConfig ? emptyData : seedData);
     },
     addCustomer: async (item) => {
       if (useSupabase && supabase) {

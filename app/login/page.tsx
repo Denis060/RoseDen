@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FormEvent, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Field } from "@/components/ui";
 
@@ -16,10 +16,9 @@ function LoginForm() {
 
   async function handleAuth(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const submitter = (event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
-    const authMode = submitter?.value === "signup" ? "signup" : "login";
+    if (busy) return;
     setBusy(true);
-    setMessage("");
+    setMessage("Signing in...");
     if (!supabase) {
       setMessage("Add Supabase keys to enable sign-in.");
       setBusy(false);
@@ -28,17 +27,25 @@ function LoginForm() {
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email")).trim().toLowerCase();
     const password = String(form.get("password"));
-    const result = authMode === "signup"
-      ? await supabase.auth.signUp({ email, password, options: { data: { full_name: "RoseDen Admin" } } })
-      : await supabase.auth.signInWithPassword({ email, password });
-    setBusy(false);
+    const result = await supabase.auth.signInWithPassword({ email, password });
     if (result.error) {
       setMessage(result.error.message === "Invalid login credentials"
         ? "The email or password does not match. Tap Show password and check every character."
         : result.error.message);
+      setBusy(false);
+      return;
     }
-    else if (authMode === "signup" && !result.data.session) setMessage("Account created. Check your email, then return here to sign in.");
-    else router.replace(params.get("next")?.startsWith("/admin") ? params.get("next")! : "/admin");
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) {
+      setMessage("Sign-in was accepted, but the browser did not save the session. Refresh and try once more.");
+      setBusy(false);
+      return;
+    }
+
+    setMessage("Signed in. Opening RoseDen OS...");
+    router.replace(params.get("next")?.startsWith("/admin") ? params.get("next")! : "/admin");
+    router.refresh();
   }
 
   return (
@@ -55,8 +62,11 @@ function LoginForm() {
             </button>
           </div>
           {message && <p className="rounded-xl bg-gold/10 p-3 text-sm text-wine">{message}</p>}
-          <button disabled={busy} value="login" className="h-13 w-full rounded-2xl bg-burgundy px-5 py-4 font-semibold text-white disabled:opacity-60">Sign in</button>
-          <button disabled={busy} value="signup" className="h-12 w-full rounded-2xl border border-burgundy/20 bg-white px-5 font-semibold text-burgundy disabled:opacity-60">Create account</button>
+          <button type="submit" disabled={busy} className="flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-burgundy px-5 py-4 font-semibold text-white disabled:opacity-60">
+            {busy && <LoaderCircle size={18} className="animate-spin" />}
+            {busy ? "Signing in..." : "Sign in to Admin"}
+          </button>
+          <p className="text-center text-xs leading-5 text-black/45">Need a new staff account? Ask the admin to create it in Supabase.</p>
         </form>
       </div>
     </main>
