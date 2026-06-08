@@ -67,9 +67,11 @@ operational data.
 7. Run `supabase/migrations/006_phase1_daily_operations.sql`, or use the
    split scripts in `supabase/phase1_steps` if required.
 8. Run `supabase/migrations/007_public_storefront.sql`.
-9. Optionally run `supabase/seed.sql`.
-10. In Authentication, create Rosannah's user.
-11. If using an email other than `joinriseafrica@gmail.com`, set its profile to admin:
+9. Run `supabase/migrations/008_phase2_buying_trips.sql`.
+10. Run `supabase/migrations/009_website_content_management.sql`.
+11. Optionally run `supabase/seed.sql`.
+12. In Authentication, create Rosannah's user.
+13. If using an email other than `joinriseafrica@gmail.com`, set its profile to admin:
 
    ```sql
    update public.profiles
@@ -77,7 +79,7 @@ operational data.
    where id = (select id from auth.users where email = 'YOUR_EMAIL');
    ```
 
-12. Add the project URL, anon key, and WhatsApp number to `.env.local`:
+14. Add the project URL, anon key, and WhatsApp number to `.env.local`:
 
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
@@ -147,3 +149,14 @@ Run `supabase/migrations/008_phase2_buying_trips.sql` after migration `007`.
 It links expenses to buying trips and adds trip status/allocation settings. The
 admin buying-trip detail page then calculates landed cost, markup, margin,
 expected profit, and actual delivered-sales profit.
+
+## Website content management
+
+Migration `009` adds the simple mobile Website editor at `/admin/website`.
+Rosannah can change the homepage words, public photos, About and Tailoring
+introductions, services, customer reviews, contact details, social links, and
+WhatsApp number without editing code.
+
+Each inventory product can also hold up to three public photos. Open a product
+in Admin Inventory, tap Edit, add its photos, then choose **Show on website**
+and optionally **Featured product**.

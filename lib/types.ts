@@ -57,6 +57,7 @@ export type InventoryItem = {
   color: string;
   supplierPhotoUrl: string;
   shopPhotoUrl: string;
+  productImages?: string[];
   tryOnUrl: string;
   batchId?: string;
   availableQuantity: number;

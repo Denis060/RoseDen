@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Boxes, ClipboardList, Contact, LayoutDashboard, MapPinned, ReceiptText } from "lucide-react";
+import { Boxes, ClipboardList, Contact, LayoutDashboard, MapPinned, ReceiptText, Settings2 } from "lucide-react";
 import { ReactNode } from "react";
 import { useData } from "./data-provider";
 
@@ -32,14 +32,17 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-2">
             <Link href="/admin/reports" className="rounded-full border border-burgundy/15 bg-white px-3 py-2 text-xs font-semibold text-burgundy">Reports</Link>
             <Link href="/admin/batches" className="hidden rounded-full border border-burgundy/15 bg-white px-3 py-2 text-xs font-semibold text-burgundy sm:block">Buying trips</Link>
-            <Link href="/" className="rounded-full border border-burgundy/15 bg-white px-3 py-2 text-xs font-semibold text-burgundy">Website</Link>
+            <Link href="/admin/website" className="rounded-full border border-burgundy/15 bg-white px-3 py-2 text-xs font-semibold text-burgundy"><span className="hidden sm:inline">Edit </span>Website</Link>
             {userEmail && <button onClick={handleSignOut} className="rounded-full bg-burgundy px-3 py-2 text-xs font-semibold text-white">Sign out</button>}
           </div>
         </div>
       </header>
       {connectionError && <div className="border-b border-amber-300 bg-amber-50 px-4 py-2 text-center text-xs font-medium text-amber-900">{connectionError}</div>}
       <main className="mx-auto w-full min-w-0 max-w-5xl px-4 pb-28 pt-6 sm:px-6 sm:pt-8">{children}</main>
-      <Link href="/admin/batches" className="fixed bottom-20 right-4 z-30 flex h-12 items-center gap-2 rounded-full bg-gold px-4 text-xs font-bold text-burgundy shadow-soft sm:hidden"><MapPinned size={17} />Trips</Link>
+      <div className="fixed bottom-20 right-4 z-30 flex flex-col items-end gap-2 sm:hidden">
+        <Link href="/admin/website" className="flex h-12 items-center gap-2 rounded-full bg-white px-4 text-xs font-bold text-burgundy shadow-soft"><Settings2 size={17} />Website</Link>
+        <Link href="/admin/batches" className="flex h-12 items-center gap-2 rounded-full bg-gold px-4 text-xs font-bold text-burgundy shadow-soft"><MapPinned size={17} />Trips</Link>
+      </div>
       <nav className="fixed inset-x-0 bottom-0 z-40 w-full border-t border-burgundy/10 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
         <div className="mx-auto grid w-full max-w-xl grid-cols-5">
           {nav.map((item) => {

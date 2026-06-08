@@ -1,9 +1,8 @@
-import type { Metadata } from "next";
+"use client";
+
 import Image from "next/image";
 import { CalendarCheck, Check, Heart, MessageCircle, Ruler, Scissors, Sparkles } from "lucide-react";
-import { whatsappLink } from "@/components/public-site";
-
-export const metadata: Metadata = { title: "Tailoring & Styling", description: "Book bespoke tailoring, fittings, bridal, and occasion wear with RoseDen Atelier." };
+import { useWebsiteContent, websiteWhatsappLink } from "@/components/website-content";
 
 const steps = [
   [MessageCircle, "Share your idea", "Send an inspiration photo, occasion, and preferred date."],
@@ -13,17 +12,18 @@ const steps = [
 ] as const;
 
 export default function TailoringPage() {
+  const content = useWebsiteContent();
   return (
     <main>
       <section className="bg-white">
         <div className="mx-auto grid min-h-[430px] max-w-6xl grid-cols-[48%_52%]">
           <div className="flex flex-col justify-center px-4 py-9 sm:px-10 sm:py-20">
             <Scissors className="text-gold" size={25} />
-            <h1 className="mt-3 font-display text-[31px] font-semibold leading-[0.98] text-burgundy sm:text-6xl">Tailored to feel like you.</h1>
-            <p className="mt-4 text-xs leading-5 text-black/60 sm:text-base sm:leading-7">Personal measurements, thoughtful fittings, and occasion pieces made with care.</p>
-            <a href={whatsappLink("Hello RoseDen Atelier, I would like to book a tailoring consultation.")} target="_blank" rel="noreferrer" className="mt-5 flex h-10 items-center justify-center gap-2 rounded-md bg-gold px-3 text-[11px] font-bold text-white sm:h-13 sm:rounded-full sm:text-sm"><MessageCircle size={15} />Book a consultation</a>
+            <h1 className="mt-3 font-display text-[31px] font-semibold leading-[0.98] text-burgundy sm:text-6xl">{content.tailoringTitle}</h1>
+            <p className="mt-4 text-xs leading-5 text-black/60 sm:text-base sm:leading-7">{content.tailoringBody}</p>
+            <a href={websiteWhatsappLink(content.whatsappNumber, "Hello RoseDen Atelier, I would like to book a tailoring consultation.")} target="_blank" rel="noreferrer" className="mt-5 flex h-10 items-center justify-center gap-2 rounded-md bg-gold px-3 text-[11px] font-bold text-white sm:h-13 sm:rounded-full sm:text-sm"><MessageCircle size={15} />Book a consultation</a>
           </div>
-          <div className="relative"><Image src="/images/showcase/original-gold.png" alt="RoseDen tailored occasion piece" fill priority className="object-cover" /></div>
+          <div className="relative"><Image src={content.tailoringImageUrl} alt="RoseDen tailored occasion piece" fill priority className="object-cover" /></div>
         </div>
       </section>
       <div className="h-3 stripe-accent" />
@@ -46,8 +46,8 @@ export default function TailoringPage() {
 
       <section className="bg-white px-4 py-10 sm:px-6 sm:py-16">
         <div className="mx-auto grid max-w-5xl grid-cols-[42%_58%] overflow-hidden rounded-3xl border border-gold/20">
-          <div className="relative min-h-[260px]"><Image src="/images/roseden-boutique-concept.png" alt="RoseDen fitting space" fill className="object-cover object-[70%_center]" /></div>
-          <div className="flex flex-col justify-center p-5 sm:p-10"><Heart className="text-gold" /><h2 className="mt-3 font-display text-2xl font-semibold text-burgundy sm:text-4xl">Ready to create your look?</h2><div className="mt-4 space-y-2 text-[10px] text-black/55 sm:text-sm">{["Tell us your occasion and timeline", "Share your inspiration", "Confirm measurements and deposit"].map((item) => <p key={item} className="flex gap-2"><Check size={14} className="shrink-0 text-gold" />{item}</p>)}</div><a href={whatsappLink("Hello RoseDen Atelier, I would like to start a tailoring order.")} target="_blank" rel="noreferrer" className="mt-5 flex h-10 items-center justify-center gap-2 rounded-md bg-burgundy text-[10px] font-bold text-white sm:h-12 sm:rounded-full sm:text-sm"><Sparkles size={15} />Start on WhatsApp</a></div>
+          <div className="relative min-h-[260px]"><Image src={content.contactImageUrl} alt="RoseDen fitting space" fill className="object-cover object-[70%_center]" /></div>
+          <div className="flex flex-col justify-center p-5 sm:p-10"><Heart className="text-gold" /><h2 className="mt-3 font-display text-2xl font-semibold text-burgundy sm:text-4xl">Ready to create your look?</h2><div className="mt-4 space-y-2 text-[10px] text-black/55 sm:text-sm">{["Tell us your occasion and timeline", "Share your inspiration", "Confirm measurements and deposit"].map((item) => <p key={item} className="flex gap-2"><Check size={14} className="shrink-0 text-gold" />{item}</p>)}</div><a href={websiteWhatsappLink(content.whatsappNumber, "Hello RoseDen Atelier, I would like to start a tailoring order.")} target="_blank" rel="noreferrer" className="mt-5 flex h-10 items-center justify-center gap-2 rounded-md bg-burgundy text-[10px] font-bold text-white sm:h-12 sm:rounded-full sm:text-sm"><Sparkles size={15} />Start on WhatsApp</a></div>
         </div>
       </section>
     </main>

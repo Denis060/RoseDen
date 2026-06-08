@@ -1,22 +1,23 @@
-import type { Metadata } from "next";
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Heart, Lightbulb, Sparkles } from "lucide-react";
-
-export const metadata: Metadata = { title: "About RoseDen", description: "Meet the people and ideas behind RoseDen Atelier." };
+import { useWebsiteContent } from "@/components/website-content";
 
 export default function AboutPage() {
+  const content = useWebsiteContent();
   return (
     <main>
       <section className="bg-white">
         <div className="mx-auto grid max-w-6xl grid-cols-[46%_54%] items-stretch">
           <div className="flex flex-col justify-center px-4 py-10 sm:px-10 sm:py-20">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Our story</p>
-            <h1 className="mt-3 font-display text-[32px] font-semibold leading-[0.98] text-burgundy sm:text-6xl">Fashion with heart, personality, and purpose.</h1>
-            <p className="mt-4 text-xs leading-5 text-black/60 sm:text-base sm:leading-7">RoseDen brings together creative styling, thoughtful tailoring, carefully chosen pieces, and one-of-one Originals.</p>
+            <h1 className="mt-3 font-display text-[32px] font-semibold leading-[0.98] text-burgundy sm:text-6xl">{content.aboutTitle}</h1>
+            <p className="mt-4 text-xs leading-5 text-black/60 sm:text-base sm:leading-7">{content.aboutBody}</p>
           </div>
           <div className="relative min-h-[390px] sm:min-h-[620px]">
-            <Image src="/images/showcase/arrival-burgundy.png" alt="RoseDen fashion look" fill priority className="object-cover" />
+            <Image src={content.aboutImageUrl} alt="RoseDen fashion look" fill priority className="object-cover" />
           </div>
         </div>
       </section>

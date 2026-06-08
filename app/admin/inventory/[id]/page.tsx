@@ -44,6 +44,7 @@ export default function InventoryDetailPage() {
   const { data, updateInventory, uploadProductImage } = useData();
   const modal = useModal();
   const [shopPhotoUrl, setShopPhotoUrl] = useState("");
+  const [productImages, setProductImages] = useState<string[]>([]);
   const [previewUrl, setPreviewUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
@@ -63,13 +64,14 @@ export default function InventoryDetailPage() {
 
   function openEdit() {
     setShopPhotoUrl(item!.shopPhotoUrl);
+    setProductImages(item!.productImages?.length ? item!.productImages.slice(0, 3) : item!.shopPhotoUrl ? [item!.shopPhotoUrl] : []);
     setPreviewUrl(item!.shopPhotoUrl);
     setUploadComplete(false);
     setError("");
     modal.show();
   }
 
-  async function upload(event: ChangeEvent<HTMLInputElement>) {
+  async function upload(event: ChangeEvent<HTMLInputElement>, index = 0) {
     const file = event.target.files?.[0];
     if (!file) return;
     if (previewUrl.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
@@ -81,7 +83,12 @@ export default function InventoryDetailPage() {
     try {
       const preparedFile = await resizeProductImage(file);
       const publicUrl = await uploadProductImage(preparedFile);
-      setShopPhotoUrl(publicUrl);
+      setProductImages((current) => {
+        const next = [...current];
+        next[index] = publicUrl;
+        return next.slice(0, 3);
+      });
+      if (index === 0) setShopPhotoUrl(publicUrl);
       setPreviewUrl(publicUrl);
       setUploadComplete(true);
     } catch (cause) {
@@ -113,6 +120,7 @@ export default function InventoryDetailPage() {
         color: String(form.get("color")),
         supplierPhotoUrl: String(form.get("supplierPhotoUrl")),
         shopPhotoUrl,
+        productImages: productImages.filter(Boolean),
         tryOnUrl: String(form.get("tryOnUrl")),
         batchId: String(form.get("batchId")) || undefined,
         isPublic: form.get("isPublic") === "on",
@@ -151,6 +159,16 @@ export default function InventoryDetailPage() {
       <section><h2 className="font-display text-xl font-semibold text-wine">Related orders</h2><div className="mt-3 space-y-2">{orders.length === 0 && <Empty>No orders linked to this product.</Empty>}{orders.map((order) => <Link key={order.id} href={`/admin/orders/${order.id}`} className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-soft"><div><p className="font-semibold">{data.customers.find((customer) => customer.id === order.customerId)?.name || "Walk-in customer"}</p><p className="mt-1 text-xs capitalize text-black/45">{order.status} - {order.quantity} item(s)</p></div><p className="font-bold text-burgundy">{money(order.total)}</p></Link>)}</div></section>
 
       {modal.open && <Modal title="Edit product" onClose={modal.hide}><Form onSubmit={submit} submitLabel={uploading ? "Uploading photo..." : "Save product"} submitDisabled={uploading}>
+        <div className="rounded-2xl border border-dashed border-burgundy/25 bg-white p-3">
+          <p className="mb-3 text-sm font-semibold text-wine">Website product photos (up to 3)</p>
+          <div className="grid grid-cols-3 gap-2">
+            {[0, 1, 2].map((index) => <label key={index} className="relative grid aspect-square cursor-pointer place-items-center overflow-hidden rounded-xl bg-burgundy/5">
+              {productImages[index] ? <img src={productImages[index]} alt={`Product view ${index + 1}`} className="h-full w-full object-cover" /> : <span className="px-2 text-center text-[10px] font-semibold text-burgundy/45"><Upload size={18} className="mx-auto mb-1" />Photo {index + 1}</span>}
+              <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" capture="environment" onChange={(event) => upload(event, index)} className="hidden" disabled={uploading} />
+            </label>)}
+          </div>
+          <p className="mt-2 text-center text-xs text-black/45">The first photo is the main shop photo.</p>
+        </div>
         <div className="rounded-2xl border border-dashed border-burgundy/25 bg-white p-3">
           <div className="relative grid h-44 place-items-center overflow-hidden rounded-xl bg-burgundy/5">
             {previewUrl ? <img src={previewUrl} alt="Selected product preview" className="h-full w-full object-cover" /> : <Camera size={36} className="text-burgundy/25" />}

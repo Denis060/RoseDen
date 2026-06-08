@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { Instagram, Menu, MessageCircle, ShoppingBag } from "lucide-react";
+import { useWebsiteContent, websiteWhatsappLink } from "@/components/website-content";
 
 export const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "";
 
@@ -9,6 +12,7 @@ export function whatsappLink(message: string) {
 }
 
 export function PublicHeader() {
+  const content = useWebsiteContent();
   return (
     <header className="sticky top-0 z-40 border-b border-burgundy/10 bg-white/95 text-ink backdrop-blur">
       <div className="h-1.5 stripe-accent" />
@@ -37,7 +41,7 @@ export function PublicHeader() {
           <Link href="/contact">Contact</Link>
         </nav>
         <div className="flex items-center gap-2">
-          <a href={whatsappLink("Hello RoseDen Atelier, I would like to make an inquiry.")} target="_blank" rel="noreferrer" className="hidden h-11 w-11 place-items-center rounded-full bg-gold text-burgundy sm:grid" aria-label="WhatsApp RoseDen">
+          <a href={websiteWhatsappLink(content.whatsappNumber, "Hello RoseDen Atelier, I would like to make an inquiry.")} target="_blank" rel="noreferrer" className="hidden h-11 w-11 place-items-center rounded-full bg-gold text-burgundy sm:grid" aria-label="WhatsApp RoseDen">
             <MessageCircle size={19} />
           </a>
           <Link href="/shop" className="grid h-10 w-10 place-items-center text-ink md:hidden" aria-label="Open shop">
@@ -50,6 +54,7 @@ export function PublicHeader() {
 }
 
 export function PublicFooter() {
+  const content = useWebsiteContent();
   return (
     <footer className="bg-burgundy px-4 py-10 text-white">
       <div className="mx-auto grid max-w-6xl grid-cols-3 gap-3 sm:gap-8">
@@ -59,7 +64,7 @@ export function PublicFooter() {
         </div>
         <div>
           <p className="text-[10px] font-semibold text-gold sm:text-base">Visit</p>
-          <p className="mt-2 text-[8px] leading-relaxed text-white/75 sm:mt-3 sm:text-sm">Makeni, Bombali District<br />Sierra Leone</p>
+          <p className="mt-2 text-[8px] leading-relaxed text-white/75 sm:mt-3 sm:text-sm">{content.location}</p>
         </div>
         <div>
           <p className="text-[10px] font-semibold text-gold sm:text-base">Explore</p>
@@ -68,7 +73,7 @@ export function PublicFooter() {
             <Link href="/tailoring">Tailoring</Link>
             <Link href="/contact">Contact</Link>
             <Link href="/login">Staff</Link>
-            <Instagram size={17} />
+            {content.instagramUrl && <a href={content.instagramUrl} target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={17} /></a>}
           </div>
         </div>
       </div>

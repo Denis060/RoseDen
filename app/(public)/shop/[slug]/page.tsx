@@ -5,9 +5,10 @@ import { useParams } from "next/navigation";
 import { ArrowLeft, ImageIcon, MessageCircle } from "lucide-react";
 import { money } from "@/lib/format";
 import { usePublicProducts } from "@/components/public-products";
-import { whatsappLink } from "@/components/public-site";
+import { useWebsiteContent, websiteWhatsappLink } from "@/components/website-content";
 
 export default function ProductDetailPage() {
+  const content = useWebsiteContent();
   const { slug } = useParams<{ slug: string }>();
   const { products, loading } = usePublicProducts();
   const product = products.find((entry) => entry.slug === slug);
@@ -20,8 +21,20 @@ export default function ProductDetailPage() {
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <Link href="/shop" className="inline-flex items-center gap-2 text-sm font-semibold text-burgundy"><ArrowLeft size={18} />Back to shop</Link>
       <div className="mt-6 grid gap-8 md:grid-cols-2">
-        <div className="grid aspect-[4/5] place-items-center overflow-hidden rounded-[32px] bg-burgundy/5">{product.image ? <img src={product.image} alt={product.name} className="h-full w-full object-cover" /> : <ImageIcon size={56} className="text-burgundy/20" />}</div>
-        <div className="md:py-8"><p className="text-xs font-bold uppercase tracking-wider text-gold">{product.sourceType.replace("-", " ")} · {product.category}</p><h1 className="mt-3 font-display text-5xl font-semibold text-wine">{product.name}</h1><p className="mt-5 text-2xl font-bold text-burgundy">{money(product.price)}</p><p className="mt-6 leading-7 text-black/60">{product.description || "A carefully selected RoseDen piece. Message us for fit, styling, and delivery details."}</p><div className="mt-7 grid grid-cols-2 gap-3"><div className="rounded-2xl bg-white p-4"><p className="text-xs text-black/40">Sizes</p><p className="mt-1 text-sm font-semibold">{product.sizes.join(", ") || "Ask RoseDen"}</p></div><div className="rounded-2xl bg-white p-4"><p className="text-xs text-black/40">Colors</p><p className="mt-1 text-sm font-semibold">{product.colors.join(", ") || "Ask RoseDen"}</p></div><div className="rounded-2xl bg-white p-4"><p className="text-xs text-black/40">Status</p><p className="mt-1 text-sm font-semibold capitalize">{product.status}</p></div><div className="rounded-2xl bg-white p-4"><p className="text-xs text-black/40">Code</p><p className="mt-1 truncate text-sm font-semibold">{product.slug}</p></div></div><a href={whatsappLink(message)} className="mt-8 flex h-14 items-center justify-center gap-2 rounded-full bg-burgundy font-semibold text-white"><MessageCircle size={19} />Order this piece on WhatsApp</a></div>
+        <div className="grid grid-cols-2 gap-2">
+          {product.images.slice(0, 3).map((image, index) => <div key={image} className={`grid place-items-center overflow-hidden rounded-[24px] bg-burgundy/5 ${index === 0 ? "col-span-2 aspect-[4/5]" : "aspect-square"}`}><img src={image} alt={`${product.name} view ${index + 1}`} className="h-full w-full object-cover" /></div>)}
+          {product.images.length === 0 && <div className="col-span-2 grid aspect-[4/5] place-items-center rounded-[32px] bg-burgundy/5"><ImageIcon size={56} className="text-burgundy/20" /></div>}
+        </div>
+        <div className="md:py-8">
+          <p className="text-xs font-bold uppercase tracking-wider text-gold">{product.sourceType.replace("-", " ")} · {product.category}</p>
+          <h1 className="mt-3 font-display text-5xl font-semibold text-wine">{product.name}</h1>
+          <p className="mt-5 text-2xl font-bold text-burgundy">{money(product.price)}</p>
+          <p className="mt-6 leading-7 text-black/60">{product.description || "A carefully selected RoseDen piece. Message us for fit, styling, and delivery details."}</p>
+          <div className="mt-7 grid grid-cols-2 gap-3">
+            {[["Sizes", product.sizes.join(", ") || "Ask RoseDen"], ["Colors", product.colors.join(", ") || "Ask RoseDen"], ["Status", product.status], ["Code", product.slug]].map(([label, value]) => <div key={label} className="rounded-2xl bg-white p-4"><p className="text-xs text-black/40">{label}</p><p className="mt-1 truncate text-sm font-semibold capitalize">{value}</p></div>)}
+          </div>
+          <a href={websiteWhatsappLink(content.whatsappNumber, message)} target="_blank" rel="noreferrer" className="mt-8 flex h-14 items-center justify-center gap-2 rounded-full bg-burgundy font-semibold text-white"><MessageCircle size={19} />Order this piece on WhatsApp</a>
+        </div>
       </div>
     </main>
   );
