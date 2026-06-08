@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Heart, ImageIcon, MessageCircle, Sparkles } from "lucide-react";
@@ -23,6 +24,28 @@ export type PublicProduct = {
   featured: boolean;
   quantity: number;
 };
+
+export function productOrderMessage(product: PublicProduct) {
+  const siteOrigin = typeof window === "undefined"
+    ? "https://roseden-os.vercel.app"
+    : window.location.origin;
+  const productUrl = `${siteOrigin}/shop/${product.slug}`;
+  const imageUrl = product.image
+    ? new URL(product.image, siteOrigin).toString()
+    : "";
+
+  return `Hello RoseDen Atelier, I am interested in this item:
+
+Product: ${product.name}
+Code: ${product.slug}
+Size: ${product.sizes.join(", ") || "Please advise"}
+Color: ${product.colors.join(", ") || "Please advise"}
+Price: ${money(product.price)}
+
+View product: ${productUrl}${imageUrl ? `\nProduct image: ${imageUrl}` : ""}
+
+Is it still available?`;
+}
 
 const showcaseProducts: PublicProduct[] = [
   { id: "showcase-1", name: "Burgundy Power Set", slug: "burgundy-power-set", category: "RD-24-158", price: 450, description: "A confident burgundy boutique look inspired by RoseDen's new arrivals.", image: "/images/showcase/arrival-burgundy.png", images: ["/images/showcase/arrival-burgundy.png"], status: "preview", sizes: ["S", "M", "L"], colors: ["Burgundy"], sourceType: "ready-made", featured: true, quantity: 1 },
@@ -80,11 +103,11 @@ export function usePublicProducts() {
 
 export function ProductCard({ product, compact = false }: { product: PublicProduct; compact?: boolean }) {
   const content = useWebsiteContent();
-  const message = `Hello RoseDen Atelier, I am interested in this item:\n\nProduct: ${product.name}\nCode: ${product.slug}\nSize: ${product.sizes.join(", ") || "Please advise"}\nColor: ${product.colors.join(", ") || "Please advise"}\nPrice: ${money(product.price)}\n\nIs it still available?`;
+  const message = productOrderMessage(product);
   return (
     <article className={`group overflow-hidden border border-gold/45 bg-white shadow-soft ${compact ? "rounded-lg" : "rounded-[22px]"}`}>
       <Link href={`/shop/${product.slug}`} className="relative grid aspect-[4/5] place-items-center overflow-hidden bg-marble/45">
-        {product.image ? <img src={product.image} alt={product.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <ImageIcon size={42} className="text-burgundy/20" />}
+        {product.image ? <Image src={product.image} alt={product.name} fill sizes={compact ? "(max-width: 640px) 25vw, 220px" : "(max-width: 768px) 50vw, 280px"} className="object-cover transition duration-500 group-hover:scale-105" /> : <ImageIcon size={42} className="text-burgundy/20" />}
         {compact
           ? product.sourceType === "original"
             ? <span className="absolute left-1.5 top-1.5 rounded-full bg-gold px-1.5 py-0.5 text-[7px] font-bold uppercase text-white">One-of-one</span>

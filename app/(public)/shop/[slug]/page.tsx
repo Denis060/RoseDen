@@ -1,10 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, ImageIcon, MessageCircle } from "lucide-react";
 import { money } from "@/lib/format";
-import { usePublicProducts } from "@/components/public-products";
+import { productOrderMessage, usePublicProducts } from "@/components/public-products";
 import { useWebsiteContent, websiteWhatsappLink } from "@/components/website-content";
 
 export default function ProductDetailPage() {
@@ -16,13 +17,13 @@ export default function ProductDetailPage() {
   if (loading) return <main className="mx-auto min-h-[60vh] max-w-5xl animate-pulse px-4 py-12"><div className="h-96 rounded-3xl bg-burgundy/5" /></main>;
   if (!product) return <main className="mx-auto min-h-[60vh] max-w-5xl px-4 py-12"><Link href="/shop" className="inline-flex items-center gap-2 font-semibold text-burgundy"><ArrowLeft size={18} />Back to shop</Link><div className="mt-10 rounded-3xl border border-dashed border-burgundy/20 p-12 text-center"><h1 className="font-display text-3xl text-wine">This piece is not currently published.</h1><p className="mt-3 text-black/50">Message RoseDen to ask about similar styles.</p></div></main>;
 
-  const message = `Hello RoseDen Atelier, I am interested in this item:\n\nProduct: ${product.name}\nCode: ${product.slug}\nSize: ${product.sizes.join(", ") || "Please advise"}\nColor: ${product.colors.join(", ") || "Please advise"}\nPrice: ${money(product.price)}\n\nIs it still available?`;
+  const message = productOrderMessage(product);
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <Link href="/shop" className="inline-flex items-center gap-2 text-sm font-semibold text-burgundy"><ArrowLeft size={18} />Back to shop</Link>
       <div className="mt-6 grid gap-8 md:grid-cols-2">
         <div className="grid grid-cols-2 gap-2">
-          {product.images.slice(0, 3).map((image, index) => <div key={image} className={`grid place-items-center overflow-hidden rounded-[24px] bg-burgundy/5 ${index === 0 ? "col-span-2 aspect-[4/5]" : "aspect-square"}`}><img src={image} alt={`${product.name} view ${index + 1}`} className="h-full w-full object-cover" /></div>)}
+          {product.images.slice(0, 3).map((image, index) => <div key={image} className={`relative grid place-items-center overflow-hidden rounded-[24px] bg-burgundy/5 ${index === 0 ? "col-span-2 aspect-[4/5]" : "aspect-square"}`}><Image src={image} alt={`${product.name} view ${index + 1}`} fill sizes={index === 0 ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 50vw, 25vw"} priority={index === 0} className="object-cover" /></div>)}
           {product.images.length === 0 && <div className="col-span-2 grid aspect-[4/5] place-items-center rounded-[32px] bg-burgundy/5"><ImageIcon size={56} className="text-burgundy/20" /></div>}
         </div>
         <div className="md:py-8">
