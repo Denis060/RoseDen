@@ -72,7 +72,7 @@ function LoginForm() {
             {busy && <LoaderCircle size={18} className="animate-spin" />}
             {busy ? "Signing in..." : "Sign in to Admin"}
           </button>
-          <p className="text-center text-xs leading-5 text-black/45">Need a new staff account? Ask the admin to create it in Supabase.</p>
+          <p className="text-center text-xs leading-5 text-black/45">Need an account? Ask a RoseDen administrator to add you in Staff &amp; Access.</p>
         </form>
       </div>
     </main>

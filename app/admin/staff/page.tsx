@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { ShieldCheck, UserCog, UsersRound } from "lucide-react";
+import { Plus, ShieldCheck, UserCog, UsersRound } from "lucide-react";
 import { AdminOnly } from "@/components/admin-only";
 import { Field, Form, Modal, PageHeader, Select, useModal } from "@/components/ui";
 import { supabase } from "@/lib/supabase";
@@ -15,7 +15,8 @@ type StaffMember = {
 };
 
 function StaffManagement() {
-  const modal = useModal();
+  const createModal = useModal();
+  const editModal = useModal();
   const [members, setMembers] = useState<StaffMember[]>([]);
   const [selected, setSelected] = useState<StaffMember | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,11 +29,10 @@ function StaffManagement() {
     const { data, error } = await supabase.rpc("list_staff_members");
     if (error) {
       setMessage(["PGRST202", "42883"].includes(error.code)
-        ? "Run migration 011_staff_roles_and_permissions.sql to enable staff management."
+        ? "Run the Phase 4B staff migration steps to enable staff management."
         : error.message);
     } else {
       setMembers((data || []) as StaffMember[]);
-      setMessage("");
     }
     setLoading(false);
   }, []);
@@ -42,10 +42,54 @@ function StaffManagement() {
   function edit(member: StaffMember) {
     setSelected(member);
     setMessage("");
-    modal.show();
+    editModal.show();
   }
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
+  async function createStaff(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!supabase) return;
+    const form = new FormData(event.currentTarget);
+    setSaving(true);
+    setMessage("");
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData.session?.access_token;
+    if (!accessToken) {
+      setMessage("Your session has expired. Please sign in again.");
+      setSaving(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/admin/staff", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          fullName: String(form.get("fullName")),
+          email: String(form.get("email")),
+          password: String(form.get("password")),
+          role: String(form.get("role")),
+        }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        setMessage(result.error || "The staff account could not be created.");
+      } else {
+        createModal.hide();
+        await load();
+        setMessage(`${result.member.full_name} can now sign in with the starting password.`);
+      }
+    } catch {
+      setMessage("The staff account could not be created. Check your connection and try again.");
+    }
+    setSaving(false);
+  }
+
+  async function updateStaff(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!supabase || !selected) return;
     const form = new FormData(event.currentTarget);
@@ -59,7 +103,7 @@ function StaffManagement() {
     if (error) {
       setMessage(error.message);
     } else {
-      modal.hide();
+      editModal.hide();
       await load();
     }
     setSaving(false);
@@ -67,14 +111,16 @@ function StaffManagement() {
 
   return (
     <div>
-      <PageHeader title="Staff & Access" subtitle="Keep daily work simple while protecting sensitive controls." />
-      <div className="mb-6 rounded-2xl border border-gold/25 bg-gold/10 p-4 text-sm text-wine">
-        <p className="font-semibold">Adding a new staff member</p>
-        <p className="mt-1 text-xs leading-5 text-black/55">Create their email and temporary password in Supabase Authentication → Users. They will appear here automatically as Staff.</p>
-      </div>
+      <PageHeader title="Staff & Access" subtitle="Add staff and choose what each person can access." />
+      <button
+        onClick={() => { setMessage(""); createModal.show(); }}
+        className="mb-6 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-burgundy font-semibold text-white shadow-soft"
+      >
+        <Plus size={20} /> Add staff member
+      </button>
 
       {loading && <div className="rounded-2xl bg-white p-6 text-center text-sm text-black/50">Loading staff...</div>}
-      {!loading && message && <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">{message}</div>}
+      {!loading && message && <div className="mb-4 rounded-2xl border border-gold/25 bg-gold/10 p-4 text-sm text-wine">{message}</div>}
 
       <div className="space-y-3">
         {members.map((member) => (
@@ -92,9 +138,27 @@ function StaffManagement() {
         ))}
       </div>
 
-      {modal.open && selected && (
-        <Modal title="Edit staff access" onClose={modal.hide}>
-          <Form onSubmit={submit} submitLabel={saving ? "Saving access..." : "Save access"} submitDisabled={saving}>
+      {createModal.open && (
+        <Modal title="Add staff member" onClose={createModal.hide}>
+          <Form onSubmit={createStaff} submitLabel={saving ? "Creating account..." : "Create staff account"} submitDisabled={saving}>
+            <Field name="fullName" label="Full name" autoComplete="name" required />
+            <Field name="email" label="Email address" type="email" autoComplete="off" inputMode="email" required />
+            <Field name="password" label="Starting password" type="password" autoComplete="new-password" minLength={8} required />
+            <Select name="role" label="Access level" defaultValue="staff">
+              <option value="staff">Staff - daily operations</option>
+              <option value="admin">Admin - full access</option>
+            </Select>
+            <div className="rounded-xl bg-white p-3 text-xs leading-5 text-black/55">
+              Share the email and starting password privately. The new staff member can sign in immediately.
+            </div>
+            {message && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{message}</p>}
+          </Form>
+        </Modal>
+      )}
+
+      {editModal.open && selected && (
+        <Modal title="Edit staff access" onClose={editModal.hide}>
+          <Form onSubmit={updateStaff} submitLabel={saving ? "Saving access..." : "Save access"} submitDisabled={saving}>
             <div className="rounded-xl bg-white p-3 text-sm text-black/55">{selected.email}</div>
             <Field name="fullName" label="Staff name" defaultValue={selected.full_name} required />
             <Select name="role" label="Access level" defaultValue={selected.role}>
@@ -115,4 +179,3 @@ function StaffManagement() {
 export default function StaffPage() {
   return <AdminOnly><StaffManagement /></AdminOnly>;
 }
-

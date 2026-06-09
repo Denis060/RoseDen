@@ -90,8 +90,14 @@ operational data.
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_ANON_KEY
+   SUPABASE_SECRET_KEY=YOUR_SB_SECRET_KEY
    NEXT_PUBLIC_WHATSAPP_NUMBER=232XXXXXXXX
    ```
+
+   `SUPABASE_SECRET_KEY` is server-only. Find the `sb_secret_...` key in
+   Supabase under **Project Settings -> API Keys**, add it to `.env.local`
+   and Vercel, and never prefix it with `NEXT_PUBLIC_` or place it in
+   client-side code. The legacy `SUPABASE_SERVICE_ROLE_KEY` is also supported.
 
 Migration `007` adds public product publishing fields while restricting anonymous
 visitors to storefront-safe columns. Product costs, suppliers, customers, orders,
@@ -99,8 +105,12 @@ payments, and expenses remain private.
 
 ## Vercel
 
-Import the repository into Vercel, set the three environment variables shown
+Import the repository into Vercel, set the four environment variables shown
 above, and deploy. The project uses the standard Next.js build command.
+
+Once the service role key is configured, an administrator can create staff
+logins directly from **Admin -> Staff & Access -> Add staff member**. Rosannah
+does not need to open the Supabase dashboard.
 
 ## Product model
 
