@@ -279,3 +279,11 @@ Run `supabase/migrations/015_customer_engagement.sql` once.
 - Staff must review the message and approve sending inside WhatsApp.
 - Opening WhatsApp records a follow-up entry on the order and customer profile.
 - Birthdays are optional and can be added from customer create/edit forms.
+
+## Phase 7 stabilization
+
+Phase 7 separates order revenue from actual payment dates, reports all
+outstanding balances, protects destructive actions with confirmation screens,
+includes birthdays in customer exports, and adds public Privacy and Terms
+pages. Dashboard cash figures now mean payments actually received during the
+displayed day or month.

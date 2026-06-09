@@ -37,6 +37,7 @@ export function exportCustomers(data: AppData) {
     full_name: customer.name,
     phone: customer.phone,
     address: customer.address,
+    birthday: customer.birthday,
     notes: customer.notes,
     bust_inches: customer.measurements?.bust,
     waist_inches: customer.measurements?.waist,

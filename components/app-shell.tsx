@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BarChart3, Boxes, ClipboardList, Contact, DatabaseBackup, HeartHandshake, LayoutDashboard, MapPinned, Menu, MessageCircle, ReceiptText, Settings2, Sparkles, UsersRound, X } from "lucide-react";
+import { BarChart3, Boxes, ClipboardList, Contact, DatabaseBackup, HeartHandshake, LayoutDashboard, LifeBuoy, MapPinned, Menu, MessageCircle, ReceiptText, Settings2, Sparkles, UsersRound, X } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { useData } from "./data-provider";
 import { InstallAppButton } from "./pwa-tools";
@@ -58,6 +58,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 ["/admin/batches", "Buying trips", MapPinned],
                 ["/admin/reports", "Reports", BarChart3],
                 ["/admin/backup", "Backup", DatabaseBackup],
+                ["/admin/help", "How to use", LifeBuoy],
                 ["/admin/staff", "Staff", UsersRound],
                 ["/admin/website", "Website", Settings2],
               ].map(([href, label, Icon]) => <Link key={href as string} href={href as string} onClick={() => setMoreOpen(false)} className="flex min-h-20 flex-col items-center justify-center gap-2 rounded-2xl bg-white text-sm font-semibold text-burgundy shadow-soft"><Icon size={22} className="text-gold" />{label as string}</Link>)}

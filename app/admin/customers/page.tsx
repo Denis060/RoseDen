@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { MapPin, Phone, Ruler, Trash2 } from "lucide-react";
+import { MapPin, Phone, Ruler } from "lucide-react";
 import { useData } from "@/components/data-provider";
+import { ConfirmDelete } from "@/components/confirm-delete";
 import { Empty, Field, Form, Modal, PageHeader, useModal } from "@/components/ui";
 import { money } from "@/lib/format";
 
@@ -57,7 +58,7 @@ export default function CustomersPage() {
               <div className="flex items-start gap-3">
                 <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-burgundy/10 font-display text-xl font-bold text-burgundy">{customer.name[0]}</div>
                 <div className="min-w-0 flex-1"><h2 className="font-semibold">{customer.name}</h2><p className="mt-1 flex items-center gap-1 text-xs text-black/50"><Phone size={13} />{customer.phone}</p><p className="mt-1 flex items-center gap-1 text-xs text-black/50"><MapPin size={13} />{customer.address}</p></div>
-                {isAdmin && <button onClick={() => remove("customers", customer.id)} className="p-2 text-black/25" aria-label="Delete customer"><Trash2 size={17} /></button>}
+                {isAdmin && <ConfirmDelete itemName={customer.name} itemType="customer" onDelete={() => remove("customers", customer.id)} className="p-2 text-black/25" />}
               </div>
               <div className="mt-4 grid grid-cols-3 border-t border-black/5 pt-3 text-center"><div><p className="text-xs text-black/45">Orders</p><p className="font-bold text-burgundy">{orders.length}</p></div><div><p className="text-xs text-black/45">Paid</p><p className="font-bold text-burgundy">{money(spent)}</p></div><div><p className="flex items-center justify-center gap-1 text-xs text-black/45"><Ruler size={12} />Bust</p><p className="font-bold text-burgundy">{customer.measurements?.bust || "-"} in</p></div></div>
               <Link href={`/admin/customers/${customer.id}`} className="mt-3 flex h-11 items-center justify-center rounded-xl border border-burgundy/15 font-semibold text-burgundy">Open customer details</Link>

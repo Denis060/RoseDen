@@ -73,6 +73,8 @@ export function PublicFooter() {
             <Link href="/tailoring">Tailoring</Link>
             <Link href="/contact">Contact</Link>
             <Link href="/login">Staff</Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/terms">Terms</Link>
             {content.instagramUrl && <a href={content.instagramUrl} target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={17} /></a>}
           </div>
         </div>

@@ -5,6 +5,7 @@ import { Activity, ArrowRight, Banknote, CircleDollarSign, Clock3, HeartHandshak
 import { useData } from "@/components/data-provider";
 import { IconBox } from "@/components/icons";
 import { money, shortDate } from "@/lib/format";
+import { amountReceivedInMonth, amountReceivedOn } from "@/lib/financials";
 
 export default function Dashboard() {
   const { data, isAdmin, userName } = useData();
@@ -15,21 +16,21 @@ export default function Dashboard() {
   const today = new Date().toISOString().slice(0, 10);
   const month = today.slice(0, 7);
   const valid = data.orders.filter((o) => o.status !== "cancelled");
-  const todaySales = valid.filter((o) => o.createdAt === today).reduce((sum, o) => sum + o.paid, 0);
-  const monthSales = valid.filter((o) => o.createdAt.startsWith(month)).reduce((sum, o) => sum + o.paid, 0);
+  const todaySales = amountReceivedOn(data, today);
+  const monthSales = amountReceivedInMonth(data, month);
   const expenses = data.expenses.filter((e) => e.date.startsWith(month)).reduce((sum, e) => sum + e.amount, 0);
   const profit = valid.filter((o) => o.createdAt.startsWith(month)).reduce((sum, o) => sum + o.total - o.cost, 0) - expenses;
   const pending = valid.filter((o) => !["delivered"].includes(o.status)).length;
   const lowStock = data.inventory.filter((i) => i.quantity <= i.lowStockAt);
   const metrics = isAdmin
     ? [
-        ["Today’s sales", money(todaySales), Banknote],
-        ["This month", money(monthSales), TrendingUp],
+        ["Received today", money(todaySales), Banknote],
+        ["Received this month", money(monthSales), TrendingUp],
         ["Estimated profit", money(profit), CircleDollarSign],
         ["Pending orders", String(pending), Clock3],
       ]
     : [
-        ["Today’s sales", money(todaySales), Banknote],
+        ["Received today", money(todaySales), Banknote],
         ["Pending orders", String(pending), Clock3],
       ];
 

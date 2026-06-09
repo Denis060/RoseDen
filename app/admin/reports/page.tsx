@@ -6,6 +6,7 @@ import { ArrowRight, BarChart3, CircleDollarSign, Download, Megaphone, PackageCh
 import { useData } from "@/components/data-provider";
 import { PageHeader } from "@/components/ui";
 import { money } from "@/lib/format";
+import { amountReceivedInMonth, businessOutstanding } from "@/lib/financials";
 
 function ProgressBar({ value, max, tone = "burgundy" }: { value: number; max: number; tone?: "burgundy" | "gold" | "green" }) {
   const width = max > 0 ? Math.max(6, Math.round((value / max) * 100)) : 0;
@@ -22,12 +23,12 @@ export default function AdminReportsPage() {
   const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));
   const sales = data.orders.filter((order) => order.status !== "cancelled" && order.createdAt.startsWith(month));
   const revenue = sales.reduce((sum, order) => sum + order.total, 0);
-  const paid = sales.reduce((sum, order) => sum + order.paid, 0);
+  const paid = amountReceivedInMonth(data, month);
   const costs = sales.reduce((sum, order) => sum + order.cost, 0);
   const expenses = data.expenses.filter((expense) => expense.date.startsWith(month)).reduce((sum, expense) => sum + expense.amount, 0);
   const grossProfit = revenue - costs;
   const netProfit = grossProfit - expenses;
-  const outstanding = sales.reduce((sum, order) => sum + Math.max(0, order.total - order.paid), 0);
+  const outstanding = businessOutstanding(data);
   const inventoryValue = data.inventory.reduce((sum, item) => sum + item.costPrice * item.quantity, 0);
 
   const customerTotals = data.customers.map((customer) => {
@@ -66,7 +67,8 @@ export default function AdminReportsPage() {
     return { id: batch.id, name: batch.name, orders: orders.length, revenue: batchRevenue, profit: batchRevenue - batchCost - batchExpenses };
   }).filter((batch) => batch.orders > 0).sort((a, b) => b.revenue - a.revenue);
 
-  const outstandingOrders = sales
+  const outstandingOrders = data.orders
+    .filter((order) => order.status !== "cancelled")
     .map((order) => ({ ...order, balance: Math.max(0, order.total - order.paid) }))
     .filter((order) => order.balance > 0)
     .sort((a, b) => b.balance - a.balance);
@@ -97,7 +99,7 @@ export default function AdminReportsPage() {
       <section className="rounded-2xl bg-white p-4 shadow-soft">
         <div className="flex items-center gap-2"><BarChart3 className="text-gold" size={20} /><h2 className="font-display text-xl font-semibold text-wine">Profit and loss</h2></div>
         <div className="mt-4 space-y-3 text-sm">
-          <div className="flex justify-between"><span className="text-black/55">Sales revenue</span><strong>{money(revenue)}</strong></div>
+          <div className="flex justify-between"><span className="text-black/55">Orders booked</span><strong>{money(revenue)}</strong></div>
           <div className="flex justify-between"><span className="text-black/55">Cost of items sold</span><strong className="text-burgundy">- {money(costs)}</strong></div>
           <div className="flex justify-between border-t border-black/5 pt-3"><span className="font-semibold">Gross profit</span><strong className="text-emerald-700">{money(grossProfit)}</strong></div>
           <div className="flex justify-between"><span className="text-black/55">Business expenses</span><strong className="text-burgundy">- {money(expenses)}</strong></div>
@@ -106,7 +108,7 @@ export default function AdminReportsPage() {
       </section>
 
       <div className="mt-4 grid grid-cols-2 gap-3">
-        {[["Amount received", paid], ["Outstanding balances", outstanding], ["Monthly expenses", expenses], ["Inventory value", inventoryValue]].map(([label, value]) => (
+        {[["Cash received this month", paid], ["All outstanding balances", outstanding], ["Monthly expenses", expenses], ["Inventory value", inventoryValue]].map(([label, value]) => (
           <div key={label as string} className="rounded-2xl bg-white p-4 shadow-soft"><p className="text-xs text-black/45">{label as string}</p><p className="mt-2 text-lg font-bold text-burgundy">{money(value as number)}</p></div>
         ))}
       </div>
@@ -122,7 +124,7 @@ export default function AdminReportsPage() {
         <h2 className="mb-1 font-display text-xl font-semibold text-wine">Outstanding balances</h2>
         <p className="mb-3 text-xs text-black/45">Tap an order to record a payment or follow up.</p>
         <div className="space-y-2 rounded-2xl bg-white p-4 shadow-soft">
-          {outstandingOrders.length === 0 && <EmptyReport>No unpaid balances for this month.</EmptyReport>}
+          {outstandingOrders.length === 0 && <EmptyReport>No unpaid balances.</EmptyReport>}
           {outstandingOrders.map((order) => <Link key={order.id} href={`/admin/orders/${order.id}`} className="flex items-center justify-between gap-3 rounded-xl bg-cream p-3"><div className="min-w-0"><p className="truncate text-sm font-semibold">{data.customers.find((customer) => customer.id === order.customerId)?.name || "Customer"}</p><p className="truncate text-xs text-black/45">{order.description}</p></div><div className="text-right"><p className="font-bold text-burgundy">{money(order.balance)}</p><p className="text-[10px] text-black/40">owed</p></div></Link>)}
         </div>
       </section>

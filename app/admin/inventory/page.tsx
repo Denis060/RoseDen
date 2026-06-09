@@ -1,11 +1,12 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { AlertTriangle, Eye, EyeOff, History, ImageIcon, Minus, Plus, RotateCcw, Star, Trash2 } from "lucide-react";
+import { AlertTriangle, Eye, EyeOff, History, ImageIcon, Minus, Plus, RotateCcw, Star } from "lucide-react";
 import Link from "next/link";
 import { useData } from "@/components/data-provider";
 import { Field, Form, Modal, Select, useModal } from "@/components/ui";
 import { ProductPublisher } from "@/components/product-publisher";
+import { ConfirmDelete } from "@/components/confirm-delete";
 import { money } from "@/lib/format";
 
 export default function InventoryPage() {
@@ -85,7 +86,7 @@ export default function InventoryPage() {
                   {photo ? <img src={photo} alt={item.name} className="h-full w-full object-cover" /> : <ImageIcon className="text-burgundy/25" size={34} />}
                 </div>
                 <div className="min-w-0 flex-1 p-4">
-                  <div className="flex items-start justify-between gap-2"><div className="min-w-0"><div className="flex items-center gap-2"><h2 className="truncate font-semibold">{item.name}</h2>{low && <AlertTriangle size={16} className="shrink-0 text-gold" />}</div><p className="mt-1 text-xs capitalize text-black/45">{item.category} • {item.color || "No color"} • {item.size || "No size"}</p></div>{isAdmin && <button onClick={() => remove("inventory", item.id)} className="text-black/25"><Trash2 size={16} /></button>}</div>
+                  <div className="flex items-start justify-between gap-2"><div className="min-w-0"><div className="flex items-center gap-2"><h2 className="truncate font-semibold">{item.name}</h2>{low && <AlertTriangle size={16} className="shrink-0 text-gold" />}</div><p className="mt-1 text-xs capitalize text-black/45">{item.category} • {item.color || "No color"} • {item.size || "No size"}</p></div>{isAdmin && <ConfirmDelete itemName={item.name} itemType="inventory item" onDelete={() => remove("inventory", item.id)} className="text-black/25" />}</div>
                   <p className="mt-3 font-bold text-burgundy">{money(item.sellingPrice)}</p>
                   <div className="mt-2 flex flex-wrap gap-1.5 text-[10px] font-semibold"><span className="rounded-full bg-emerald-50 px-2 py-1 text-emerald-700">{item.availableQuantity} available</span><span className="rounded-full bg-gold/10 px-2 py-1 text-wine">{item.reservedQuantity} reserved</span><span className="rounded-full bg-burgundy/10 px-2 py-1 text-burgundy">{item.soldQuantity} sold</span></div>
                 </div>

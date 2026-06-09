@@ -1,11 +1,12 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { CalendarDays, Trash2 } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useData } from "@/components/data-provider";
 import { OrderEntryForm } from "@/components/order-entry-form";
+import { ConfirmDelete } from "@/components/confirm-delete";
 import { Modal, PageHeader, useModal } from "@/components/ui";
 import { money, shortDate } from "@/lib/format";
 import { OrderStatus } from "@/lib/types";
@@ -45,7 +46,7 @@ function OrdersContent() {
                   <h2 className="mt-1 truncate font-semibold">{order.description}</h2>
                   <p className="mt-1 text-xs text-black/45">{data.customers.find((customer) => customer.id === order.customerId)?.name || "Walk-in customer"} · {order.size || "No size"} · {order.color || "No color"}</p>
                 </div>
-                {isAdmin && <button onClick={() => remove("orders", order.id)} className="p-2 text-black/25"><Trash2 size={17} /></button>}
+                {isAdmin && <ConfirmDelete itemName={order.description} itemType="order" onDelete={() => remove("orders", order.id)} className="p-2 text-black/25" />}
               </div>
               <div className="mt-4 grid grid-cols-3 border-y border-black/5 py-3">
                 <div><p className="text-[11px] text-black/40">Total</p><p className="text-sm font-bold">{money(order.total)}</p></div>
