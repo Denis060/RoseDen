@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { Megaphone, PackageCheck } from "lucide-react";
 import { useData } from "@/components/data-provider";
 import { Field, Form, Modal, PageHeader, useModal } from "@/components/ui";
@@ -13,22 +13,32 @@ const channels: SalesChannel[] = ["WhatsApp Status", "Facebook", "TikTok", "Inst
 export default function AdminBatchesPage() {
   const { data, addBatch } = useData();
   const modal = useModal();
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const f = new FormData(event.currentTarget);
-    addBatch({
-      name: String(f.get("name")),
-      source: String(f.get("source")),
-      purchaseDate: String(f.get("purchaseDate")),
-      totalCost: Number(f.get("totalCost")),
-      transportCost: Number(f.get("transportCost")),
-      channels: channels.filter((channel) => f.getAll("channels").includes(channel)),
-      notes: String(f.get("notes")),
-      status: "open",
-      allocationMethod: "per-unit",
-    });
-    modal.hide();
+    setSaving(true);
+    setError("");
+    try {
+      await addBatch({
+        name: String(f.get("name")),
+        source: String(f.get("source")),
+        purchaseDate: String(f.get("purchaseDate")),
+        totalCost: Number(f.get("totalCost")),
+        transportCost: Number(f.get("transportCost")),
+        channels: channels.filter((channel) => f.getAll("channels").includes(channel)),
+        notes: String(f.get("notes")),
+        status: "open",
+        allocationMethod: "per-unit",
+      });
+      modal.hide();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Could not save this buying trip.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -52,7 +62,7 @@ export default function AdminBatchesPage() {
           );
         })}
       </div>
-      {modal.open && <Modal title="Create post batch" onClose={modal.hide}><Form onSubmit={submit} submitLabel="Create batch"><Field name="name" label="Batch name" placeholder="Freetown Stock — June 7" required /><div className="grid grid-cols-2 gap-3"><Field name="source" label="Source / buying location" required /><Field name="purchaseDate" label="Purchase date" type="date" defaultValue={new Date().toISOString().slice(0, 10)} required /><Field name="totalCost" label="Total stock cost (NLe)" type="number" required /><Field name="transportCost" label="Transport cost" type="number" defaultValue="0" required /></div><fieldset><legend className="mb-2 text-sm font-medium">Where will this batch be posted?</legend><div className="grid grid-cols-2 gap-2">{channels.map((channel) => <label key={channel} className="flex min-h-11 items-center gap-2 rounded-xl border border-black/10 bg-white px-3 text-sm"><input type="checkbox" name="channels" value={channel} defaultChecked={channel === "WhatsApp Status"} className="accent-burgundy" />{channel}</label>)}</div></fieldset><Field name="notes" label="Notes" /><p className="flex items-center gap-2 rounded-xl bg-gold/10 p-3 text-xs text-wine"><PackageCheck size={16} />Add products to this batch from Inventory after saving.</p></Form></Modal>}
+      {modal.open && <Modal title="Create post batch" onClose={modal.hide}><Form onSubmit={submit} submitLabel={saving ? "Saving trip..." : "Create batch"} submitDisabled={saving}><Field name="name" label="Batch name" placeholder="Freetown Stock — June 7" required /><div className="grid grid-cols-2 gap-3"><Field name="source" label="Source / buying location" required /><Field name="purchaseDate" label="Purchase date" type="date" defaultValue={new Date().toISOString().slice(0, 10)} required /><Field name="totalCost" label="Total stock cost (NLe)" type="number" required /><Field name="transportCost" label="Transport cost" type="number" defaultValue="0" required /></div><fieldset><legend className="mb-2 text-sm font-medium">Where will this batch be posted?</legend><div className="grid grid-cols-2 gap-2">{channels.map((channel) => <label key={channel} className="flex min-h-11 items-center gap-2 rounded-xl border border-black/10 bg-white px-3 text-sm"><input type="checkbox" name="channels" value={channel} defaultChecked={channel === "WhatsApp Status"} className="accent-burgundy" />{channel}</label>)}</div></fieldset><Field name="notes" label="Notes" />{error && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{error}</p>}<p className="flex items-center gap-2 rounded-xl bg-gold/10 p-3 text-xs text-wine"><PackageCheck size={16} />Add products to this batch from Inventory after saving.</p></Form></Modal>}
     </div>
   );
 }

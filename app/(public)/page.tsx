@@ -78,24 +78,24 @@ export default function HomePage() {
       <div className="h-3 stripe-accent" />
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-14">
-        <div className="mb-5 flex items-end justify-between gap-4 sm:mb-8">
-          <div>
-            <h2 className="font-display text-3xl font-semibold uppercase text-burgundy sm:text-5xl sm:normal-case">New arrivals</h2>
+        <div className="mb-5 flex min-w-0 items-end justify-between gap-3 sm:mb-8 sm:gap-4">
+          <div className="min-w-0">
+            <h2 className="font-display text-[27px] font-semibold uppercase leading-none text-burgundy min-[370px]:text-3xl sm:text-5xl sm:normal-case">New arrivals</h2>
             <p className="mt-1 text-xs text-black/55 sm:mt-2 sm:text-sm">Fresh pieces available to order now.</p>
           </div>
-          <Link href="/shop" className="shrink-0 text-sm font-bold text-burgundy">View all →</Link>
+          <Link href="/shop" className="shrink-0 whitespace-nowrap pb-0.5 text-xs font-bold text-burgundy sm:text-sm">View all →</Link>
         </div>
         <ProductGrid rail limit={4} />
       </section>
 
       <section className="bg-white px-4 py-14 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-8 flex items-end justify-between gap-4">
-            <div>
-              <h2 className="font-display text-3xl font-semibold uppercase text-burgundy sm:text-5xl sm:normal-case">RoseDen Originals</h2>
+          <div className="mb-8 flex min-w-0 items-end justify-between gap-3 sm:gap-4">
+            <div className="min-w-0">
+              <h2 className="font-display text-[27px] font-semibold uppercase leading-none text-burgundy min-[370px]:text-3xl sm:text-5xl sm:normal-case">RoseDen Originals</h2>
               <p className="mt-2 max-w-xl text-sm text-black/55">One-of-one redesigned and original pieces with their own story.</p>
             </div>
-            <Link href="/originals" className="shrink-0 text-sm font-bold text-burgundy">Explore →</Link>
+            <Link href="/originals" className="shrink-0 whitespace-nowrap pb-0.5 text-xs font-bold text-burgundy sm:text-sm">Explore →</Link>
           </div>
           <ProductGrid originalsOnly rail limit={4} />
         </div>

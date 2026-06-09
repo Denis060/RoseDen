@@ -29,6 +29,7 @@ function OrdersContent() {
   const [total, setTotal] = useState("");
   const [cost, setCost] = useState("");
   const [formError, setFormError] = useState("");
+  const [saving, setSaving] = useState(false);
   useEffect(() => { if (params.get("new") === "1" || quickSocial) modal.show(); }, [params, quickSocial]);
 
   const customerMatches = useMemo(() => {
@@ -87,7 +88,7 @@ function OrdersContent() {
     }
   }
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const f = new FormData(event.currentTarget);
     const inventoryId = quickSocial ? selectedInventoryId : String(f.get("inventoryId") || "");
@@ -117,12 +118,20 @@ function OrdersContent() {
       deliveryPlan: String(f.get("deliveryPlan")) as "pickup" | "delivery",
     };
 
-    if (quickSocial) {
-      addStatusOrder({ id: selectedCustomerId || undefined, name: String(f.get("customerName")), phone: String(f.get("phone")) }, order);
-    } else {
-      addOrder({ ...order, customerId: String(f.get("customerId")) });
+    setSaving(true);
+    setFormError("");
+    try {
+      if (quickSocial) {
+        await addStatusOrder({ id: selectedCustomerId || undefined, name: String(f.get("customerName")), phone: String(f.get("phone")) }, order);
+      } else {
+        await addOrder({ ...order, customerId: String(f.get("customerId")) });
+      }
+      modal.hide();
+    } catch (cause) {
+      setFormError(cause instanceof Error ? cause.message : "Could not save this order. Check the connection and try again.");
+    } finally {
+      setSaving(false);
     }
-    modal.hide();
   }
 
   return (
@@ -158,7 +167,7 @@ function OrdersContent() {
 
       {modal.open && (
         <Modal title={quickSocial ? "Record status/social order" : "New sale or order"} onClose={modal.hide}>
-          <Form onSubmit={submit} submitLabel={quickSocial ? "Reserve product" : "Record order"}>
+          <Form onSubmit={submit} submitLabel={saving ? "Saving order..." : quickSocial ? "Reserve product" : "Record order"} submitDisabled={saving}>
             {quickSocial ? (
               <>
                 <div className="relative">

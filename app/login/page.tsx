@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { FormEvent, Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Field } from "@/components/ui";
 
 function LoginForm() {
-  const router = useRouter();
   const params = useSearchParams();
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
@@ -51,16 +50,16 @@ function LoginForm() {
     }
 
     setMessage("Signed in. Opening RoseDen OS...");
-    router.replace(params.get("next")?.startsWith("/admin") ? params.get("next")! : "/admin");
-    router.refresh();
+    const destination = params.get("next")?.startsWith("/admin") ? params.get("next")! : "/admin";
+    window.location.replace(destination);
   }
 
   return (
-    <main className="min-h-screen bg-cream px-4 py-10">
-      <div className="mx-auto max-w-sm rounded-[28px] bg-white p-6 shadow-soft">
+    <main className="min-h-screen w-full overflow-x-hidden bg-cream px-4 py-10">
+      <div className="mx-auto w-full max-w-sm min-w-0 rounded-[28px] bg-white p-6 shadow-soft">
         <Link href="/" className="text-sm font-semibold text-burgundy">← Back to website</Link>
         <div className="mb-7 mt-5 text-center"><div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-burgundy font-display text-2xl font-bold text-white">R</div><h1 className="mt-4 font-display text-3xl font-bold text-wine">RoseDen OS</h1><p className="mt-1 text-sm text-black/50">Private staff sign in</p></div>
-        <form onSubmit={handleAuth} className="space-y-4">
+        <form onSubmit={handleAuth} className="min-w-0 space-y-4">
           <Field name="email" label="Email" type="email" defaultValue="joinriseafrica@gmail.com" required />
           <div>
             <Field name="password" label="Password" type={showPassword ? "text" : "password"} autoComplete="current-password" required />

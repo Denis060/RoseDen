@@ -28,7 +28,7 @@ export function Form({ children, onSubmit, submitLabel = "Save", submitDisabled 
 }
 
 export function Field({ label, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
-  return <label className="block text-sm font-medium text-ink">{label}<input {...props} className="mt-1.5 h-12 w-full rounded-xl border border-black/10 bg-white px-3 outline-none focus:border-gold focus:ring-2 focus:ring-gold/15" /></label>;
+  return <label className="block min-w-0 text-sm font-medium text-ink">{label}<input {...props} className="mt-1.5 h-12 min-w-0 w-full rounded-xl border border-black/10 bg-white px-3 outline-none focus:border-gold focus:ring-2 focus:ring-gold/15" /></label>;
 }
 
 export function Select({ label, children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement> & { label: string; children: ReactNode }) {

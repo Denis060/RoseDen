@@ -14,22 +14,22 @@ type Store = {
   connectionError: string | null;
   refresh: () => Promise<void>;
   signOut: () => Promise<void>;
-  addCustomer: (item: Omit<Customer, "id">) => void;
+  addCustomer: (item: Omit<Customer, "id">) => Promise<void>;
   updateCustomer: (id: string, item: Omit<Customer, "id">) => Promise<void>;
-  addOrder: (item: Omit<Order, "id" | "createdAt" | "payments">) => void;
-  addStatusOrder: (customer: { id?: string; name: string; phone: string }, item: Omit<Order, "id" | "createdAt" | "customerId" | "payments">) => void;
-  updateOrderStatus: (id: string, status: Order["status"]) => void;
+  addOrder: (item: Omit<Order, "id" | "createdAt" | "payments">) => Promise<void>;
+  addStatusOrder: (customer: { id?: string; name: string; phone: string }, item: Omit<Order, "id" | "createdAt" | "customerId" | "payments">) => Promise<void>;
+  updateOrderStatus: (id: string, status: Order["status"]) => Promise<void>;
   updateOrder: (id: string, item: Omit<Order, "id" | "createdAt" | "paid" | "payments">) => Promise<void>;
   addPayment: (orderId: string, payment: Omit<Payment, "id" | "orderId" | "paidAt">) => Promise<void>;
-  addInventory: (item: Omit<InventoryItem, "id" | "availableQuantity" | "reservedQuantity" | "soldQuantity" | "totalQuantity">) => void;
+  addInventory: (item: Omit<InventoryItem, "id" | "availableQuantity" | "reservedQuantity" | "soldQuantity" | "totalQuantity">) => Promise<void>;
   updateInventory: (id: string, item: Omit<InventoryItem, "id" | "quantity" | "availableQuantity" | "reservedQuantity" | "soldQuantity" | "totalQuantity">) => Promise<void>;
   uploadProductImage: (file: File) => Promise<string>;
-  restockInventory: (inventoryId: string, entry: Omit<StockEntry, "id" | "inventoryId" | "stockedAt">) => void;
-  adjustInventory: (id: string, amount: number) => void;
-  updateInventoryStatus: (id: string, status: ProductStatus) => void;
-  addExpense: (item: Omit<Expense, "id">) => void;
-  addBatch: (item: Omit<PostBatch, "id">) => void;
-  remove: (collection: keyof AppData, id: string) => void;
+  restockInventory: (inventoryId: string, entry: Omit<StockEntry, "id" | "inventoryId" | "stockedAt">) => Promise<void>;
+  adjustInventory: (id: string, amount: number) => Promise<void>;
+  updateInventoryStatus: (id: string, status: ProductStatus) => Promise<void>;
+  addExpense: (item: Omit<Expense, "id">) => Promise<void>;
+  addBatch: (item: Omit<PostBatch, "id">) => Promise<void>;
+  remove: (collection: keyof AppData, id: string) => Promise<void>;
 };
 
 const DataContext = createContext<Store | null>(null);
@@ -363,6 +363,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   async function insertOrder(item: Omit<Order, "id" | "createdAt" | "payments">) {
     if (!supabase) return;
+    if (item.inventoryId) {
+      const { data: product, error: stockError } = await supabase
+        .from("inventory")
+        .select("quantity,product_name")
+        .eq("id", item.inventoryId)
+        .single();
+      if (stockError) throw stockError;
+      if (Number(product.quantity) < item.quantity) {
+        throw new Error(`Only ${product.quantity} ${product.product_name} currently available.`);
+      }
+    }
+
     const { data: order, error } = await supabase.from("orders").insert({
       customer_id: item.customerId || null,
       order_type: item.type,
@@ -380,26 +392,31 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }).select("id").single();
     if (error) throw error;
 
-    if (item.inventoryId) {
-      const { error: itemError } = await supabase.from("order_items").insert({
-        order_id: order.id,
-        inventory_id: item.inventoryId,
-        description: item.description,
-        quantity: item.quantity,
-        unit_price: item.quantity > 0 ? item.total / item.quantity : item.total,
-        unit_cost: item.quantity > 0 ? item.cost / item.quantity : item.cost,
-      });
-      if (itemError) throw itemError;
-    }
+    try {
+      if (item.inventoryId) {
+        const { error: itemError } = await supabase.from("order_items").insert({
+          order_id: order.id,
+          inventory_id: item.inventoryId,
+          description: item.description,
+          quantity: item.quantity,
+          unit_price: item.quantity > 0 ? item.total / item.quantity : item.total,
+          unit_cost: item.quantity > 0 ? item.cost / item.quantity : item.cost,
+        });
+        if (itemError) throw itemError;
+      }
 
-    if (item.paid > 0) {
-      const { error: paymentError } = await supabase.from("payments").insert({
-        order_id: order.id,
-        amount: item.paid,
-        notes: "Initial payment",
-        created_by: user?.id,
-      });
-      if (paymentError) throw paymentError;
+      if (item.paid > 0) {
+        const { error: paymentError } = await supabase.from("payments").insert({
+          order_id: order.id,
+          amount: item.paid,
+          notes: "Initial payment",
+          created_by: user?.id,
+        });
+        if (paymentError) throw paymentError;
+      }
+    } catch (cause) {
+      await supabase.from("orders").delete().eq("id", order.id);
+      throw cause;
     }
   }
 
