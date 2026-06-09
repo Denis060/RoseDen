@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Boxes, ClipboardList, Contact, LayoutDashboard, MapPinned, ReceiptText, Settings2 } from "lucide-react";
+import { Boxes, ClipboardList, Contact, LayoutDashboard, MapPinned, ReceiptText, Settings2, UsersRound } from "lucide-react";
 import { ReactNode } from "react";
 import { useData } from "./data-provider";
 
@@ -17,7 +17,7 @@ const nav = [
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { userEmail, signOut, connectionError } = useData();
+  const { userEmail, isAdmin, signOut, connectionError } = useData();
 
   async function handleSignOut() {
     await signOut();
@@ -29,17 +29,18 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="admin-print-hidden sticky top-0 z-30 border-b border-burgundy/10 bg-cream/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <Link href="/admin" className="leading-none"><span className="font-display text-xl font-bold text-burgundy">RoseDen Atelier</span><span className="mt-1 block text-[9px] uppercase tracking-[0.22em] text-gold">Tailored · Curated · Original</span></Link>
-          <div className="grid w-full grid-cols-3 gap-2 sm:flex sm:w-auto sm:items-center">
-            <Link href="/admin/reports" className="rounded-full border border-burgundy/15 bg-white px-3 py-2 text-center text-xs font-semibold text-burgundy">Reports</Link>
-            <Link href="/admin/batches" className="hidden rounded-full border border-burgundy/15 bg-white px-3 py-2 text-xs font-semibold text-burgundy sm:block">Buying trips</Link>
-            <Link href="/admin/website" className="rounded-full bg-gold px-3 py-2 text-center text-xs font-bold text-burgundy">Edit Website</Link>
+          <div className={`grid w-full gap-2 sm:flex sm:w-auto sm:items-center ${isAdmin ? "grid-cols-3" : "grid-cols-1"}`}>
+            {isAdmin && <Link href="/admin/reports" className="rounded-full border border-burgundy/15 bg-white px-3 py-2 text-center text-xs font-semibold text-burgundy">Reports</Link>}
+            {isAdmin && <Link href="/admin/staff" className="hidden rounded-full border border-burgundy/15 bg-white px-3 py-2 text-xs font-semibold text-burgundy sm:block">Staff</Link>}
+            {isAdmin && <Link href="/admin/website" className="rounded-full bg-gold px-3 py-2 text-center text-xs font-bold text-burgundy">Edit Website</Link>}
             {userEmail && <button onClick={handleSignOut} className="rounded-full bg-burgundy px-3 py-2 text-xs font-semibold text-white">Sign out</button>}
           </div>
         </div>
       </header>
       {connectionError && <div className="border-b border-amber-300 bg-amber-50 px-4 py-2 text-center text-xs font-medium text-amber-900">{connectionError}</div>}
       <main className="mx-auto w-full min-w-0 max-w-5xl px-4 pb-28 pt-6 sm:px-6 sm:pt-8">{children}</main>
-      {!pathname.endsWith("/receipt") && <div className="fixed bottom-20 right-4 z-30 flex flex-col items-end gap-2 sm:hidden">
+      {isAdmin && !pathname.endsWith("/receipt") && <div className="fixed bottom-20 right-4 z-30 flex flex-col items-end gap-2 sm:hidden">
+        <Link href="/admin/staff" className="flex h-12 items-center gap-2 rounded-full bg-white px-4 text-xs font-bold text-burgundy shadow-soft"><UsersRound size={17} />Staff</Link>
         <Link href="/admin/website" className="flex h-12 items-center gap-2 rounded-full bg-white px-4 text-xs font-bold text-burgundy shadow-soft"><Settings2 size={17} />Website</Link>
         <Link href="/admin/batches" className="flex h-12 items-center gap-2 rounded-full bg-gold px-4 text-xs font-bold text-burgundy shadow-soft"><MapPinned size={17} />Trips</Link>
       </div>}

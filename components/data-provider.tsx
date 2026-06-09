@@ -11,6 +11,9 @@ type Store = {
   loading: boolean;
   mode: "demo" | "supabase";
   userEmail: string | null;
+  userRole: "admin" | "staff" | null;
+  roleLoading: boolean;
+  isAdmin: boolean;
   connectionError: string | null;
   refresh: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -169,9 +172,37 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
+  const [userRole, setUserRole] = useState<"admin" | "staff" | null>(null);
+  const [roleLoading, setRoleLoading] = useState(hasSupabaseConfig);
   const [connectionError, setConnectionError] = useState<string | null>(null);
 
   const useSupabase = Boolean(supabase && user);
+  const isAdmin = !hasSupabaseConfig || userRole === "admin";
+
+  useEffect(() => {
+    let active = true;
+    async function loadRole() {
+      if (!supabase || !user) {
+        if (active) {
+          setUserRole(hasSupabaseConfig ? null : "admin");
+          setRoleLoading(false);
+        }
+        return;
+      }
+      setRoleLoading(true);
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+      if (active) {
+        setUserRole(error ? null : profile.role);
+        setRoleLoading(false);
+      }
+    }
+    loadRole();
+    return () => { active = false; };
+  }, [user]);
 
   const refresh = useCallback(async () => {
     if (!ready) return;
@@ -427,11 +458,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
     loading,
     mode: useSupabase ? "supabase" : "demo",
     userEmail: user?.email || null,
+    userRole,
+    roleLoading,
+    isAdmin,
     connectionError,
     refresh,
     signOut: async () => {
       await supabase?.auth.signOut();
       setUser(null);
+      setUserRole(null);
       setData(hasSupabaseConfig ? emptyData : seedData);
     },
     addCustomer: async (item) => {
@@ -604,6 +639,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }));
     },
     addInventory: async (item) => {
+      if (!isAdmin) throw new Error("Only an administrator can add inventory.");
       if (useSupabase && supabase) {
         const { data: inserted, error } = await supabase.from("inventory").insert({
           product_name: item.name,
@@ -664,6 +700,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       });
     },
     updateInventory: async (inventoryId, item) => {
+      if (!isAdmin) throw new Error("Only an administrator can edit inventory.");
       if (useSupabase && supabase) {
         const { error } = await supabase.from("inventory").update({
           product_name: item.name,
@@ -699,6 +736,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }));
     },
     uploadProductImage: async (file) => {
+      if (!isAdmin) throw new Error("Only an administrator can upload product images.");
       if (!supabase || !user) throw new Error("Sign in to upload product images.");
       if (!file.type.startsWith("image/")) throw new Error("Please choose an image file.");
       if (file.size > 6 * 1024 * 1024) throw new Error("This photo is still too large. Choose a photo under 6 MB.");
@@ -725,6 +763,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       return supabase.storage.from("product-images").getPublicUrl(path).data.publicUrl;
     },
     restockInventory: async (inventoryId, entry) => {
+      if (!isAdmin) throw new Error("Only an administrator can restock inventory.");
       if (useSupabase && supabase) {
         const { error } = await supabase.rpc("restock_inventory", {
           target_inventory_id: inventoryId,
@@ -754,6 +793,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }));
     },
     adjustInventory: async (itemId, amount) => {
+      if (!isAdmin) throw new Error("Only an administrator can adjust inventory.");
       if (useSupabase && supabase) {
         const item = data.inventory.find((entry) => entry.id === itemId);
         if (!item) return;
@@ -770,6 +810,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       } : item) }));
     },
     updateInventoryStatus: async (itemId, status) => {
+      if (!isAdmin) throw new Error("Only an administrator can change inventory status.");
       if (useSupabase && supabase) {
         const { error } = await supabase.from("inventory").update({ status }).eq("id", itemId);
         if (error) throw error;
@@ -795,6 +836,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setData((d) => ({ ...d, expenses: [{ ...item, id: id() }, ...d.expenses] }));
     },
     addBatch: async (item) => {
+      if (!isAdmin) throw new Error("Only an administrator can create buying trips.");
       if (useSupabase && supabase) {
         const { error } = await supabase.from("post_batches").insert({
           batch_name: item.name,
@@ -815,6 +857,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setData((d) => ({ ...d, batches: [{ ...item, id: id() }, ...d.batches] }));
     },
     remove: async (collection, itemId) => {
+      if (!isAdmin) throw new Error("Only an administrator can delete records.");
       if (useSupabase && supabase) {
         const tables: Record<keyof AppData, string> = {
           customers: "customers",
@@ -831,7 +874,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }
       setData((d) => ({ ...d, [collection]: d[collection].filter((item) => item.id !== itemId) }));
     },
-  }), [connectionError, data, loading, refresh, useSupabase, user]);
+  }), [connectionError, data, isAdmin, loading, refresh, roleLoading, useSupabase, user, userRole]);
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 }

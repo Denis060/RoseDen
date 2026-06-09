@@ -34,6 +34,7 @@ and operational tools live under `/admin` and require Supabase authentication.
 - Printable and WhatsApp-ready customer receipts
 - Admin-only audit history for orders, payments, stock, customers, expenses,
   buying trips, and website changes
+- Admin and Staff roles with database-enforced permissions
 - Supabase Auth login screen and PostgreSQL schema with roles/RLS
 - Local demo mode with sample data when Supabase is not configured
 
@@ -73,9 +74,10 @@ operational data.
 9. Run `supabase/migrations/008_phase2_buying_trips.sql`.
 10. Run `supabase/migrations/009_website_content_management.sql`.
 11. Run `supabase/migrations/010_receipts_and_audit_history.sql`.
-12. Optionally run `supabase/seed.sql`.
-13. In Authentication, create Rosannah's user.
-14. If using an email other than `joinriseafrica@gmail.com`, set its profile to admin:
+12. Run `supabase/migrations/011_staff_roles_and_permissions.sql`.
+13. Optionally run `supabase/seed.sql`.
+14. In Authentication, create Rosannah's user.
+15. If using an email other than `joinriseafrica@gmail.com`, set its profile to admin:
 
    ```sql
    update public.profiles
@@ -83,7 +85,7 @@ operational data.
    where id = (select id from auth.users where email = 'YOUR_EMAIL');
    ```
 
-15. Add the project URL, anon key, and WhatsApp number to `.env.local`:
+16. Add the project URL, anon key, and WhatsApp number to `.env.local`:
 
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
@@ -174,3 +176,19 @@ Supabase SQL Editor. It is safe to rerun.
   receipt summary through WhatsApp.
 - Open **Activity History** from the dashboard to review changes. Audit history
   is visible only to administrators.
+
+## Phase 4B staff access
+
+Run `supabase/migrations/011_staff_roles_and_permissions.sql` once in the
+Supabase SQL Editor. It is safe to rerun.
+
+To add staff:
+
+1. Create the person's email and temporary password in Supabase
+   **Authentication → Users**.
+2. Open **Admin → Staff & Access** in RoseDen OS.
+3. Add their name and choose **Staff** or **Admin**.
+
+Staff can manage customers, orders, payments, order status, and expenses.
+Admins additionally manage inventory, buying trips, reports, website content,
+activity history, deletions, and staff roles.

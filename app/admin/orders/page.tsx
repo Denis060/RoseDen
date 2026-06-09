@@ -13,7 +13,7 @@ const statuses: OrderStatus[] = ["pending", "in progress", "ready", "delivered",
 const channels: SalesChannel[] = ["WhatsApp Status", "Facebook", "TikTok", "Instagram", "Referral", "Walk-in", "Existing Customer", "Website"];
 
 function OrdersContent() {
-  const { data, addOrder, addStatusOrder, updateOrderStatus, remove } = useData();
+  const { data, isAdmin, addOrder, addStatusOrder, updateOrderStatus, remove } = useData();
   const modal = useModal();
   const params = useSearchParams();
   const quickSocial = params.get("status") === "1";
@@ -148,7 +148,7 @@ function OrdersContent() {
                   <h2 className="mt-1 truncate font-semibold">{order.description}</h2>
                   <p className="mt-1 text-xs text-black/45">{data.customers.find((customer) => customer.id === order.customerId)?.name || "Walk-in customer"} • {order.size || "No size"} • {order.color || "No color"}</p>
                 </div>
-                <button onClick={() => remove("orders", order.id)} className="p-2 text-black/25"><Trash2 size={17} /></button>
+                {isAdmin && <button onClick={() => remove("orders", order.id)} className="p-2 text-black/25"><Trash2 size={17} /></button>}
               </div>
               <div className="mt-4 grid grid-cols-3 border-y border-black/5 py-3">
                 <div><p className="text-[11px] text-black/40">Total</p><p className="text-sm font-bold">{money(order.total)}</p></div>

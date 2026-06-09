@@ -41,7 +41,7 @@ async function resizeProductImage(file: File) {
 
 export default function InventoryDetailPage() {
   const params = useParams<{ id: string }>();
-  const { data, updateInventory, uploadProductImage } = useData();
+  const { data, isAdmin, updateInventory, uploadProductImage } = useData();
   const modal = useModal();
   const [shopPhotoUrl, setShopPhotoUrl] = useState("");
   const [productImages, setProductImages] = useState<string[]>([]);
@@ -144,7 +144,7 @@ export default function InventoryDetailPage() {
         <Link href="/admin/inventory" className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-burgundy"><ArrowLeft size={18} />Inventory</Link>
         <div className="overflow-hidden rounded-3xl bg-white shadow-soft">
           <div className="grid h-64 place-items-center bg-burgundy/5">{photo ? <img src={photo} alt={item.name} className="h-full w-full object-cover" /> : <ImageIcon size={52} className="text-burgundy/20" />}</div>
-          <div className="p-5"><div className="flex items-start justify-between gap-3"><div><p className="text-xs capitalize text-gold">{item.category}</p><h1 className="mt-1 font-display text-3xl font-semibold text-wine">{item.name}</h1><p className="mt-2 text-sm text-black/50">{item.color || "No color"} - {item.size || "No size"}</p></div><button onClick={openEdit} className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-burgundy text-white" aria-label="Edit product"><Pencil size={19} /></button></div><div className="mt-4 flex items-end justify-between"><div><p className="text-xs text-black/45">Selling price</p><p className="text-xl font-bold text-burgundy">{money(item.sellingPrice)}</p></div><div className="text-right"><p className="text-xs text-black/45">Unit cost</p><p className="font-semibold">{money(item.costPrice)}</p></div></div></div>
+          <div className="p-5"><div className="flex items-start justify-between gap-3"><div><p className="text-xs capitalize text-gold">{item.category}</p><h1 className="mt-1 font-display text-3xl font-semibold text-wine">{item.name}</h1><p className="mt-2 text-sm text-black/50">{item.color || "No color"} - {item.size || "No size"}</p></div>{isAdmin && <button onClick={openEdit} className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-burgundy text-white" aria-label="Edit product"><Pencil size={19} /></button>}</div><div className="mt-4 flex items-end justify-between"><div><p className="text-xs text-black/45">Selling price</p><p className="text-xl font-bold text-burgundy">{money(item.sellingPrice)}</p></div>{isAdmin && <div className="text-right"><p className="text-xs text-black/45">Unit cost</p><p className="font-semibold">{money(item.costPrice)}</p></div>}</div></div>
         </div>
       </div>
 
@@ -154,7 +154,7 @@ export default function InventoryDetailPage() {
         <p className="mt-4 rounded-xl bg-cream p-3 text-xs text-black/55">Available stock changes when orders are reserved or cancelled. Sold stock comes from delivered orders.</p>
       </section>
 
-      <section className="rounded-2xl bg-white p-4 shadow-soft"><h2 className="flex items-center gap-2 font-display text-xl font-semibold text-wine"><History size={19} className="text-gold" />Stock history</h2><div className="mt-3 space-y-2">{stockEntries.length === 0 && <p className="text-sm text-black/45">No stock entries recorded.</p>}{stockEntries.map((entry) => <div key={entry.id} className="flex items-center justify-between rounded-xl bg-cream p-3"><div><p className="text-sm font-semibold">+{entry.quantity} units</p><p className="text-xs text-black/45">{shortDate(entry.stockedAt)} - {entry.supplier || "No supplier"}</p></div><p className="text-sm font-bold">{money(entry.unitCost)} each</p></div>)}</div></section>
+      {isAdmin && <section className="rounded-2xl bg-white p-4 shadow-soft"><h2 className="flex items-center gap-2 font-display text-xl font-semibold text-wine"><History size={19} className="text-gold" />Stock history</h2><div className="mt-3 space-y-2">{stockEntries.length === 0 && <p className="text-sm text-black/45">No stock entries recorded.</p>}{stockEntries.map((entry) => <div key={entry.id} className="flex items-center justify-between rounded-xl bg-cream p-3"><div><p className="text-sm font-semibold">+{entry.quantity} units</p><p className="text-xs text-black/45">{shortDate(entry.stockedAt)} - {entry.supplier || "No supplier"}</p></div><p className="text-sm font-bold">{money(entry.unitCost)} each</p></div>)}</div></section>}
 
       <section><h2 className="font-display text-xl font-semibold text-wine">Related orders</h2><div className="mt-3 space-y-2">{orders.length === 0 && <Empty>No orders linked to this product.</Empty>}{orders.map((order) => <Link key={order.id} href={`/admin/orders/${order.id}`} className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-soft"><div><p className="font-semibold">{data.customers.find((customer) => customer.id === order.customerId)?.name || "Walk-in customer"}</p><p className="mt-1 text-xs capitalize text-black/45">{order.status} - {order.quantity} item(s)</p></div><p className="font-bold text-burgundy">{money(order.total)}</p></Link>)}</div></section>
 

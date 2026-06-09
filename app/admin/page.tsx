@@ -7,7 +7,7 @@ import { IconBox } from "@/components/icons";
 import { money, shortDate } from "@/lib/format";
 
 export default function Dashboard() {
-  const { data } = useData();
+  const { data, isAdmin } = useData();
   const today = new Date().toISOString().slice(0, 10);
   const month = today.slice(0, 7);
   const valid = data.orders.filter((o) => o.status !== "cancelled");
@@ -17,6 +17,17 @@ export default function Dashboard() {
   const profit = valid.filter((o) => o.createdAt.startsWith(month)).reduce((sum, o) => sum + o.total - o.cost, 0) - expenses;
   const pending = valid.filter((o) => !["delivered"].includes(o.status)).length;
   const lowStock = data.inventory.filter((i) => i.quantity <= i.lowStockAt);
+  const metrics = isAdmin
+    ? [
+        ["Today’s sales", money(todaySales), Banknote],
+        ["This month", money(monthSales), TrendingUp],
+        ["Estimated profit", money(profit), CircleDollarSign],
+        ["Pending orders", String(pending), Clock3],
+      ]
+    : [
+        ["Today’s sales", money(todaySales), Banknote],
+        ["Pending orders", String(pending), Clock3],
+      ];
 
   return (
     <div>
@@ -25,29 +36,24 @@ export default function Dashboard() {
         <Link href="/admin/orders?status=1" className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-burgundy px-5 font-semibold text-white shadow-soft"><Megaphone size={20} /> Record status/social order</Link>
         <Link href="/admin/orders?new=1" className="flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-burgundy/20 bg-white px-5 font-semibold text-burgundy"><Plus size={20} /> Regular sale or order</Link>
       </div>
-      <Link href="/admin/website" className="mb-7 flex items-center justify-between rounded-2xl border border-gold/30 bg-white p-4 shadow-soft">
+      {isAdmin && <Link href="/admin/website" className="mb-7 flex items-center justify-between rounded-2xl border border-gold/30 bg-white p-4 shadow-soft">
         <div className="flex items-center gap-3">
           <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gold text-burgundy"><Settings2 size={22} /></span>
           <div><p className="font-display text-lg font-semibold text-wine">Manage Website</p><p className="mt-0.5 text-xs text-black/50">Change photos, words, contact details, and social links.</p></div>
         </div>
         <ArrowRight className="shrink-0 text-burgundy" size={20} />
-      </Link>
-      <Link href="/admin/activity" className="mb-7 flex items-center justify-between rounded-2xl border border-burgundy/10 bg-white p-4 shadow-soft">
+      </Link>}
+      {isAdmin && <Link href="/admin/activity" className="mb-7 flex items-center justify-between rounded-2xl border border-burgundy/10 bg-white p-4 shadow-soft">
         <div className="flex items-center gap-3">
           <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-burgundy/10 text-burgundy"><Activity size={22} /></span>
           <div><p className="font-display text-lg font-semibold text-wine">Activity History</p><p className="mt-0.5 text-xs text-black/50">Review orders, payments, stock, expenses, and website changes.</p></div>
         </div>
         <ArrowRight className="shrink-0 text-burgundy" size={20} />
-      </Link>
+      </Link>}
       <section className="grid grid-cols-2 gap-3">
-        {[
-          ["Today’s sales", money(todaySales), Banknote],
-          ["This month", money(monthSales), TrendingUp],
-          ["Estimated profit", money(profit), CircleDollarSign],
-          ["Pending orders", String(pending), Clock3],
-        ].map(([label, value, Icon]) => <div key={label as string} className="rounded-2xl border border-burgundy/10 bg-white p-4"><IconBox icon={Icon as typeof Banknote} /><p className="mt-4 text-xs font-medium text-black/50">{label as string}</p><p className="mt-1 text-xl font-bold text-wine">{value as string}</p></div>)}
+        {metrics.map(([label, value, Icon]) => <div key={label as string} className="rounded-2xl border border-burgundy/10 bg-white p-4"><IconBox icon={Icon as typeof Banknote} /><p className="mt-4 text-xs font-medium text-black/50">{label as string}</p><p className="mt-1 text-xl font-bold text-wine">{value as string}</p></div>)}
       </section>
-      <Link href="/admin/batches" className="mt-7 flex items-center justify-between rounded-2xl bg-wine p-4 text-white"><div><p className="text-xs text-gold">Buying → posting → selling</p><p className="mt-1 font-display text-lg font-semibold">Track post batches and trip profit</p></div><ArrowRight /></Link>
+      {isAdmin && <Link href="/admin/batches" className="mt-7 flex items-center justify-between rounded-2xl bg-wine p-4 text-white"><div><p className="text-xs text-gold">Buying → posting → selling</p><p className="mt-1 font-display text-lg font-semibold">Track post batches and trip profit</p></div><ArrowRight /></Link>}
       <section className="mt-7">
         <div className="mb-3 flex items-center justify-between"><h2 className="font-display text-xl font-semibold text-wine">Low stock</h2><Link href="/admin/inventory" className="text-xs font-semibold text-burgundy">View inventory</Link></div>
         <div className="overflow-hidden rounded-2xl border border-gold/25 bg-gold/10">
@@ -55,7 +61,7 @@ export default function Dashboard() {
         </div>
       </section>
       <section className="mt-7">
-        <div className="mb-3 flex items-center justify-between"><h2 className="font-display text-xl font-semibold text-wine">Recent transactions</h2><Link href="/admin/reports" className="text-xs font-semibold text-burgundy">See reports</Link></div>
+        <div className="mb-3 flex items-center justify-between"><h2 className="font-display text-xl font-semibold text-wine">Recent transactions</h2>{isAdmin && <Link href="/admin/reports" className="text-xs font-semibold text-burgundy">See reports</Link>}</div>
         <div className="divide-y divide-black/5 rounded-2xl bg-white px-4">
           {valid.slice(0, 5).map((order) => <div key={order.id} className="flex items-center gap-3 py-4"><span className="h-2.5 w-2.5 rounded-full bg-gold" /><div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold">{order.description}</p><p className="text-xs text-black/45">{data.customers.find((c) => c.id === order.customerId)?.name} • {shortDate(order.createdAt)}</p></div><p className="text-sm font-bold text-burgundy">{money(order.paid)}</p></div>)}
         </div>
