@@ -174,6 +174,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const useSupabase = Boolean(supabase && user);
 
   const refresh = useCallback(async () => {
+    if (!ready) return;
+
     if (!supabase || !user) {
       setLoading(false);
       return;
@@ -275,7 +277,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ? "Phase 1 database update is still needed. Run migration 006 to enable accurate reserved and sold quantities."
       : null);
     setLoading(false);
-  }, [user]);
+  }, [ready, user]);
 
   useEffect(() => {
     let active = true;
