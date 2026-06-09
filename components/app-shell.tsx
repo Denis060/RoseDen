@@ -39,10 +39,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       </header>
       {connectionError && <div className="border-b border-amber-300 bg-amber-50 px-4 py-2 text-center text-xs font-medium text-amber-900">{connectionError}</div>}
       <main className="mx-auto w-full min-w-0 max-w-5xl px-4 pb-28 pt-6 sm:px-6 sm:pt-8">{children}</main>
-      <div className="fixed bottom-20 right-4 z-30 flex flex-col items-end gap-2 sm:hidden">
+      {!pathname.endsWith("/receipt") && <div className="fixed bottom-20 right-4 z-30 flex flex-col items-end gap-2 sm:hidden">
         <Link href="/admin/website" className="flex h-12 items-center gap-2 rounded-full bg-white px-4 text-xs font-bold text-burgundy shadow-soft"><Settings2 size={17} />Website</Link>
         <Link href="/admin/batches" className="flex h-12 items-center gap-2 rounded-full bg-gold px-4 text-xs font-bold text-burgundy shadow-soft"><MapPinned size={17} />Trips</Link>
-      </div>
+      </div>}
       <nav className="fixed inset-x-0 bottom-0 z-40 w-full border-t border-burgundy/10 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
         <div className="mx-auto grid w-full max-w-xl grid-cols-5">
           {nav.map((item) => {

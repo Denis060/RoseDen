@@ -9,6 +9,25 @@ button, input, select, textarea { font: inherit; }
 button { touch-action: manipulation; }
 ::selection { background: rgba(104, 26, 45, .18); }
 
+@media print {
+  html, body {
+    background: #ffffff;
+  }
+
+  body {
+    color: #1c1c1c;
+  }
+
+  header, nav, .print-hidden {
+    display: none !important;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+}
+
 .stripe-accent {
   background-image: repeating-linear-gradient(
     90deg,

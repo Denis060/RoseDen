@@ -7,7 +7,7 @@ Public fashion storefront and private mobile-first business operations system fo
 
 - Public website: `/`, `/shop`, `/originals`, `/tailoring`, `/about`, `/contact`
 - Private operations: `/admin`, `/admin/orders`, `/admin/customers`,
-  `/admin/inventory`, `/admin/expenses`, `/admin/reports`
+  `/admin/inventory`, `/admin/expenses`, `/admin/reports`, `/admin/activity`
 - Authentication: `/login`
 
 Visitors can browse the public website without signing in. All business records
@@ -31,6 +31,9 @@ and operational tools live under `/admin` and require Supabase authentication.
 - Inventory quantity controls and low-stock warnings
 - Expense tracking
 - Sales, profit, top-customer, best-product, and outstanding-balance reports
+- Printable and WhatsApp-ready customer receipts
+- Admin-only audit history for orders, payments, stock, customers, expenses,
+  buying trips, and website changes
 - Supabase Auth login screen and PostgreSQL schema with roles/RLS
 - Local demo mode with sample data when Supabase is not configured
 
@@ -69,9 +72,10 @@ operational data.
 8. Run `supabase/migrations/007_public_storefront.sql`.
 9. Run `supabase/migrations/008_phase2_buying_trips.sql`.
 10. Run `supabase/migrations/009_website_content_management.sql`.
-11. Optionally run `supabase/seed.sql`.
-12. In Authentication, create Rosannah's user.
-13. If using an email other than `joinriseafrica@gmail.com`, set its profile to admin:
+11. Run `supabase/migrations/010_receipts_and_audit_history.sql`.
+12. Optionally run `supabase/seed.sql`.
+13. In Authentication, create Rosannah's user.
+14. If using an email other than `joinriseafrica@gmail.com`, set its profile to admin:
 
    ```sql
    update public.profiles
@@ -79,7 +83,7 @@ operational data.
    where id = (select id from auth.users where email = 'YOUR_EMAIL');
    ```
 
-14. Add the project URL, anon key, and WhatsApp number to `.env.local`:
+15. Add the project URL, anon key, and WhatsApp number to `.env.local`:
 
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
@@ -160,3 +164,13 @@ WhatsApp number without editing code.
 Each inventory product can also hold up to three public photos. Open a product
 in Admin Inventory, tap Edit, add its photos, then choose **Show on website**
 and optionally **Featured product**.
+
+## Phase 4A receipts and audit history
+
+Run `supabase/migrations/010_receipts_and_audit_history.sql` once in the
+Supabase SQL Editor. It is safe to rerun.
+
+- Open any order and tap **View receipt** to print, save as PDF, or send the
+  receipt summary through WhatsApp.
+- Open **Activity History** from the dashboard to review changes. Audit history
+  is visible only to administrators.

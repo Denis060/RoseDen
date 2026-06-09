@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { ArrowLeft, CalendarDays, CreditCard, MapPin, Package, Pencil, Phone, UserRound } from "lucide-react";
+import { ArrowLeft, CalendarDays, CreditCard, MapPin, Package, Pencil, Phone, ReceiptText, UserRound } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useData } from "@/components/data-provider";
 import { Empty, Field, Form, Modal, Select, useModal } from "@/components/ui";
@@ -89,6 +89,7 @@ export default function OrderDetailPage() {
           <div><p className="text-xs text-black/45">Balance</p><p className="mt-1 font-bold text-burgundy">{money(balance)}</p></div>
         </div>
         {balance > 0 && <button onClick={paymentModal.show} className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gold font-semibold text-wine"><CreditCard size={18} />Add payment</button>}
+        <Link href={`/admin/orders/${order.id}/receipt`} className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-burgundy/15 font-semibold text-burgundy"><ReceiptText size={18} />View receipt</Link>
       </section>
 
       <section className="rounded-2xl bg-white p-4 shadow-soft">

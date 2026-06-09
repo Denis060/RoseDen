@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Banknote, CircleDollarSign, Clock3, Megaphone, PackageSearch, Plus, Settings2, TrendingUp } from "lucide-react";
+import { Activity, ArrowRight, Banknote, CircleDollarSign, Clock3, Megaphone, PackageSearch, Plus, Settings2, TrendingUp } from "lucide-react";
 import { useData } from "@/components/data-provider";
 import { IconBox } from "@/components/icons";
 import { money, shortDate } from "@/lib/format";
@@ -29,6 +29,13 @@ export default function Dashboard() {
         <div className="flex items-center gap-3">
           <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gold text-burgundy"><Settings2 size={22} /></span>
           <div><p className="font-display text-lg font-semibold text-wine">Manage Website</p><p className="mt-0.5 text-xs text-black/50">Change photos, words, contact details, and social links.</p></div>
+        </div>
+        <ArrowRight className="shrink-0 text-burgundy" size={20} />
+      </Link>
+      <Link href="/admin/activity" className="mb-7 flex items-center justify-between rounded-2xl border border-burgundy/10 bg-white p-4 shadow-soft">
+        <div className="flex items-center gap-3">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-burgundy/10 text-burgundy"><Activity size={22} /></span>
+          <div><p className="font-display text-lg font-semibold text-wine">Activity History</p><p className="mt-0.5 text-xs text-black/50">Review orders, payments, stock, expenses, and website changes.</p></div>
         </div>
         <ArrowRight className="shrink-0 text-burgundy" size={20} />
       </Link>
