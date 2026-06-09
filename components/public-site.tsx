@@ -57,18 +57,18 @@ export function PublicFooter() {
   const content = useWebsiteContent();
   return (
     <footer className="bg-burgundy px-4 py-10 text-white">
-      <div className="mx-auto grid max-w-6xl grid-cols-3 gap-3 sm:gap-8">
-        <div>
-          <p className="font-display text-sm font-semibold sm:text-2xl">RoseDen Atelier</p>
-          <p className="mt-2 max-w-xs text-[8px] leading-relaxed text-white/70 sm:mt-3 sm:text-sm">Styled in Makeni. Tailored, curated, and original.</p>
+      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-5 gap-y-7 sm:grid-cols-3 sm:gap-8">
+        <div className="col-span-2 sm:col-span-1">
+          <p className="font-display text-xl font-semibold sm:text-2xl">RoseDen Atelier</p>
+          <p className="mt-2 max-w-xs text-xs leading-relaxed text-white/70 sm:mt-3 sm:text-sm">Styled in Makeni. Tailored, curated, and original.</p>
         </div>
         <div>
-          <p className="text-[10px] font-semibold text-gold sm:text-base">Visit</p>
-          <p className="mt-2 text-[8px] leading-relaxed text-white/75 sm:mt-3 sm:text-sm">{content.location}</p>
+          <p className="text-sm font-semibold text-gold sm:text-base">Visit</p>
+          <p className="mt-2 text-xs leading-relaxed text-white/75 sm:mt-3 sm:text-sm">{content.location}</p>
         </div>
         <div>
-          <p className="text-[10px] font-semibold text-gold sm:text-base">Explore</p>
-          <div className="mt-2 flex flex-wrap gap-2 text-[8px] text-white/80 sm:mt-3 sm:gap-4 sm:text-sm">
+          <p className="text-sm font-semibold text-gold sm:text-base">Explore</p>
+          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-2 text-xs text-white/80 sm:mt-3 sm:gap-4 sm:text-sm">
             <Link href="/shop">Shop</Link>
             <Link href="/tailoring">Tailoring</Link>
             <Link href="/contact">Contact</Link>

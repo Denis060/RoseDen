@@ -98,7 +98,7 @@ export function ProductCard({ product, compact = false }: { product: PublicProdu
   const message = productOrderMessage(product);
   const disabled = product.status !== "available";
   return (
-    <article className={`group min-w-0 overflow-hidden border border-gold/35 bg-white shadow-soft ${compact ? "rounded-lg" : "rounded-[22px]"}`}>
+    <article className={`group w-full min-w-0 max-w-full overflow-hidden border border-gold/35 bg-white shadow-soft ${compact ? "rounded-lg" : "rounded-[22px]"}`}>
       <Link href={`/shop/${product.slug}`} className="relative grid aspect-[4/5] place-items-center overflow-hidden bg-marble/45">
         {product.image ? <Image src={product.image} alt={product.name} fill sizes={compact ? "(max-width: 640px) 25vw, 220px" : "(max-width: 768px) 50vw, 280px"} className={`object-cover transition duration-500 group-hover:scale-105 ${product.status === "sold" ? "grayscale-[35%]" : ""}`} /> : <ImageIcon size={42} className="text-burgundy/20" />}
         <span className={`absolute left-2 top-2 rounded-full px-2 py-1 text-[8px] font-bold uppercase shadow-sm ${statusStyle(product.status)}`}>{product.status}</span>
@@ -114,8 +114,8 @@ export function ProductCard({ product, compact = false }: { product: PublicProdu
           : <TrackedWhatsAppLink
               href={websiteWhatsappLink(content.whatsappNumber, message)}
               inquiry={{ inventoryId: product.id, productName: product.name, productSlug: product.slug }}
-              className="mt-4 flex h-11 items-center justify-center gap-1.5 rounded-lg bg-gold text-sm font-bold text-burgundy"
-            ><MessageCircle size={17} />Order on WhatsApp</TrackedWhatsAppLink>)}
+              className="mt-4 flex h-11 min-w-0 items-center justify-center gap-1 rounded-lg bg-gold px-2 text-center text-[11px] font-bold leading-tight text-burgundy min-[420px]:text-xs sm:gap-1.5 sm:text-sm"
+            ><MessageCircle size={16} className="shrink-0" />Order on WhatsApp</TrackedWhatsAppLink>)}
       </div>
     </article>
   );
@@ -149,12 +149,12 @@ export function ProductGrid({
   if (visible.length === 0) return (
     <div className="marble-surface rounded-3xl border border-white px-6 py-12 text-center shadow-soft">
       <Sparkles className="mx-auto text-gold" />
-      <p className="mt-4 font-display text-2xl text-burgundy">{status === "sold" ? "No sold pieces in this collection yet." : "New pieces are being prepared."}</p>
+      <p className="mt-4 break-words font-display text-xl leading-tight text-burgundy sm:text-2xl">{status === "sold" ? "No sold pieces in this collection yet." : "New pieces are being prepared."}</p>
       <p className="mx-auto mt-2 max-w-md text-sm text-black/60">{status === "sold" ? "RoseDen Originals that find their new owner will be remembered here." : "Message RoseDen to see the latest pieces before they are published."}</p>
       {status !== "sold" && <a href={websiteWhatsappLink(content.whatsappNumber, "Hello RoseDen Atelier, please show me your latest available pieces.")} target="_blank" rel="noreferrer" className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-burgundy px-5 text-sm font-semibold text-white"><MessageCircle size={17} />Ask on WhatsApp</a>}
     </div>
   );
 
   if (rail) return <div className="grid grid-cols-4 gap-2 sm:gap-4">{visible.map((product) => <ProductCard key={product.id} product={product} compact />)}</div>;
-  return <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">{visible.map((product) => <ProductCard key={product.id} product={product} />)}</div>;
+  return <div className="grid min-w-0 grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{visible.map((product) => <ProductCard key={product.id} product={product} />)}</div>;
 }

@@ -38,7 +38,7 @@ export function ShopCatalog() {
         </div>
       </div>
       <p className="mb-4 text-sm text-black/50">{loading ? "Loading RoseDen pieces..." : `${visible.length} piece${visible.length === 1 ? "" : "s"} found`}</p>
-      {!loading && visible.length === 0 ? <div className="rounded-3xl bg-white p-10 text-center text-black/50">No pieces match these filters. Try clearing one filter.</div> : <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">{visible.map((product) => <ProductCard key={product.id} product={product} />)}</div>}
+      {!loading && visible.length === 0 ? <div className="rounded-3xl bg-white p-10 text-center text-black/50">No pieces match these filters. Try clearing one filter.</div> : <div className="grid min-w-0 grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{visible.map((product) => <ProductCard key={product.id} product={product} />)}</div>}
     </div>
   );
 }

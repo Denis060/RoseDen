@@ -159,7 +159,7 @@ export default function HomePage() {
       <section className="bg-white px-4 py-10 sm:px-6 sm:py-20">
         <h2 className="text-center font-display text-3xl font-semibold uppercase text-burgundy sm:text-5xl sm:normal-case">Visit & contact us</h2>
         <div className="mx-auto mt-6 grid max-w-6xl grid-cols-3 gap-2 sm:mt-8 sm:gap-5">
-          <div className="text-[8px] leading-relaxed text-black/65 sm:text-sm">
+          <div className="text-[10px] leading-relaxed text-black/65 sm:text-sm">
             <p className="flex items-start gap-1"><MapPin size={13} className="shrink-0 text-burgundy" />{content.location}</p>
             <p className="mt-2">{content.openingHours}</p>
             <p className="mt-2">{content.email}</p>
@@ -168,8 +168,8 @@ export default function HomePage() {
             <Image src={content.contactImageUrl} alt="RoseDen Atelier" fill className="object-cover object-[72%_center]" />
           </div>
           <div className="flex flex-col items-center justify-center rounded-lg bg-burgundy p-2 text-center text-white sm:rounded-3xl sm:p-5">
-            <p className="font-display text-[12px] leading-tight sm:text-2xl">Let’s style your next moment.</p>
-            <a href={websiteWhatsappLink(content.whatsappNumber, "Hello RoseDen Atelier, I would like to make an order.")} target="_blank" rel="noreferrer" className="mt-2 flex items-center gap-1 rounded-md bg-gold px-2 py-1.5 text-[8px] font-bold text-white sm:mt-4 sm:px-4 sm:py-3 sm:text-sm"><MessageCircle size={13} />Chat on WhatsApp</a>
+            <p className="font-display text-sm leading-tight sm:text-2xl">Let’s style your next moment.</p>
+            <a href={websiteWhatsappLink(content.whatsappNumber, "Hello RoseDen Atelier, I would like to make an order.")} target="_blank" rel="noreferrer" className="mt-2 flex items-center gap-1 rounded-md bg-gold px-2 py-1.5 text-[9px] font-bold text-white sm:mt-4 sm:px-4 sm:py-3 sm:text-sm"><MessageCircle size={13} />Chat on WhatsApp</a>
             <div className="mt-2 flex gap-2 text-gold">{content.facebookUrl && <a href={content.facebookUrl} target="_blank" rel="noreferrer"><Facebook size={14} /></a>}{content.instagramUrl && <a href={content.instagramUrl} target="_blank" rel="noreferrer"><Instagram size={14} /></a>}{content.tiktokUrl && <a href={content.tiktokUrl} target="_blank" rel="noreferrer"><Music2 size={14} /></a>}</div>
           </div>
         </div>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BarChart3, Boxes, ClipboardList, Contact, DatabaseBackup, HeartHandshake, LayoutDashboard, LifeBuoy, MapPinned, Menu, MessageCircle, ReceiptText, Settings2, Sparkles, UsersRound, X } from "lucide-react";
+import { BarChart3, Boxes, ClipboardList, Contact, DatabaseBackup, HeartHandshake, LayoutDashboard, LifeBuoy, MapPinned, MessageCircle, ReceiptText, Settings2, Sparkles, UsersRound, X } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { useData } from "./data-provider";
 import { InstallAppButton } from "./pwa-tools";
@@ -36,7 +36,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             <p className="text-[9px] font-bold uppercase tracking-wider text-gold">{userRole || "staff"}</p>
           </div>}
           <div className={`grid w-full gap-2 sm:flex sm:w-auto sm:items-center ${isAdmin ? "grid-cols-3" : "grid-cols-1"}`}>
-            {isAdmin && <Link href="/admin/reports" className="rounded-full border border-burgundy/15 bg-white px-3 py-2 text-center text-xs font-semibold text-burgundy">Reports</Link>}
+            {isAdmin && <button onClick={() => setMoreOpen(true)} className="rounded-full border border-burgundy/15 bg-white px-3 py-2 text-center text-xs font-semibold text-burgundy sm:hidden">More</button>}
+            {isAdmin && <Link href="/admin/reports" className="hidden rounded-full border border-burgundy/15 bg-white px-3 py-2 text-center text-xs font-semibold text-burgundy sm:block">Reports</Link>}
             {isAdmin && <Link href="/admin/staff" className="hidden rounded-full border border-burgundy/15 bg-white px-3 py-2 text-xs font-semibold text-burgundy sm:block">Staff</Link>}
             {isAdmin && <Link href="/admin/website" className="rounded-full bg-gold px-3 py-2 text-center text-xs font-bold text-burgundy">Edit Website</Link>}
             {userEmail && <button onClick={handleSignOut} className="rounded-full bg-burgundy px-3 py-2 text-xs font-semibold text-white">Sign out</button>}
@@ -46,7 +47,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       {connectionError && <div className="border-b border-amber-300 bg-amber-50 px-4 py-2 text-center text-xs font-medium text-amber-900">{connectionError}</div>}
       <main className="mx-auto w-full min-w-0 max-w-5xl px-4 pb-28 pt-6 sm:px-6 sm:pt-8">{children}</main>
       {isAdmin && !pathname.endsWith("/receipt") && <>
-        <button onClick={() => setMoreOpen(true)} className="fixed bottom-20 right-4 z-30 flex h-12 items-center gap-2 rounded-full bg-wine px-4 text-xs font-bold text-white shadow-soft sm:hidden"><Menu size={18} className="text-gold" />More</button>
         {moreOpen && <div className="fixed inset-0 z-50 flex items-end bg-black/45 sm:hidden" onClick={() => setMoreOpen(false)}>
           <div className="max-h-[82vh] w-full overflow-y-auto rounded-t-[28px] bg-cream p-5" onClick={(event) => event.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between"><div><h2 className="font-display text-2xl font-semibold text-wine">More tools</h2><p className="text-xs text-black/45">Admin controls and business insights</p></div><button onClick={() => setMoreOpen(false)} className="grid h-11 w-11 place-items-center rounded-full bg-black/5"><X size={20} /></button></div>
