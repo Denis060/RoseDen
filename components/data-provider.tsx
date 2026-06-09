@@ -758,7 +758,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       const extension = extensions[file.type] || file.name.split(".").pop()?.toLowerCase() || "jpg";
       const path = `${user.id}/${Date.now()}-${id()}.${extension}`;
       const { error } = await supabase.storage.from("product-images").upload(path, file, {
-        cacheControl: "3600",
+        cacheControl: "31536000",
         contentType: file.type || undefined,
         upsert: false,
       });

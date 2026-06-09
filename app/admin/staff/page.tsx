@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { Plus, ShieldCheck, UserCog, UsersRound } from "lucide-react";
+import { KeyRound, Plus, ShieldCheck, UserCog, UserRoundCheck, UserRoundX, UsersRound } from "lucide-react";
 import { AdminOnly } from "@/components/admin-only";
 import { Field, Form, Modal, PageHeader, Select, useModal } from "@/components/ui";
 import { supabase } from "@/lib/supabase";
@@ -12,30 +12,49 @@ type StaffMember = {
   email: string;
   role: "admin" | "staff";
   created_at: string;
+  disabled: boolean;
+  last_sign_in_at: string | null;
+  is_current_user: boolean;
 };
 
 function StaffManagement() {
   const createModal = useModal();
   const editModal = useModal();
+  const passwordModal = useModal();
   const [members, setMembers] = useState<StaffMember[]>([]);
   const [selected, setSelected] = useState<StaffMember | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
+  const accessToken = useCallback(async () => {
+    if (!supabase) return null;
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token || null;
+  }, []);
+
   const load = useCallback(async () => {
     if (!supabase) return;
     setLoading(true);
-    const { data, error } = await supabase.rpc("list_staff_members");
-    if (error) {
-      setMessage(["PGRST202", "42883"].includes(error.code)
-        ? "Run the Phase 4B staff migration steps to enable staff management."
-        : error.message);
-    } else {
-      setMembers((data || []) as StaffMember[]);
+    const token = await accessToken();
+    if (!token) {
+      setMessage("Your session has expired. Please sign in again.");
+      setLoading(false);
+      return;
+    }
+    try {
+      const response = await fetch("/api/admin/staff", {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Could not load staff accounts.");
+      setMembers(result.members as StaffMember[]);
+    } catch (cause) {
+      setMessage(cause instanceof Error ? cause.message : "Could not load staff accounts.");
     }
     setLoading(false);
-  }, []);
+  }, [accessToken]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -52,9 +71,8 @@ function StaffManagement() {
     setSaving(true);
     setMessage("");
 
-    const { data: sessionData } = await supabase.auth.getSession();
-    const accessToken = sessionData.session?.access_token;
-    if (!accessToken) {
+    const token = await accessToken();
+    if (!token) {
       setMessage("Your session has expired. Please sign in again.");
       setSaving(false);
       return;
@@ -65,7 +83,7 @@ function StaffManagement() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           fullName: String(form.get("fullName")),
@@ -87,6 +105,48 @@ function StaffManagement() {
       setMessage("The staff account could not be created. Check your connection and try again.");
     }
     setSaving(false);
+  }
+
+  async function changeAccount(
+    payload: { action: "reset_password"; password: string } | { action: "set_disabled"; disabled: boolean }
+  ) {
+    if (!selected) return;
+    setSaving(true);
+    setMessage("");
+    const token = await accessToken();
+    if (!token) {
+      setMessage("Your session has expired. Please sign in again.");
+      setSaving(false);
+      return;
+    }
+    try {
+      const response = await fetch("/api/admin/staff", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ targetUserId: selected.id, ...payload }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Could not update this account.");
+      passwordModal.hide();
+      editModal.hide();
+      await load();
+      setMessage(result.message);
+    } catch (cause) {
+      setMessage(cause instanceof Error ? cause.message : "Could not update this account.");
+    }
+    setSaving(false);
+  }
+
+  async function resetPassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    await changeAccount({
+      action: "reset_password",
+      password: String(form.get("password")),
+    });
   }
 
   async function updateStaff(event: FormEvent<HTMLFormElement>) {
@@ -131,7 +191,10 @@ function StaffManagement() {
             <div className="min-w-0 flex-1">
               <p className="truncate font-semibold">{member.full_name || "Name not set"}</p>
               <p className="truncate text-xs text-black/45">{member.email}</p>
-              <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-gold">{member.role}</p>
+              <div className="mt-1 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
+                <span className="text-gold">{member.role}</span>
+                <span className={member.disabled ? "text-red-600" : "text-emerald-700"}>{member.disabled ? "Login disabled" : "Active"}</span>
+              </div>
             </div>
             <button onClick={() => edit(member)} className="grid h-11 w-11 place-items-center rounded-xl border border-burgundy/15 text-burgundy" aria-label={`Edit ${member.email}`}><UserCog size={19} /></button>
           </article>
@@ -168,6 +231,30 @@ function StaffManagement() {
             <div className="rounded-xl bg-cream p-3 text-xs leading-5 text-black/55">
               Staff can manage customers, orders, payments, order status, and expenses. Admins also manage inventory, buying trips, reports, website settings, activity history, deletions, and staff access.
             </div>
+            <div className="grid grid-cols-2 gap-3">
+              <button type="button" onClick={() => { editModal.hide(); passwordModal.show(); }} className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-burgundy/15 bg-white px-3 text-xs font-semibold text-burgundy"><KeyRound size={17} />Reset password</button>
+              <button
+                type="button"
+                disabled={saving || (selected.is_current_user && !selected.disabled)}
+                onClick={() => changeAccount({ action: "set_disabled", disabled: !selected.disabled })}
+                className={`flex min-h-12 items-center justify-center gap-2 rounded-xl px-3 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-40 ${selected.disabled ? "bg-emerald-700 text-white" : "bg-red-700 text-white"}`}
+              >
+                {selected.disabled ? <UserRoundCheck size={17} /> : <UserRoundX size={17} />}
+                {selected.disabled ? "Restore login" : "Disable login"}
+              </button>
+            </div>
+            {selected.is_current_user && !selected.disabled && <p className="text-center text-[11px] text-black/45">You cannot disable the account you are currently using.</p>}
+            {message && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{message}</p>}
+          </Form>
+        </Modal>
+      )}
+
+      {passwordModal.open && selected && (
+        <Modal title="Set temporary password" onClose={passwordModal.hide}>
+          <Form onSubmit={resetPassword} submitLabel={saving ? "Updating password..." : "Update password"} submitDisabled={saving}>
+            <div className="rounded-xl bg-white p-3 text-sm text-black/55">{selected.full_name}<span className="mt-1 block text-xs">{selected.email}</span></div>
+            <Field name="password" label="New temporary password" type="password" autoComplete="new-password" minLength={8} required />
+            <p className="rounded-xl bg-gold/10 p-3 text-xs leading-5 text-wine">Tell the staff member this password privately. Their old password will stop working immediately.</p>
             {message && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{message}</p>}
           </Form>
         </Modal>

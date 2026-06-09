@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Boxes, ClipboardList, Contact, LayoutDashboard, MapPinned, ReceiptText, Settings2, Sparkles, UsersRound } from "lucide-react";
-import { ReactNode } from "react";
+import { BarChart3, Boxes, ClipboardList, Contact, DatabaseBackup, LayoutDashboard, MapPinned, Menu, ReceiptText, Settings2, Sparkles, UsersRound, X } from "lucide-react";
+import { ReactNode, useState } from "react";
 import { useData } from "./data-provider";
+import { InstallAppButton } from "./pwa-tools";
 
 const nav = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -17,6 +18,7 @@ const nav = [
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [moreOpen, setMoreOpen] = useState(false);
   const { userEmail, userName, userRole, isAdmin, signOut, connectionError } = useData();
 
   async function handleSignOut() {
@@ -43,12 +45,25 @@ export function AppShell({ children }: { children: ReactNode }) {
       </header>
       {connectionError && <div className="border-b border-amber-300 bg-amber-50 px-4 py-2 text-center text-xs font-medium text-amber-900">{connectionError}</div>}
       <main className="mx-auto w-full min-w-0 max-w-5xl px-4 pb-28 pt-6 sm:px-6 sm:pt-8">{children}</main>
-      {isAdmin && !pathname.endsWith("/receipt") && <div className="fixed bottom-20 right-4 z-30 flex flex-col items-end gap-2 sm:hidden">
-        <Link href="/admin/advisor" className="flex h-12 items-center gap-2 rounded-full bg-wine px-4 text-xs font-bold text-white shadow-soft"><Sparkles size={17} className="text-gold" />Advisor</Link>
-        <Link href="/admin/staff" className="flex h-12 items-center gap-2 rounded-full bg-white px-4 text-xs font-bold text-burgundy shadow-soft"><UsersRound size={17} />Staff</Link>
-        <Link href="/admin/website" className="flex h-12 items-center gap-2 rounded-full bg-white px-4 text-xs font-bold text-burgundy shadow-soft"><Settings2 size={17} />Website</Link>
-        <Link href="/admin/batches" className="flex h-12 items-center gap-2 rounded-full bg-gold px-4 text-xs font-bold text-burgundy shadow-soft"><MapPinned size={17} />Trips</Link>
-      </div>}
+      {isAdmin && !pathname.endsWith("/receipt") && <>
+        <button onClick={() => setMoreOpen(true)} className="fixed bottom-20 right-4 z-30 flex h-12 items-center gap-2 rounded-full bg-wine px-4 text-xs font-bold text-white shadow-soft sm:hidden"><Menu size={18} className="text-gold" />More</button>
+        {moreOpen && <div className="fixed inset-0 z-50 flex items-end bg-black/45 sm:hidden" onClick={() => setMoreOpen(false)}>
+          <div className="max-h-[82vh] w-full overflow-y-auto rounded-t-[28px] bg-cream p-5" onClick={(event) => event.stopPropagation()}>
+            <div className="mb-4 flex items-center justify-between"><div><h2 className="font-display text-2xl font-semibold text-wine">More tools</h2><p className="text-xs text-black/45">Admin controls and business insights</p></div><button onClick={() => setMoreOpen(false)} className="grid h-11 w-11 place-items-center rounded-full bg-black/5"><X size={20} /></button></div>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                ["/admin/advisor", "Advisor", Sparkles],
+                ["/admin/batches", "Buying trips", MapPinned],
+                ["/admin/reports", "Reports", BarChart3],
+                ["/admin/backup", "Backup", DatabaseBackup],
+                ["/admin/staff", "Staff", UsersRound],
+                ["/admin/website", "Website", Settings2],
+              ].map(([href, label, Icon]) => <Link key={href as string} href={href as string} onClick={() => setMoreOpen(false)} className="flex min-h-20 flex-col items-center justify-center gap-2 rounded-2xl bg-white text-sm font-semibold text-burgundy shadow-soft"><Icon size={22} className="text-gold" />{label as string}</Link>)}
+            </div>
+            <div className="mt-4"><InstallAppButton onComplete={() => setMoreOpen(false)} /></div>
+          </div>
+        </div>}
+      </>}
       <nav className="fixed inset-x-0 bottom-0 z-40 w-full border-t border-burgundy/10 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
         <div className="mx-auto grid w-full max-w-xl grid-cols-5">
           {nav.map((item) => {

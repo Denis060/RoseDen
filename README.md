@@ -198,10 +198,9 @@ smaller files in `supabase/phase4b_steps` in number order, then run
 
 To add staff:
 
-1. Create the person's email and temporary password in Supabase
-   **Authentication → Users**.
-2. Open **Admin → Staff & Access** in RoseDen OS.
-3. Add their name and choose **Staff** or **Admin**.
+1. Open **Admin -> Staff & Access** in RoseDen OS.
+2. Tap **Add staff member**.
+3. Enter their name, email, starting password, and access level.
 
 Staff can manage customers, orders, payments, order status, and expenses.
 Admins additionally manage inventory, buying trips, reports, website content,
@@ -216,3 +215,19 @@ channels, and available products hidden from the website.
 
 This first version is private, deterministic, and free: it does not send
 customer or financial data to an external AI provider.
+
+## Phase 5 launch readiness
+
+Phase 5 adds:
+
+- in-app temporary password resets and staff login disabling/restoring
+- self-service forgot-password email recovery
+- admin CSV exports and a complete JSON emergency backup
+- stronger photo compression and long-lived image caching for mobile data
+- a compact mobile **More** menu instead of overlapping floating shortcuts
+- an installable Progressive Web App with an **Install RoseDen OS** action
+
+Before launch, add the production `/update-password` URL to the allowed
+Supabase Authentication redirect URLs. Admins should download a backup monthly
+and test login, order, payment, inventory, expense, receipt, and website flows
+on Rosannah's actual phone.

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, BarChart3, CircleDollarSign, Megaphone, PackageCheck, Repeat, ShoppingBag, Star, Truck, UserRound } from "lucide-react";
+import { ArrowRight, BarChart3, CircleDollarSign, Download, Megaphone, PackageCheck, Repeat, ShoppingBag, Star, Truck, UserRound } from "lucide-react";
 import { useData } from "@/components/data-provider";
 import { PageHeader } from "@/components/ui";
 import { money } from "@/lib/format";
@@ -88,6 +88,7 @@ export default function AdminReportsPage() {
   return (
     <div>
       <PageHeader title="Reports" subtitle="Understand the money, products, customers, and marketing channels" />
+      <Link href="/admin/backup" className="mb-4 flex h-12 items-center justify-center gap-2 rounded-xl border border-burgundy/15 bg-white text-sm font-semibold text-burgundy"><Download size={17} />Backup and export records</Link>
       <label className="mb-5 block rounded-2xl bg-white p-4 text-sm font-semibold shadow-soft">
         Report month
         <input type="month" value={month} onChange={(event) => setMonth(event.target.value)} className="mt-2 h-12 w-full rounded-xl border border-black/10 bg-cream px-3 text-base outline-none focus:border-gold" />
