@@ -14,9 +14,9 @@ export function PageHeader({ title, subtitle, action }: { title: string; subtitl
 
 export function Modal({ title, children, onClose }: { title: string; children: ReactNode; onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/45 p-0 sm:items-center sm:p-6">
-      <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-[28px] bg-cream p-5 shadow-2xl sm:rounded-[28px]">
-        <div className="mb-5 flex items-center justify-between"><h2 className="font-display text-2xl font-semibold text-wine">{title}</h2><button onClick={onClose} className="grid h-11 w-11 place-items-center rounded-full bg-black/5"><X size={20} /></button></div>
+    <div className="fixed inset-0 z-50 flex max-w-[100vw] items-end justify-center overflow-x-hidden bg-black/45 p-0 sm:items-center sm:p-6">
+      <div className="max-h-[92vh] w-full min-w-0 max-w-lg overflow-x-hidden overflow-y-auto rounded-t-[28px] bg-cream p-5 shadow-2xl sm:rounded-[28px]">
+        <div className="mb-5 flex min-w-0 items-center justify-between gap-3"><h2 className="min-w-0 font-display text-2xl font-semibold text-wine">{title}</h2><button onClick={onClose} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-black/5"><X size={20} /></button></div>
         {children}
       </div>
     </div>

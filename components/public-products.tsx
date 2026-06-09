@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ImageIcon, MessageCircle, Sparkles } from "lucide-react";
 import { money } from "@/lib/format";
 import { supabase } from "@/lib/supabase";
+import { TrackedWhatsAppLink } from "@/components/tracked-whatsapp-link";
 import { useWebsiteContent, websiteWhatsappLink } from "@/components/website-content";
 
 export type PublicProduct = {
@@ -110,7 +111,11 @@ export function ProductCard({ product, compact = false }: { product: PublicProdu
         {!compact && <div className="mt-3 space-y-1 text-[11px] text-black/50"><p className="truncate"><strong className="text-black/65">Sizes:</strong> {product.sizes.join(", ") || "Ask RoseDen"}</p><p className="truncate"><strong className="text-black/65">Colors:</strong> {product.colors.join(", ") || "Ask RoseDen"}</p></div>}
         {!compact && (disabled
           ? <Link href={`/shop/${product.slug}`} className="mt-4 flex h-11 items-center justify-center rounded-lg border border-burgundy/15 text-sm font-semibold text-burgundy">View details</Link>
-          : <a href={websiteWhatsappLink(content.whatsappNumber, message)} target="_blank" rel="noreferrer" className="mt-4 flex h-11 items-center justify-center gap-1.5 rounded-lg bg-gold text-sm font-bold text-burgundy"><MessageCircle size={17} />Order on WhatsApp</a>)}
+          : <TrackedWhatsAppLink
+              href={websiteWhatsappLink(content.whatsappNumber, message)}
+              inquiry={{ inventoryId: product.id, productName: product.name, productSlug: product.slug }}
+              className="mt-4 flex h-11 items-center justify-center gap-1.5 rounded-lg bg-gold text-sm font-bold text-burgundy"
+            ><MessageCircle size={17} />Order on WhatsApp</TrackedWhatsAppLink>)}
       </div>
     </article>
   );

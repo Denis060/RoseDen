@@ -250,3 +250,16 @@ Phase 6A adds:
 - WhatsApp messages containing the customer's selected product options
 - reserved and sold product presentation
 - a sold archive for one-of-one RoseDen Originals
+
+## Phase 6B assisted selling
+
+Run `supabase/migrations/013_whatsapp_product_inquiries.sql` once.
+
+- Selecting inventory in an order fills its description, type, size, color,
+  selling price, cost, and available stock.
+- Quantity automatically recalculates the total and estimated cost.
+- Payment automatically shows the remaining balance.
+- Website WhatsApp product clicks appear under **Admin -> More -> Product
+  interest**.
+- A product click is stored as an inquiry, not a sale. Staff can convert a
+  confirmed inquiry into an order with the product already selected.

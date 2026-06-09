@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BarChart3, Boxes, ClipboardList, Contact, DatabaseBackup, LayoutDashboard, MapPinned, Menu, ReceiptText, Settings2, Sparkles, UsersRound, X } from "lucide-react";
+import { BarChart3, Boxes, ClipboardList, Contact, DatabaseBackup, LayoutDashboard, MapPinned, Menu, MessageCircle, ReceiptText, Settings2, Sparkles, UsersRound, X } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { useData } from "./data-provider";
 import { InstallAppButton } from "./pwa-tools";
@@ -53,6 +53,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="grid grid-cols-2 gap-3">
               {[
                 ["/admin/advisor", "Advisor", Sparkles],
+                ["/admin/inquiries", "Product interest", MessageCircle],
                 ["/admin/batches", "Buying trips", MapPinned],
                 ["/admin/reports", "Reports", BarChart3],
                 ["/admin/backup", "Backup", DatabaseBackup],
