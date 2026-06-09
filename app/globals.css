@@ -18,7 +18,7 @@ button { touch-action: manipulation; }
     color: #1c1c1c;
   }
 
-  header, nav, .print-hidden {
+  .admin-print-hidden, nav, .print-hidden {
     display: none !important;
   }
 

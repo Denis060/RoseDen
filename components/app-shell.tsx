@@ -26,7 +26,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden bg-cream text-ink">
-      <header className="sticky top-0 z-30 border-b border-burgundy/10 bg-cream/95 backdrop-blur">
+      <header className="admin-print-hidden sticky top-0 z-30 border-b border-burgundy/10 bg-cream/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <Link href="/admin" className="leading-none"><span className="font-display text-xl font-bold text-burgundy">RoseDen Atelier</span><span className="mt-1 block text-[9px] uppercase tracking-[0.22em] text-gold">Tailored · Curated · Original</span></Link>
           <div className="grid w-full grid-cols-3 gap-2 sm:flex sm:w-auto sm:items-center">
