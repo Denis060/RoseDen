@@ -206,3 +206,13 @@ To add staff:
 Staff can manage customers, orders, payments, order status, and expenses.
 Admins additionally manage inventory, buying trips, reports, website content,
 activity history, deletions, and staff roles.
+
+## Phase 4C RoseDen Advisor
+
+The admin-only **RoseDen Advisor** turns existing business records into daily
+recommendations. It highlights overdue orders, outstanding balances, proven
+products that need restocking, weak margins, high expense ratios, strong sales
+channels, and available products hidden from the website.
+
+This first version is private, deterministic, and free: it does not send
+customer or financial data to an external AI provider.

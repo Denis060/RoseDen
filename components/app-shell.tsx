@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Boxes, ClipboardList, Contact, LayoutDashboard, MapPinned, ReceiptText, Settings2, UsersRound } from "lucide-react";
+import { Boxes, ClipboardList, Contact, LayoutDashboard, MapPinned, ReceiptText, Settings2, Sparkles, UsersRound } from "lucide-react";
 import { ReactNode } from "react";
 import { useData } from "./data-provider";
 
@@ -44,6 +44,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       {connectionError && <div className="border-b border-amber-300 bg-amber-50 px-4 py-2 text-center text-xs font-medium text-amber-900">{connectionError}</div>}
       <main className="mx-auto w-full min-w-0 max-w-5xl px-4 pb-28 pt-6 sm:px-6 sm:pt-8">{children}</main>
       {isAdmin && !pathname.endsWith("/receipt") && <div className="fixed bottom-20 right-4 z-30 flex flex-col items-end gap-2 sm:hidden">
+        <Link href="/admin/advisor" className="flex h-12 items-center gap-2 rounded-full bg-wine px-4 text-xs font-bold text-white shadow-soft"><Sparkles size={17} className="text-gold" />Advisor</Link>
         <Link href="/admin/staff" className="flex h-12 items-center gap-2 rounded-full bg-white px-4 text-xs font-bold text-burgundy shadow-soft"><UsersRound size={17} />Staff</Link>
         <Link href="/admin/website" className="flex h-12 items-center gap-2 rounded-full bg-white px-4 text-xs font-bold text-burgundy shadow-soft"><Settings2 size={17} />Website</Link>
         <Link href="/admin/batches" className="flex h-12 items-center gap-2 rounded-full bg-gold px-4 text-xs font-bold text-burgundy shadow-soft"><MapPinned size={17} />Trips</Link>

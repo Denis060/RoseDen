@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Activity, ArrowRight, Banknote, CircleDollarSign, Clock3, Megaphone, PackageSearch, Plus, Settings2, TrendingUp } from "lucide-react";
+import { Activity, ArrowRight, Banknote, CircleDollarSign, Clock3, Megaphone, PackageSearch, Plus, Settings2, Sparkles, TrendingUp } from "lucide-react";
 import { useData } from "@/components/data-provider";
 import { IconBox } from "@/components/icons";
 import { money, shortDate } from "@/lib/format";
@@ -57,6 +57,7 @@ export default function Dashboard() {
       <section className="grid grid-cols-2 gap-3">
         {metrics.map(([label, value, Icon]) => <div key={label as string} className="rounded-2xl border border-burgundy/10 bg-white p-4"><IconBox icon={Icon as typeof Banknote} /><p className="mt-4 text-xs font-medium text-black/50">{label as string}</p><p className="mt-1 text-xl font-bold text-wine">{value as string}</p></div>)}
       </section>
+      {isAdmin && <Link href="/admin/advisor" className="mt-7 flex items-center justify-between rounded-2xl bg-gold p-4 text-burgundy shadow-soft"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-xl bg-white/70"><Sparkles size={21} /></span><div><p className="font-display text-lg font-semibold">RoseDen Advisor</p><p className="mt-0.5 text-xs text-burgundy/65">See what needs attention and where to grow next.</p></div></div><ArrowRight /></Link>}
       {isAdmin && <Link href="/admin/batches" className="mt-7 flex items-center justify-between rounded-2xl bg-wine p-4 text-white"><div><p className="text-xs text-gold">Buying → posting → selling</p><p className="mt-1 font-display text-lg font-semibold">Track post batches and trip profit</p></div><ArrowRight /></Link>}
       <section className="mt-7">
         <div className="mb-3 flex items-center justify-between"><h2 className="font-display text-xl font-semibold text-wine">Low stock</h2><Link href="/admin/inventory" className="text-xs font-semibold text-burgundy">View inventory</Link></div>
