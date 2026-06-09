@@ -387,8 +387,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
     if (!supabase) return "";
     if (customer.id) return customer.id;
     const digits = phoneKey(customer.phone);
+    if (digits.length < 8) throw new Error("Enter a complete phone number so this customer can be identified.");
+
     const existing = data.customers.find((entry) => digits.length >= 6 && phoneKey(entry.phone) === digits);
     if (existing) return existing.id;
+
+    const databaseMatch = await supabase
+      .from("customers")
+      .select("id")
+      .eq("phone_key", digits)
+      .maybeSingle();
+    if (!databaseMatch.error && databaseMatch.data) return databaseMatch.data.id;
+
     const { data: inserted, error } = await supabase.from("customers").insert({
       name: customer.name,
       phone: customer.phone,
@@ -396,6 +406,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
       notes: "Added from status/social order",
       created_by: user?.id,
     }).select("id").single();
+    if (error?.code === "23505") {
+      const duplicate = await supabase
+        .from("customers")
+        .select("id")
+        .eq("phone_key", digits)
+        .maybeSingle();
+      if (duplicate.data) return duplicate.data.id;
+      throw new Error("This phone number already belongs to a customer. Search and select that customer.");
+    }
     if (error) throw error;
     return inserted.id;
   }
@@ -479,6 +498,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
     },
     addCustomer: async (item) => {
       if (useSupabase && supabase) {
+        const digits = phoneKey(item.phone);
+        if (digits.length < 8) throw new Error("Enter a complete phone number.");
+        const existing = data.customers.find((customer) => phoneKey(customer.phone) === digits);
+        if (existing) throw new Error(`${existing.name} already uses this phone number.`);
         const { data: inserted, error } = await supabase.from("customers").insert({
           name: item.name,
           phone: item.phone,
@@ -486,6 +509,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           notes: item.notes,
           created_by: user?.id,
         }).select("id").single();
+        if (error?.code === "23505") throw new Error("This phone number already belongs to another customer.");
         if (error) throw error;
         await insertMeasurement(inserted.id, item.measurements);
         await refresh();

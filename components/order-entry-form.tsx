@@ -54,6 +54,8 @@ export function OrderEntryForm({ quickSocial, initialProductId, inquiryId, onSav
 
   const selectedCustomer = data.customers.find((customer) => customer.id === selectedCustomerId);
   const selectedProduct = data.inventory.find((item) => item.id === selectedInventoryId);
+  const enteredPhoneKey = phone.replace(/\D/g, "").slice(-8);
+  const completeNewCustomer = !walkIn && !selectedCustomer && customerQuery.trim().length > 1 && enteredPhoneKey.length === 8;
   const total = unitPrice * quantity;
   const cost = unitCost * quantity;
   const balance = Math.max(0, total - paid);
@@ -241,7 +243,7 @@ export function OrderEntryForm({ quickSocial, initialProductId, inquiryId, onSav
               const value = event.target.value;
               setPhone(value);
               const digits = value.replace(/\D/g, "").slice(-8);
-              const match = digits.length >= 6 ? data.customers.find((customer) => customer.phone.replace(/\D/g, "").slice(-8) === digits) : undefined;
+              const match = digits.length === 8 ? data.customers.find((customer) => customer.phone.replace(/\D/g, "").slice(-8) === digits) : undefined;
               if (match) chooseCustomer(match.id);
               else setSelectedCustomerId("");
             }} placeholder="Phone / WhatsApp number" className="h-12 w-full rounded-xl border border-black/10 bg-white px-3 outline-none focus:border-gold" />
@@ -249,6 +251,7 @@ export function OrderEntryForm({ quickSocial, initialProductId, inquiryId, onSav
           </div>
         )}
         {selectedCustomer && <div className="mt-2 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3"><UserRound size={19} className="text-emerald-700" /><div><p className="text-sm font-bold text-emerald-900">Existing customer found</p><p className="text-xs text-emerald-800/70">{customerOrders.length} previous orders · {money(customerBalance)} outstanding</p></div></div>}
+        {completeNewCustomer && <div className="mt-2 flex items-center gap-3 rounded-xl border border-gold/30 bg-gold/10 p-3"><UserRound size={19} className="text-gold" /><div><p className="text-sm font-bold text-wine">New customer</p><p className="text-xs text-black/55">Saving this order will automatically add {customerQuery.trim()} to Customers.</p></div></div>}
       </section>
 
       <section className="min-w-0">

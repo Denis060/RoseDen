@@ -263,3 +263,8 @@ Run `supabase/migrations/013_whatsapp_product_inquiries.sql` once.
   interest**.
 - A product click is stored as an inquiry, not a sale. Staff can convert a
   confirmed inquiry into an order with the product already selected.
+
+Run `supabase/migrations/014_customer_phone_identity.sql` after migration 013.
+It makes the final eight phone digits the unique customer identity. New order
+customers are saved automatically, existing phone numbers reuse the existing
+customer, and duplicate phone records are prevented.
