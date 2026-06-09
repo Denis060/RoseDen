@@ -45,3 +45,11 @@ button { touch-action: manipulation; }
     linear-gradient(62deg, transparent 57%, rgba(255, 255, 255, .8) 57.5%, transparent 58%),
     linear-gradient(145deg, rgba(255, 255, 255, .5), transparent 60%);
 }
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Heart, ImageIcon, MessageCircle, Sparkles } from "lucide-react";
+import { ImageIcon, MessageCircle, Sparkles } from "lucide-react";
 import { money } from "@/lib/format";
 import { supabase } from "@/lib/supabase";
 import { useWebsiteContent, websiteWhatsappLink } from "@/components/website-content";
@@ -17,46 +17,31 @@ export type PublicProduct = {
   description: string;
   image: string;
   images: string[];
-  status: string;
+  status: "available" | "reserved" | "sold";
   sizes: string[];
   colors: string[];
   sourceType: string;
   featured: boolean;
   quantity: number;
+  createdAt: string;
 };
 
-export function productOrderMessage(product: PublicProduct) {
-  const siteOrigin = typeof window === "undefined"
-    ? "https://roseden-os.vercel.app"
-    : window.location.origin;
+export function productOrderMessage(product: PublicProduct, size = "", color = "") {
+  const siteOrigin = typeof window === "undefined" ? "https://roseden-os.vercel.app" : window.location.origin;
   const productUrl = `${siteOrigin}/shop/${product.slug}`;
-  const imageUrl = product.image
-    ? new URL(product.image, siteOrigin).toString()
-    : "";
-
+  const imageUrl = product.image ? new URL(product.image, siteOrigin).toString() : "";
   return `Hello RoseDen Atelier, I am interested in this item:
 
 Product: ${product.name}
 Code: ${product.slug}
-Size: ${product.sizes.join(", ") || "Please advise"}
-Color: ${product.colors.join(", ") || "Please advise"}
+Size: ${size || product.sizes.join(", ") || "Please advise"}
+Color: ${color || product.colors.join(", ") || "Please advise"}
 Price: ${money(product.price)}
 
 View product: ${productUrl}${imageUrl ? `\nProduct image: ${imageUrl}` : ""}
 
 Is it still available?`;
 }
-
-const showcaseProducts: PublicProduct[] = [
-  { id: "showcase-1", name: "Burgundy Power Set", slug: "burgundy-power-set", category: "RD-24-158", price: 450, description: "A confident burgundy boutique look inspired by RoseDen's new arrivals.", image: "/images/showcase/arrival-burgundy.png", images: ["/images/showcase/arrival-burgundy.png"], status: "preview", sizes: ["S", "M", "L"], colors: ["Burgundy"], sourceType: "ready-made", featured: true, quantity: 1 },
-  { id: "showcase-2", name: "Ankara Elegance Dress", slug: "ankara-elegance-dress", category: "RD-24-159", price: 380, description: "A youthful African-print dress for standout everyday styling.", image: "/images/showcase/arrival-blue.png", images: ["/images/showcase/arrival-blue.png"], status: "preview", sizes: ["S", "M"], colors: ["Blue"], sourceType: "ready-made", featured: true, quantity: 1 },
-  { id: "showcase-3", name: "Monochrome Midi", slug: "monochrome-midi", category: "RD-24-160", price: 420, description: "A black-and-white midi dress with a structured boutique feel.", image: "/images/showcase/arrival-monochrome.png", images: ["/images/showcase/arrival-monochrome.png"], status: "preview", sizes: ["M", "L"], colors: ["Black", "White"], sourceType: "ready-made", featured: true, quantity: 1 },
-  { id: "showcase-4", name: "Neutral Chic Set", slug: "neutral-chic-set", category: "RD-24-161", price: 400, description: "A soft cream look for elegant casual moments.", image: "/images/showcase/arrival-cream.png", images: ["/images/showcase/arrival-cream.png"], status: "preview", sizes: ["S", "M"], colors: ["Cream"], sourceType: "ready-made", featured: true, quantity: 1 },
-  { id: "showcase-o1", name: "Recrafted Denim Blazer", slug: "recrafted-denim-blazer", category: "RD-O-001", price: 650, description: "A one-of-one RoseDen Original denim blazer with gold detail.", image: "/images/showcase/original-denim.png", images: ["/images/showcase/original-denim.png"], status: "preview", sizes: ["M"], colors: ["Denim", "Gold"], sourceType: "original", featured: true, quantity: 1 },
-  { id: "showcase-o2", name: "Upcycled Statement Piece", slug: "upcycled-statement-piece", category: "RD-O-002", price: 380, description: "A colorful redesigned statement blazer from the Originals collection.", image: "/images/showcase/original-patchwork.png", images: ["/images/showcase/original-patchwork.png"], status: "preview", sizes: ["M"], colors: ["Multi"], sourceType: "original", featured: true, quantity: 1 },
-  { id: "showcase-o3", name: "Gold & Ankara Fusion", slug: "gold-ankara-fusion", category: "RD-O-003", price: 600, description: "A black-and-gold fitted RoseDen Original with boutique drama.", image: "/images/showcase/original-gold.png", images: ["/images/showcase/original-gold.png"], status: "preview", sizes: ["S", "M"], colors: ["Black", "Gold"], sourceType: "original", featured: true, quantity: 1 },
-  { id: "showcase-o4", name: "Beaded Corset Top", slug: "beaded-corset-top", category: "RD-O-004", price: 480, description: "A denim corset top with gold-inspired embellishment.", image: "/images/showcase/original-corset.png", images: ["/images/showcase/original-corset.png"], status: "preview", sizes: ["S", "M"], colors: ["Denim", "Gold"], sourceType: "original", featured: true, quantity: 1 },
-];
 
 function mapProduct(row: any): PublicProduct {
   const images = (row.product_images || [row.shop_photo_url, row.supplier_photo_url, row.photo_url]).filter(Boolean);
@@ -75,6 +60,7 @@ function mapProduct(row: any): PublicProduct {
     sourceType: row.source_type || "ready-made",
     featured: Boolean(row.is_featured),
     quantity: Number(row.quantity || 0),
+    createdAt: row.created_at || "",
   };
 }
 
@@ -87,12 +73,11 @@ export function usePublicProducts() {
       if (!supabase) return setLoading(false);
       const { data } = await supabase
         .from("inventory")
-        .select("id,product_name,slug,category,selling_price,public_description,shop_photo_url,supplier_photo_url,photo_url,product_images,public_status,sizes,colors,source_type,is_featured,quantity")
+        .select("id,product_name,slug,category,selling_price,public_description,shop_photo_url,supplier_photo_url,photo_url,product_images,public_status,sizes,colors,source_type,is_featured,quantity,created_at")
         .eq("is_public", true)
-        .eq("public_status", "available")
+        .neq("public_status", "hidden")
         .order("created_at", { ascending: false });
-      const mapped = (data || []).map(mapProduct);
-      setProducts(mapped.length ? mapped : showcaseProducts);
+      setProducts((data || []).map(mapProduct));
       setLoading(false);
     }
     load();
@@ -101,48 +86,67 @@ export function usePublicProducts() {
   return { products, loading };
 }
 
+function statusStyle(status: PublicProduct["status"]) {
+  if (status === "sold") return "bg-black text-white";
+  if (status === "reserved") return "bg-gold text-burgundy";
+  return "bg-white/95 text-emerald-700";
+}
+
 export function ProductCard({ product, compact = false }: { product: PublicProduct; compact?: boolean }) {
   const content = useWebsiteContent();
   const message = productOrderMessage(product);
+  const disabled = product.status !== "available";
   return (
-    <article className={`group overflow-hidden border border-gold/45 bg-white shadow-soft ${compact ? "rounded-lg" : "rounded-[22px]"}`}>
+    <article className={`group min-w-0 overflow-hidden border border-gold/35 bg-white shadow-soft ${compact ? "rounded-lg" : "rounded-[22px]"}`}>
       <Link href={`/shop/${product.slug}`} className="relative grid aspect-[4/5] place-items-center overflow-hidden bg-marble/45">
-        {product.image ? <Image src={product.image} alt={product.name} fill sizes={compact ? "(max-width: 640px) 25vw, 220px" : "(max-width: 768px) 50vw, 280px"} className="object-cover transition duration-500 group-hover:scale-105" /> : <ImageIcon size={42} className="text-burgundy/20" />}
-        {compact
-          ? product.sourceType === "original"
-            ? <span className="absolute left-1.5 top-1.5 rounded-full bg-gold px-1.5 py-0.5 text-[7px] font-bold uppercase text-white">One-of-one</span>
-            : <span className="absolute right-1.5 top-1.5 grid h-5 w-5 place-items-center rounded-full bg-white/90 text-burgundy"><Heart size={11} /></span>
-          : <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase text-burgundy shadow-sm">{product.status}</span>}
+        {product.image ? <Image src={product.image} alt={product.name} fill sizes={compact ? "(max-width: 640px) 25vw, 220px" : "(max-width: 768px) 50vw, 280px"} className={`object-cover transition duration-500 group-hover:scale-105 ${product.status === "sold" ? "grayscale-[35%]" : ""}`} /> : <ImageIcon size={42} className="text-burgundy/20" />}
+        <span className={`absolute left-2 top-2 rounded-full px-2 py-1 text-[8px] font-bold uppercase shadow-sm ${statusStyle(product.status)}`}>{product.status}</span>
+        {product.sourceType === "original" && <span className="absolute right-2 top-2 rounded-full bg-burgundy px-2 py-1 text-[8px] font-bold uppercase text-white">One-of-one</span>}
       </Link>
       <div className={compact ? "p-2" : "p-4"}>
         <p className={`${compact ? "text-[8px]" : "text-[10px]"} font-bold uppercase tracking-[0.12em] text-gold`}>{product.category}</p>
         <Link href={`/shop/${product.slug}`} className={`${compact ? "mt-0.5 min-h-7 text-[10px]" : "mt-1 min-h-12 text-xl"} block font-display font-semibold leading-tight text-burgundy`}>{product.name}</Link>
         <p className={`${compact ? "mt-1 text-[10px]" : "mt-2"} font-bold text-gold`}>{money(product.price)}</p>
-        <a href={websiteWhatsappLink(content.whatsappNumber, message)} target="_blank" rel="noreferrer" className={`${compact ? "hidden" : "mt-4 flex h-11 text-sm"} items-center justify-center gap-1.5 rounded-lg bg-gold font-bold text-burgundy`}>
-          <MessageCircle size={17} />Order
-        </a>
+        {!compact && <div className="mt-3 space-y-1 text-[11px] text-black/50"><p className="truncate"><strong className="text-black/65">Sizes:</strong> {product.sizes.join(", ") || "Ask RoseDen"}</p><p className="truncate"><strong className="text-black/65">Colors:</strong> {product.colors.join(", ") || "Ask RoseDen"}</p></div>}
+        {!compact && (disabled
+          ? <Link href={`/shop/${product.slug}`} className="mt-4 flex h-11 items-center justify-center rounded-lg border border-burgundy/15 text-sm font-semibold text-burgundy">View details</Link>
+          : <a href={websiteWhatsappLink(content.whatsappNumber, message)} target="_blank" rel="noreferrer" className="mt-4 flex h-11 items-center justify-center gap-1.5 rounded-lg bg-gold text-sm font-bold text-burgundy"><MessageCircle size={17} />Order on WhatsApp</a>)}
       </div>
     </article>
   );
 }
 
-export function ProductGrid({ featuredOnly = false, originalsOnly = false, rail = false, limit }: { featuredOnly?: boolean; originalsOnly?: boolean; rail?: boolean; limit?: number }) {
+export function ProductGrid({
+  featuredOnly = false,
+  originalsOnly = false,
+  rail = false,
+  limit,
+  status = "available",
+}: {
+  featuredOnly?: boolean;
+  originalsOnly?: boolean;
+  rail?: boolean;
+  limit?: number;
+  status?: "available" | "reserved" | "sold" | "all";
+}) {
   const content = useWebsiteContent();
   const { products, loading } = usePublicProducts();
   const visible = useMemo(() => {
-    const filtered = products.filter((product) => (!featuredOnly || product.featured) && (!originalsOnly || product.sourceType === "original"));
+    const filtered = products.filter((product) =>
+      (!featuredOnly || product.featured) &&
+      (!originalsOnly || product.sourceType === "original") &&
+      (status === "all" || product.status === status)
+    );
     return typeof limit === "number" ? filtered.slice(0, limit) : filtered;
-  }, [featuredOnly, limit, originalsOnly, products]);
+  }, [featuredOnly, limit, originalsOnly, products, status]);
 
   if (loading) return <div className="grid grid-cols-2 gap-4">{[1, 2, 3, 4].map((item) => <div key={item} className="aspect-[3/4] animate-pulse rounded-3xl bg-marble/60" />)}</div>;
   if (visible.length === 0) return (
     <div className="marble-surface rounded-3xl border border-white px-6 py-12 text-center shadow-soft">
       <Sparkles className="mx-auto text-gold" />
-      <p className="mt-4 font-display text-2xl text-burgundy">New pieces are being prepared.</p>
-      <p className="mx-auto mt-2 max-w-md text-sm text-black/60">Products appear here after staff opens an inventory item and turns on <strong>Show on website</strong>.</p>
-      <a href={websiteWhatsappLink(content.whatsappNumber, "Hello RoseDen Atelier, please show me your latest available pieces.")} target="_blank" rel="noreferrer" className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-burgundy px-5 text-sm font-semibold text-white">
-        <MessageCircle size={17} />Ask on WhatsApp
-      </a>
+      <p className="mt-4 font-display text-2xl text-burgundy">{status === "sold" ? "No sold pieces in this collection yet." : "New pieces are being prepared."}</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-black/60">{status === "sold" ? "RoseDen Originals that find their new owner will be remembered here." : "Message RoseDen to see the latest pieces before they are published."}</p>
+      {status !== "sold" && <a href={websiteWhatsappLink(content.whatsappNumber, "Hello RoseDen Atelier, please show me your latest available pieces.")} target="_blank" rel="noreferrer" className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-burgundy px-5 text-sm font-semibold text-white"><MessageCircle size={17} />Ask on WhatsApp</a>}
     </div>
   );
 

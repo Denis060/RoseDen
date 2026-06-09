@@ -4,16 +4,12 @@ import { FormEvent, useState } from "react";
 import { AlertTriangle, Eye, EyeOff, History, ImageIcon, Minus, Plus, RotateCcw, Star, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useData } from "@/components/data-provider";
-import { Field, Form, Modal, PageHeader, Select, useModal } from "@/components/ui";
+import { Field, Form, Modal, Select, useModal } from "@/components/ui";
+import { ProductPublisher } from "@/components/product-publisher";
 import { money } from "@/lib/format";
-import { ProductStatus } from "@/lib/types";
-
-const categories = ["dress", "top", "skirt", "shoes", "bag", "accessory", "fabric", "other"];
-const productStatuses: ProductStatus[] = ["available", "cancelled"];
 
 export default function InventoryPage() {
-  const { data, isAdmin, addInventory, restockInventory, adjustInventory, updateInventory, remove } = useData();
-  const modal = useModal();
+  const { data, isAdmin, restockInventory, adjustInventory, updateInventory, remove } = useData();
   const restockModal = useModal();
   const [restockId, setRestockId] = useState("");
   const [query, setQuery] = useState("");
@@ -23,26 +19,6 @@ export default function InventoryPage() {
   const visibleInventory = data.inventory.filter((item) =>
     `${item.name} ${item.category} ${item.color} ${item.size} ${item.supplier}`.toLowerCase().includes(query.toLowerCase())
   );
-
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const f = new FormData(event.currentTarget);
-    setSaving(true);
-    setFormError("");
-    try {
-      await addInventory({
-        name: String(f.get("name")), category: String(f.get("category")), costPrice: Number(f.get("costPrice")), sellingPrice: Number(f.get("sellingPrice")),
-        quantity: Number(f.get("quantity")), supplier: String(f.get("supplier")), lowStockAt: Number(f.get("lowStockAt")), status: String(f.get("status")) as ProductStatus,
-        size: String(f.get("size")), color: String(f.get("color")), supplierPhotoUrl: String(f.get("supplierPhotoUrl")), shopPhotoUrl: String(f.get("shopPhotoUrl")),
-        tryOnUrl: String(f.get("tryOnUrl")), batchId: String(f.get("batchId")) || undefined
-      });
-      modal.hide();
-    } catch (cause) {
-      setFormError(cause instanceof Error ? cause.message : "Could not add this product.");
-    } finally {
-      setSaving(false);
-    }
-  }
 
   async function submitRestock(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -96,7 +72,7 @@ export default function InventoryPage() {
 
   return (
     <div>
-      <PageHeader title="Inventory" subtitle={isAdmin ? `${data.inventory.length} products • ${money(value)} at cost` : `${data.inventory.length} products available to sell`} action={isAdmin ? modal.show : undefined} />
+      <div className="mb-6 flex items-start justify-between gap-4"><div><h1 className="font-display text-3xl font-semibold text-wine">Inventory</h1><p className="mt-1 text-sm text-black/55">{isAdmin ? `${data.inventory.length} products · ${money(value)} at cost` : `${data.inventory.length} products available to sell`}</p></div>{isAdmin && <ProductPublisher />}</div>
       <div className="mb-5 flex items-center rounded-2xl border border-black/10 bg-white px-4"><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Find a product to view or restock" className="h-12 min-w-0 flex-1 bg-transparent outline-none" />{query && <button onClick={() => setQuery("")} className="text-xs font-semibold text-burgundy">Clear</button>}</div>
       <div className="space-y-3">
         {visibleInventory.map((item) => {
@@ -131,7 +107,6 @@ export default function InventoryPage() {
           );
         })}
       </div>
-      {modal.open && <Modal title="Add photo-first product" onClose={modal.hide}><Form onSubmit={submit} submitLabel={saving ? "Saving product..." : "Add to inventory"} submitDisabled={saving}><Field name="shopPhotoUrl" label="Actual in-shop photo URL" type="url" /><Field name="supplierPhotoUrl" label="Supplier / model photo URL" type="url" /><Field name="tryOnUrl" label="Rosannah try-on photo/video link" type="url" /><Field name="name" label="Product name" required /><div className="grid grid-cols-2 gap-3"><Select name="category" label="Category">{categories.map((category) => <option key={category}>{category}</option>)}</Select><Select name="status" label="Status"><option value="available">Active</option><option value="cancelled">Inactive</option></Select><Field name="color" label="Color" /><Field name="size" label="Size" /></div><div className="grid grid-cols-2 gap-3"><Field name="costPrice" label="Cost price (NLe)" type="number" required /><Field name="sellingPrice" label="Selling price" type="number" required /><Field name="quantity" label="Quantity" type="number" defaultValue="1" required /><Field name="lowStockAt" label="Low stock alert" type="number" defaultValue="2" required /></div><Field name="supplier" label="Supplier / source" /><Select name="batchId" label="Buying / post batch"><option value="">No batch</option>{data.batches.map((batch) => <option key={batch.id} value={batch.id}>{batch.name}</option>)}</Select>{formError && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{formError}</p>}</Form></Modal>}
       {restockModal.open && restockItem && <Modal title={`Restock ${restockItem.name}`} onClose={restockModal.hide}><Form onSubmit={submitRestock} submitLabel={saving ? "Saving stock..." : "Add stock"} submitDisabled={saving}><div className="rounded-xl bg-gold/10 p-3 text-sm"><strong>{restockItem.quantity} currently available</strong><p className="mt-1 text-xs text-black/50">{restockItem.color} • {restockItem.size} • selling at {money(restockItem.sellingPrice)}</p></div><div className="grid grid-cols-2 gap-3"><Field name="quantity" label="Quantity received" type="number" min="1" defaultValue="1" required /><Field name="unitCost" label="New unit cost (NLe)" type="number" defaultValue={restockItem.costPrice} required /></div><Field name="supplier" label="Supplier / source" defaultValue={restockItem.supplier} /><Select name="batchId" label="Buying / post batch" defaultValue={restockItem.batchId || ""}><option value="">No batch</option>{data.batches.map((batch) => <option key={batch.id} value={batch.id}>{batch.name}</option>)}</Select><Field name="notes" label="Restock notes" placeholder="New color mix, buying trip details…" />{formError && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{formError}</p>}</Form></Modal>}
     </div>
   );

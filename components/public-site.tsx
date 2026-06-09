@@ -82,5 +82,5 @@ export function PublicFooter() {
 }
 
 export function PublicShell({ children }: { children: React.ReactNode }) {
-  return <div className="min-h-screen bg-cream text-ink"><PublicHeader />{children}<PublicFooter /></div>;
+  return <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-cream text-ink"><PublicHeader />{children}<PublicFooter /></div>;
 }

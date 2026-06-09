@@ -231,3 +231,22 @@ Before launch, add the production `/update-password` URL to the allowed
 Supabase Authentication redirect URLs. Admins should download a backup monthly
 and test login, order, payment, inventory, expense, receipt, and website flows
 on Rosannah's actual phone.
+
+## Phase 6A product merchandising
+
+Run `supabase/migrations/012_product_merchandising.sql` once. It allows public
+visitors to see published products marked available, reserved, or sold while
+keeping costs, suppliers, buying trips, and stock history private.
+
+Phase 6A adds:
+
+- one mobile **Add & publish product** workflow with up to three phone photos
+- automatic product web codes and an exact customer-card preview
+- publish-now or save-private choices
+- real published inventory only; sample products no longer appear as stock
+- shop search and category, size, color, and availability filters
+- clearer product cards with sizes, colors, collection, and status
+- an interactive product gallery with size and color selection
+- WhatsApp messages containing the customer's selected product options
+- reserved and sold product presentation
+- a sold archive for one-of-one RoseDen Originals
