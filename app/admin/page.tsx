@@ -7,7 +7,11 @@ import { IconBox } from "@/components/icons";
 import { money, shortDate } from "@/lib/format";
 
 export default function Dashboard() {
-  const { data, isAdmin } = useData();
+  const { data, isAdmin, userName } = useData();
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const displayName = userName || "there";
+  const initial = displayName === "there" ? "R" : displayName.charAt(0).toUpperCase();
   const today = new Date().toISOString().slice(0, 10);
   const month = today.slice(0, 7);
   const valid = data.orders.filter((o) => o.status !== "cancelled");
@@ -31,7 +35,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      <div className="mb-6 flex min-w-0 items-end justify-between gap-3"><div className="min-w-0"><p className="text-sm text-black/50">Good morning, Rosannah</p><h1 className="mt-1 font-display text-[1.7rem] font-semibold leading-tight text-wine sm:text-3xl">Here’s your atelier today.</h1></div><div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-burgundy font-display text-lg font-bold text-white">R</div></div>
+      <div className="mb-6 flex min-w-0 items-end justify-between gap-3"><div className="min-w-0"><p className="text-sm text-black/50">{greeting}, {displayName}</p><h1 className="mt-1 font-display text-[1.7rem] font-semibold leading-tight text-wine sm:text-3xl">Here’s your atelier today.</h1></div><div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-burgundy font-display text-lg font-bold text-white">{initial}</div></div>
       <div className="mb-7 grid gap-3 sm:grid-cols-2">
         <Link href="/admin/orders?status=1" className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-burgundy px-5 font-semibold text-white shadow-soft"><Megaphone size={20} /> Record status/social order</Link>
         <Link href="/admin/orders?new=1" className="flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-burgundy/20 bg-white px-5 font-semibold text-burgundy"><Plus size={20} /> Regular sale or order</Link>

@@ -17,7 +17,7 @@ const nav = [
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { userEmail, isAdmin, signOut, connectionError } = useData();
+  const { userEmail, userName, userRole, isAdmin, signOut, connectionError } = useData();
 
   async function handleSignOut() {
     await signOut();
@@ -29,6 +29,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="admin-print-hidden sticky top-0 z-30 border-b border-burgundy/10 bg-cream/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <Link href="/admin" className="leading-none"><span className="font-display text-xl font-bold text-burgundy">RoseDen Atelier</span><span className="mt-1 block text-[9px] uppercase tracking-[0.22em] text-gold">Tailored · Curated · Original</span></Link>
+          {userEmail && <div className="min-w-0 sm:ml-auto sm:text-right">
+            <p className="truncate text-xs font-semibold text-wine">{userName || userEmail}</p>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-gold">{userRole || "staff"}</p>
+          </div>}
           <div className={`grid w-full gap-2 sm:flex sm:w-auto sm:items-center ${isAdmin ? "grid-cols-3" : "grid-cols-1"}`}>
             {isAdmin && <Link href="/admin/reports" className="rounded-full border border-burgundy/15 bg-white px-3 py-2 text-center text-xs font-semibold text-burgundy">Reports</Link>}
             {isAdmin && <Link href="/admin/staff" className="hidden rounded-full border border-burgundy/15 bg-white px-3 py-2 text-xs font-semibold text-burgundy sm:block">Staff</Link>}

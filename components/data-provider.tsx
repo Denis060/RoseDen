@@ -11,6 +11,7 @@ type Store = {
   loading: boolean;
   mode: "demo" | "supabase";
   userEmail: string | null;
+  userName: string | null;
   userRole: "admin" | "staff" | null;
   roleLoading: boolean;
   isAdmin: boolean;
@@ -172,6 +173,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<"admin" | "staff" | null>(null);
   const [roleLoading, setRoleLoading] = useState(hasSupabaseConfig);
   const [connectionError, setConnectionError] = useState<string | null>(null);
@@ -184,6 +186,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     async function loadRole() {
       if (!supabase || !user) {
         if (active) {
+          setUserName(hasSupabaseConfig ? null : "RoseDen");
           setUserRole(hasSupabaseConfig ? null : "admin");
           setRoleLoading(false);
         }
@@ -192,10 +195,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setRoleLoading(true);
       const { data: profile, error } = await supabase
         .from("profiles")
-        .select("role")
+        .select("full_name,role")
         .eq("id", user.id)
         .single();
       if (active) {
+        const metadataName = String(user.user_metadata?.full_name || "").trim();
+        const emailName = user.email?.split("@")[0] || "";
+        setUserName(error ? metadataName || emailName : profile.full_name?.trim() || metadataName || emailName);
         setUserRole(error ? null : profile.role);
         setRoleLoading(false);
       }
@@ -458,6 +464,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     loading,
     mode: useSupabase ? "supabase" : "demo",
     userEmail: user?.email || null,
+    userName,
     userRole,
     roleLoading,
     isAdmin,
@@ -466,6 +473,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     signOut: async () => {
       await supabase?.auth.signOut();
       setUser(null);
+      setUserName(null);
       setUserRole(null);
       setData(hasSupabaseConfig ? emptyData : seedData);
     },
@@ -874,7 +882,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }
       setData((d) => ({ ...d, [collection]: d[collection].filter((item) => item.id !== itemId) }));
     },
-  }), [connectionError, data, isAdmin, loading, refresh, roleLoading, useSupabase, user, userRole]);
+  }), [connectionError, data, isAdmin, loading, refresh, roleLoading, useSupabase, user, userName, userRole]);
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 }
