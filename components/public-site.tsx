@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Instagram, Menu, MessageCircle, ShoppingBag } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useWebsiteContent, websiteWhatsappLink } from "@/components/website-content";
 
 export const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "";
@@ -13,20 +15,45 @@ export function whatsappLink(message: string) {
 
 export function PublicHeader() {
   const content = useWebsiteContent();
+  const pathname = usePathname();
+  const menuRef = useRef<HTMLDetailsElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const links = [
+    ["/shop", "Shop"],
+    ["/originals", "Originals"],
+    ["/tailoring", "Tailoring"],
+    ["/about", "About"],
+    ["/contact", "Contact"],
+  ] as const;
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  function isActive(href: string) {
+    return pathname === href || pathname.startsWith(`${href}/`);
+  }
+
   return (
     <header className="sticky top-0 z-40 border-b border-burgundy/10 bg-white/95 text-ink backdrop-blur">
-      <div className="h-1.5 stripe-accent" />
+      <div className="h-1 brand-divider" />
       <div className="relative mx-auto flex h-[64px] max-w-6xl items-center justify-between px-4 sm:h-[72px] sm:px-6">
-        <details className="group relative md:hidden">
-          <summary className="grid h-10 w-10 cursor-pointer list-none place-items-center text-ink" aria-label="Open menu">
+        <details ref={menuRef} open={menuOpen} onToggle={(event) => setMenuOpen(event.currentTarget.open)} className="group relative md:hidden">
+          <summary className="grid h-10 w-10 cursor-pointer list-none place-items-center rounded-full text-ink transition hover:bg-cream" aria-label={menuOpen ? "Close menu" : "Open menu"}>
             <Menu size={24} />
           </summary>
           <nav className="absolute left-0 top-12 z-50 w-44 rounded-2xl border border-burgundy/10 bg-white p-2 text-sm font-semibold shadow-soft">
-            <Link href="/shop" className="block rounded-xl px-3 py-2.5 hover:bg-cream">Shop</Link>
-            <Link href="/originals" className="block rounded-xl px-3 py-2.5 hover:bg-cream">Originals</Link>
-            <Link href="/tailoring" className="block rounded-xl px-3 py-2.5 hover:bg-cream">Tailoring</Link>
-            <Link href="/about" className="block rounded-xl px-3 py-2.5 hover:bg-cream">About</Link>
-            <Link href="/contact" className="block rounded-xl px-3 py-2.5 hover:bg-cream">Contact</Link>
+            {links.map(([href, label]) => (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setMenuOpen(false)}
+                aria-current={isActive(href) ? "page" : undefined}
+                className={`block rounded-xl px-3 py-2.5 transition ${isActive(href) ? "bg-burgundy text-white" : "hover:bg-cream"}`}
+              >
+                {label}
+              </Link>
+            ))}
           </nav>
         </details>
         <Link href="/" className="absolute left-1/2 -translate-x-1/2 text-center leading-none md:static md:translate-x-0 md:text-left">
@@ -34,11 +61,11 @@ export function PublicHeader() {
           <span className="mt-1 block text-[9px] uppercase tracking-[0.32em] text-gold">Atelier</span>
         </Link>
         <nav className="hidden items-center gap-6 text-sm font-semibold md:flex">
-          <Link href="/shop">Shop</Link>
-          <Link href="/originals">Originals</Link>
-          <Link href="/tailoring">Tailoring</Link>
-          <Link href="/about">About</Link>
-          <Link href="/contact">Contact</Link>
+          {links.map(([href, label]) => (
+            <Link key={href} href={href} aria-current={isActive(href) ? "page" : undefined} className={isActive(href) ? "text-burgundy underline decoration-gold decoration-2 underline-offset-8" : "transition hover:text-burgundy"}>
+              {label}
+            </Link>
+          ))}
         </nav>
         <div className="flex items-center gap-2">
           <a href={websiteWhatsappLink(content.whatsappNumber, "Hello RoseDen Atelier, I would like to make an inquiry.")} target="_blank" rel="noreferrer" className="hidden h-11 w-11 place-items-center rounded-full bg-gold text-burgundy sm:grid" aria-label="WhatsApp RoseDen">
