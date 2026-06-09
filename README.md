@@ -268,3 +268,14 @@ Run `supabase/migrations/014_customer_phone_identity.sql` after migration 013.
 It makes the final eight phone digits the unique customer identity. New order
 customers are saved automatically, existing phone numbers reuse the existing
 customer, and duplicate phone records are prevented.
+
+## Phase 6C customer engagement
+
+Run `supabase/migrations/015_customer_engagement.sql` once.
+
+- The Follow-ups workspace groups overdue orders, ready orders, outstanding
+  balances, recent deliveries needing reviews, and upcoming birthdays.
+- RoseDen prepares editable WhatsApp messages with customer and order details.
+- Staff must review the message and approve sending inside WhatsApp.
+- Opening WhatsApp records a follow-up entry on the order and customer profile.
+- Birthdays are optional and can be added from customer create/edit forms.

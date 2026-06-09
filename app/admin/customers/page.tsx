@@ -26,6 +26,7 @@ export default function CustomersPage() {
         phone: String(form.get("phone")),
         address: String(form.get("address")),
         notes: String(form.get("notes")),
+        birthday: String(form.get("birthday")) || undefined,
         measurements: {
           bust: Number(form.get("bust")),
           waist: Number(form.get("waist")),
@@ -64,7 +65,7 @@ export default function CustomersPage() {
           );
         })}
       </div>
-      {modal.open && <Modal title="Add customer" onClose={modal.hide}><Form onSubmit={submit} submitLabel={saving ? "Saving customer..." : "Save customer"} submitDisabled={saving}><Field name="name" label="Full name" required /><Field name="phone" label="Phone / WhatsApp" required /><Field name="address" label="Address / location" /><Field name="notes" label="Notes" /><div className="grid grid-cols-2 gap-3"><Field name="bust" label="Bust (inches)" type="number" step="0.1" /><Field name="waist" label="Waist" type="number" step="0.1" /><Field name="hips" label="Hips" type="number" step="0.1" /><Field name="shoulder" label="Shoulder" type="number" step="0.1" /><Field name="height" label="Height" type="number" step="0.1" /></div>{error && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{error}</p>}</Form></Modal>}
+      {modal.open && <Modal title="Add customer" onClose={modal.hide}><Form onSubmit={submit} submitLabel={saving ? "Saving customer..." : "Save customer"} submitDisabled={saving}><Field name="name" label="Full name" required /><Field name="phone" label="Phone / WhatsApp" required /><Field name="address" label="Address / location" /><Field name="birthday" label="Birthday (optional)" type="date" /><Field name="notes" label="Notes" /><div className="grid grid-cols-2 gap-3"><Field name="bust" label="Bust (inches)" type="number" step="0.1" /><Field name="waist" label="Waist" type="number" step="0.1" /><Field name="hips" label="Hips" type="number" step="0.1" /><Field name="shoulder" label="Shoulder" type="number" step="0.1" /><Field name="height" label="Height" type="number" step="0.1" /></div>{error && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{error}</p>}</Form></Modal>}
     </div>
   );
 }

@@ -90,6 +90,7 @@ function mapCustomer(row: any, measurements: any[]): Customer {
     phone: row.phone,
     address: row.address || "",
     notes: row.notes || "",
+    birthday: row.birthday || undefined,
     measurements: measurement ? {
       bust: Number(measurement.bust || 0),
       waist: Number(measurement.waist || 0),
@@ -507,6 +508,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           phone: item.phone,
           address: item.address,
           notes: item.notes,
+          birthday: item.birthday || null,
           created_by: user?.id,
         }).select("id").single();
         if (error?.code === "23505") throw new Error("This phone number already belongs to another customer.");
@@ -524,6 +526,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           phone: item.phone,
           address: item.address,
           notes: item.notes,
+          birthday: item.birthday || null,
         }).eq("id", customerId);
         if (error) throw error;
         await insertMeasurement(customerId, item.measurements);

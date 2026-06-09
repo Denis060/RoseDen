@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Activity, ArrowRight, Banknote, CircleDollarSign, Clock3, Megaphone, PackageSearch, Plus, Settings2, Sparkles, TrendingUp } from "lucide-react";
+import { Activity, ArrowRight, Banknote, CircleDollarSign, Clock3, HeartHandshake, Megaphone, PackageSearch, Plus, Settings2, Sparkles, TrendingUp } from "lucide-react";
 import { useData } from "@/components/data-provider";
 import { IconBox } from "@/components/icons";
 import { money, shortDate } from "@/lib/format";
@@ -40,6 +40,10 @@ export default function Dashboard() {
         <Link href="/admin/orders?status=1" className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-burgundy px-5 font-semibold text-white shadow-soft"><Megaphone size={20} /> Record status/social order</Link>
         <Link href="/admin/orders?new=1" className="flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-burgundy/20 bg-white px-5 font-semibold text-burgundy"><Plus size={20} /> Regular sale or order</Link>
       </div>
+      <Link href="/admin/follow-ups" className="mb-7 flex items-center justify-between rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+        <div className="flex items-center gap-3"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-emerald-600 text-white"><HeartHandshake size={22} /></span><div><p className="font-display text-lg font-semibold text-wine">Customer Follow-ups</p><p className="mt-0.5 text-xs text-black/50">Balances, ready orders, reviews, and birthdays.</p></div></div>
+        <ArrowRight className="shrink-0 text-emerald-700" size={20} />
+      </Link>
       {isAdmin && <Link href="/admin/website" className="mb-7 flex items-center justify-between rounded-2xl border border-gold/30 bg-white p-4 shadow-soft">
         <div className="flex items-center gap-3">
           <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gold text-burgundy"><Settings2 size={22} /></span>

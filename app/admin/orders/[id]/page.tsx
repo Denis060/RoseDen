@@ -5,8 +5,11 @@ import { FormEvent, useState } from "react";
 import { ArrowLeft, CalendarDays, CreditCard, MapPin, Package, Pencil, Phone, ReceiptText, UserRound } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useData } from "@/components/data-provider";
+import { FollowUpHistory } from "@/components/follow-up-history";
+import { WhatsAppFollowUp } from "@/components/whatsapp-follow-up";
 import { Empty, Field, Form, Modal, Select, useModal } from "@/components/ui";
 import { money, shortDate } from "@/lib/format";
+import { FollowUpType } from "@/lib/customer-engagement";
 import { OrderStatus, OrderType, SalesChannel } from "@/lib/types";
 
 const statuses: OrderStatus[] = ["pending", "in progress", "ready", "delivered", "cancelled"];
@@ -18,6 +21,7 @@ export default function OrderDetailPage() {
   const editModal = useModal();
   const paymentModal = useModal();
   const [error, setError] = useState("");
+  const [historyKey, setHistoryKey] = useState(0);
   const order = data.orders.find((entry) => entry.id === params.id);
 
   if (!order) {
@@ -27,6 +31,15 @@ export default function OrderDetailPage() {
   const customer = data.customers.find((entry) => entry.id === order.customerId);
   const product = data.inventory.find((entry) => entry.id === order.inventoryId);
   const balance = Math.max(0, order.total - order.paid);
+  const suggestedFollowUp: FollowUpType = order.status === "ready"
+    ? "order_ready"
+    : order.status === "delivered"
+      ? "review"
+      : order.dueDate < new Date().toISOString().slice(0, 10)
+        ? "overdue"
+        : balance > 0
+          ? "balance"
+          : "general";
 
   async function submitEdit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -89,6 +102,7 @@ export default function OrderDetailPage() {
           <div><p className="text-xs text-black/45">Balance</p><p className="mt-1 font-bold text-burgundy">{money(balance)}</p></div>
         </div>
         {balance > 0 && <button onClick={paymentModal.show} className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gold font-semibold text-wine"><CreditCard size={18} />Add payment</button>}
+        {customer && <WhatsAppFollowUp customer={customer} order={order} type={suggestedFollowUp} label="Message customer on WhatsApp" onLogged={() => setHistoryKey((value) => value + 1)} className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 font-semibold text-white" />}
         <Link href={`/admin/orders/${order.id}/receipt`} className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-burgundy/15 font-semibold text-burgundy"><ReceiptText size={18} />View receipt</Link>
       </section>
 
@@ -109,6 +123,8 @@ export default function OrderDetailPage() {
           {order.payments.map((payment) => <div key={payment.id} className="flex items-center justify-between rounded-xl bg-cream p-3"><div><p className="text-sm font-semibold capitalize">{payment.method}</p><p className="text-xs text-black/45">{shortDate(payment.paidAt)}{payment.notes ? ` - ${payment.notes}` : ""}</p></div><p className="font-bold text-emerald-700">{money(payment.amount)}</p></div>)}
         </div>
       </section>
+
+      {customer && <section className="rounded-2xl bg-white p-4 shadow-soft"><h2 className="font-display text-xl font-semibold text-wine">Follow-up history</h2><div className="mt-3"><FollowUpHistory orderId={order.id} refreshKey={historyKey} /></div></section>}
 
       {editModal.open && <Modal title="Edit order" onClose={editModal.hide}><Form onSubmit={submitEdit} submitLabel="Save changes">
         <Select name="customerId" label="Customer" defaultValue={order.customerId}><option value="">Walk-in customer</option>{data.customers.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}</option>)}</Select>

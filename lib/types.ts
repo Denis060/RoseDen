@@ -4,6 +4,7 @@ export type Customer = {
   phone: string;
   address: string;
   notes: string;
+  birthday?: string;
   measurements?: { bust: number; waist: number; hips: number; shoulder: number; height: number };
 };
 
