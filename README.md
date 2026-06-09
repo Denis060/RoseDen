@@ -182,6 +182,10 @@ Supabase SQL Editor. It is safe to rerun.
 Run `supabase/migrations/011_staff_roles_and_permissions.sql` once in the
 Supabase SQL Editor. It is safe to rerun.
 
+If the SQL Editor reports an unterminated dollar-quoted string, run the five
+smaller files in `supabase/phase4b_steps` in number order, then run
+`supabase/verify_phase4b.sql`.
+
 To add staff:
 
 1. Create the person's email and temporary password in Supabase
