@@ -51,7 +51,7 @@ export function ProductShareButton({ product, className }: Props) {
   return (
     <div>
       <button type="button" onClick={share} className={className || "flex h-12 w-full items-center justify-center gap-2 rounded-full border border-burgundy/15 bg-white font-semibold text-burgundy"}>
-        <Share2 size={18} />Share this product
+        <Share2 size={18} />Share product with photo
       </button>
       {message && <p className="mt-2 flex items-center justify-center gap-1 text-xs text-emerald-700"><Check size={13} />{message}</p>}
     </div>

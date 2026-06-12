@@ -10,7 +10,7 @@ export async function prepareProductImage(file: File) {
       nextImage.onerror = () => reject(new Error("This phone image format could not be prepared. Try JPEG, PNG, or WebP."));
       nextImage.src = localUrl;
     });
-    const maxSide = 1200;
+    const maxSide = 1000;
     const scale = Math.min(1, maxSide / Math.max(image.naturalWidth, image.naturalHeight));
     const canvas = document.createElement("canvas");
     canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
@@ -18,7 +18,7 @@ export async function prepareProductImage(file: File) {
     const context = canvas.getContext("2d");
     if (!context) throw new Error("This browser could not prepare the photo.");
     context.drawImage(image, 0, 0, canvas.width, canvas.height);
-    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.72));
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.68));
     if (!blob) throw new Error("This browser could not resize the photo.");
     return new File([blob], `roseden-${Date.now()}.jpg`, { type: "image/jpeg" });
   } finally {

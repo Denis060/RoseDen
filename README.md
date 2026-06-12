@@ -328,3 +328,16 @@ sizes and common colors. Staff can also add a custom size or color. An optional
 public TikTok, Instagram, YouTube, Facebook, or direct video link appears as
 **Watch product video** on the published product page and is included in the
 prepared sharing caption.
+
+## WhatsApp previews and low-data phones
+
+Product order messages now contain one clean product link. Each product page
+publishes its product name, description, and main photo as social preview
+metadata so WhatsApp can show a rich preview when its preview service is
+available. WhatsApp does not allow a website order link to force-attach a photo;
+use **Share product with photo** when the actual image file must accompany the
+message.
+
+New uploads are resized to 1000 pixels and compressed before storage. Public
+product cards and galleries request smaller image qualities and cache optimized
+images for at least one day to reduce repeat data use on slower connections.

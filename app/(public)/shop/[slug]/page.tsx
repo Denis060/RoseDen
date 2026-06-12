@@ -38,11 +38,11 @@ export default function ProductDetailPage() {
       <div className="mt-5 grid gap-8 md:grid-cols-2">
         <div>
           <div className="relative grid aspect-[4/5] place-items-center overflow-hidden rounded-[28px] bg-marble/45 shadow-soft">
-            {activeImage ? <Image src={activeImage} alt={product.name} fill sizes="(max-width: 768px) 100vw, 50vw" priority className="object-cover" /> : <ImageIcon size={56} className="text-burgundy/20" />}
+            {activeImage ? <Image src={activeImage} alt={product.name} fill quality={65} sizes="(max-width: 768px) 100vw, 50vw" priority className="object-cover" /> : <ImageIcon size={56} className="text-burgundy/20" />}
             <span className={`absolute left-3 top-3 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase shadow ${product.status === "available" ? "bg-white text-emerald-700" : product.status === "reserved" ? "bg-gold text-burgundy" : "bg-black text-white"}`}>{product.status}</span>
             {product.sourceType === "original" && <span className="absolute right-3 top-3 rounded-full bg-burgundy px-3 py-1.5 text-[10px] font-bold uppercase text-white">One-of-one</span>}
           </div>
-          {product.images.length > 1 && <div className="mt-3 grid grid-cols-3 gap-2">{product.images.slice(0, 3).map((image, index) => <button key={image} onClick={() => setActiveImage(image)} className={`relative aspect-square overflow-hidden rounded-xl border-2 ${activeImage === image ? "border-gold" : "border-transparent"}`}><Image src={image} alt={`${product.name} view ${index + 1}`} fill sizes="30vw" className="object-cover" /></button>)}</div>}
+          {product.images.length > 1 && <div className="mt-3 grid grid-cols-3 gap-2">{product.images.slice(0, 3).map((image, index) => <button key={image} onClick={() => setActiveImage(image)} className={`relative aspect-square overflow-hidden rounded-xl border-2 ${activeImage === image ? "border-gold" : "border-transparent"}`}><Image src={image} alt={`${product.name} view ${index + 1}`} fill quality={45} sizes="30vw" className="object-cover" /></button>)}</div>}
         </div>
 
         <div className="md:py-6">
@@ -71,6 +71,7 @@ export default function ProductDetailPage() {
           ><MessageCircle size={19} />Order selected piece on WhatsApp</TrackedWhatsAppLink> : <a href={websiteWhatsappLink(content.whatsappNumber, `Hello RoseDen Atelier, I saw ${product.name}, but it is ${product.status}. Please show me something similar.`)} target="_blank" rel="noreferrer" className="mt-7 flex h-14 items-center justify-center gap-2 rounded-full bg-gold font-bold text-burgundy"><Sparkles size={19} />Ask for something similar</a>}
 
           <ProductShareButton product={product} className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-full border border-burgundy/15 bg-white font-semibold text-burgundy" />
+          <p className="mt-2 text-center text-[11px] leading-5 text-black/45">WhatsApp controls link previews. Use Share product with photo when you want the actual image attached.</p>
 
           <div className="mt-5 flex gap-3 rounded-2xl border border-gold/20 bg-white p-4 text-xs leading-5 text-black/55"><ShieldCheck className="shrink-0 text-gold" size={20} /><p>Confirm availability, delivery or pickup, and payment directly with RoseDen on WhatsApp.</p></div>
         </div>

@@ -31,7 +31,6 @@ export type PublicProduct = {
 export function productOrderMessage(product: PublicProduct, size = "", color = "") {
   const siteOrigin = typeof window === "undefined" ? "https://roseden-os.vercel.app" : window.location.origin;
   const productUrl = `${siteOrigin}/shop/${product.slug}`;
-  const imageUrl = product.image ? new URL(product.image, siteOrigin).toString() : "";
   return `Hello RoseDen Atelier, I am interested in this item:
 
 Product: ${product.name}
@@ -40,7 +39,7 @@ Size: ${size || product.sizes.join(", ") || "Please advise"}
 Color: ${color || product.colors.join(", ") || "Please advise"}
 Price: ${money(product.price)}
 
-View product: ${productUrl}${imageUrl ? `\nProduct image: ${imageUrl}` : ""}
+View product and photo: ${productUrl}
 
 Is it still available?`;
 }
@@ -115,7 +114,7 @@ export function ProductCard({ product, compact = false }: { product: PublicProdu
   return (
     <article className={`group w-full min-w-0 max-w-full overflow-hidden border border-gold/35 bg-white shadow-soft ${compact ? "rounded-lg" : "rounded-[22px]"}`}>
       <Link href={`/shop/${product.slug}`} className="relative grid aspect-[4/5] place-items-center overflow-hidden bg-marble/45">
-        {product.image ? <Image src={product.image} alt={product.name} fill sizes={compact ? "(max-width: 640px) 25vw, 220px" : "(max-width: 768px) 50vw, 280px"} className={`object-cover transition duration-500 group-hover:scale-105 ${product.status === "sold" ? "grayscale-[35%]" : ""}`} /> : <ImageIcon size={42} className="text-burgundy/20" />}
+        {product.image ? <Image src={product.image} alt={product.name} fill quality={compact ? 45 : 55} sizes={compact ? "(max-width: 640px) 25vw, 220px" : "(max-width: 768px) 50vw, 280px"} className={`object-cover transition duration-500 group-hover:scale-105 ${product.status === "sold" ? "grayscale-[35%]" : ""}`} /> : <ImageIcon size={42} className="text-burgundy/20" />}
         <span className={`absolute left-2 top-2 rounded-full px-2 py-1 text-[8px] font-bold uppercase shadow-sm ${statusStyle(product.status)}`}>{product.status}</span>
         {product.sourceType === "original" && <span className="absolute right-2 top-2 rounded-full bg-burgundy px-2 py-1 text-[8px] font-bold uppercase text-white">One-of-one</span>}
       </Link>
