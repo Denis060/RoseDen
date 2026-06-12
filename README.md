@@ -317,3 +317,14 @@ the selected channels to Marketing.
 Customers can also open a product and tap **Share this product**. Sharing uses
 the phone's supported apps and always requires the person to confirm the final
 post or message.
+
+## Easier product options and video
+
+Run `supabase/migrations/017_public_product_video.sql` once. It is safe to
+rerun.
+
+Product add and edit forms now use large tap-to-select choices for standard
+sizes and common colors. Staff can also add a custom size or color. An optional
+public TikTok, Instagram, YouTube, Facebook, or direct video link appears as
+**Watch product video** on the published product page and is included in the
+prepared sharing caption.

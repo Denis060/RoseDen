@@ -15,6 +15,7 @@ type Props = {
     slug: string;
     description: string;
     image: string;
+    tryOnUrl?: string;
   };
   className?: string;
 };
@@ -36,7 +37,7 @@ export function ProductShareButton({ product, className }: Props) {
     try {
       const result = await shareProduct({
         title: `${product.name} | RoseDen Atelier`,
-        text: productShareCaption(product, origin),
+        text: productShareCaption({ ...product, videoUrl: product.tryOnUrl }, origin),
         url: `${origin}/shop/${product.slug}`,
         imageFile,
       });

@@ -27,6 +27,7 @@ export function ProductPostAssistant({ product }: { product: InventoryItem }) {
     price: product.sellingPrice,
     slug: product.slug,
     description: product.publicDescription,
+    videoUrl: product.tryOnUrl,
   }, typeof window === "undefined" ? "" : window.location.origin);
 
   function open() {

@@ -8,6 +8,7 @@ type ProductCopyInput = {
   price?: number;
   slug?: string;
   description?: string;
+  videoUrl?: string;
 };
 
 const categoryNames: Record<string, string> = {
@@ -35,9 +36,9 @@ export function productShareCaption(product: ProductCopyInput, origin = "") {
     product.price ? `Price: ${money(product.price)}` : "",
     product.sizes?.length ? `Sizes: ${product.sizes.join(", ")}` : "",
     product.colors?.length ? `Colors: ${product.colors.join(", ")}` : "",
+    product.videoUrl?.trim() ? `Watch video: ${product.videoUrl.trim()}` : "",
     product.slug && origin ? `View and order: ${origin}/shop/${product.slug}` : "",
     "Message RoseDen to reserve or ask about delivery.",
   ];
   return lines.filter(Boolean).join("\n");
 }
-

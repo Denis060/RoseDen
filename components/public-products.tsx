@@ -25,6 +25,7 @@ export type PublicProduct = {
   featured: boolean;
   quantity: number;
   createdAt: string;
+  tryOnUrl: string;
 };
 
 export function productOrderMessage(product: PublicProduct, size = "", color = "") {
@@ -62,6 +63,7 @@ function mapProduct(row: any): PublicProduct {
     featured: Boolean(row.is_featured),
     quantity: Number(row.quantity || 0),
     createdAt: row.created_at || "",
+    tryOnUrl: row.try_on_url || "",
   };
 }
 
@@ -72,13 +74,26 @@ export function usePublicProducts() {
   useEffect(() => {
     async function load() {
       if (!supabase) return setLoading(false);
-      const { data } = await supabase
+      const videoResult = await supabase
         .from("inventory")
-        .select("id,product_name,slug,category,selling_price,public_description,shop_photo_url,supplier_photo_url,photo_url,product_images,public_status,sizes,colors,source_type,is_featured,quantity,created_at")
+        .select("id,product_name,slug,category,selling_price,public_description,shop_photo_url,supplier_photo_url,photo_url,product_images,public_status,sizes,colors,source_type,is_featured,quantity,created_at,try_on_url")
         .eq("is_public", true)
         .neq("public_status", "hidden")
         .order("created_at", { ascending: false });
-      setProducts((data || []).map(mapProduct));
+      let rows: any[] = videoResult.data || [];
+      let loadError = videoResult.error;
+      if (loadError) {
+        const legacyResult = await supabase
+          .from("inventory")
+          .select("id,product_name,slug,category,selling_price,public_description,shop_photo_url,supplier_photo_url,photo_url,product_images,public_status,sizes,colors,source_type,is_featured,quantity,created_at")
+          .eq("is_public", true)
+          .neq("public_status", "hidden")
+          .order("created_at", { ascending: false });
+        rows = legacyResult.data || [];
+        loadError = legacyResult.error;
+      }
+      if (loadError) console.error("Could not load public products:", loadError.message);
+      setProducts(rows.map(mapProduct));
       setLoading(false);
     }
     load();

@@ -4,6 +4,7 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { Camera, CheckCircle2, Eye, ImageIcon, LoaderCircle, Plus, Sparkles, Upload, WandSparkles } from "lucide-react";
 import { useData } from "@/components/data-provider";
 import { Field, Form, Modal, Select, useModal } from "@/components/ui";
+import { commonColors, ProductOptionsPicker, standardSizes } from "@/components/product-options-picker";
 import { money } from "@/lib/format";
 import { prepareProductImage, productSlug } from "@/lib/product-image";
 import { suggestProductName } from "@/lib/product-copy";
@@ -17,12 +18,12 @@ export function ProductPublisher() {
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
-  const [preview, setPreview] = useState({ name: "", price: "", category: "dress", sizes: "", colors: "" });
+  const [preview, setPreview] = useState({ name: "", price: "", category: "dress", sizes: [] as string[], colors: [] as string[] });
 
   function open() {
     setImages([]);
     setMessage("");
-    setPreview({ name: "", price: "", category: "dress", sizes: "", colors: "" });
+    setPreview({ name: "", price: "", category: "dress", sizes: [], colors: [] });
     modal.show();
   }
 
@@ -51,8 +52,8 @@ export function ProductPublisher() {
     if (uploadingIndex !== null) return setMessage("Please wait for the photo upload to finish.");
     const form = new FormData(event.currentTarget);
     const publish = String(form.get("publish")) === "yes";
-    const sizes = String(form.get("sizes")).split(",").map((value) => value.trim()).filter(Boolean);
-    const colors = String(form.get("colors")).split(",").map((value) => value.trim()).filter(Boolean);
+    const sizes = preview.sizes;
+    const colors = preview.colors;
     const category = String(form.get("category"));
     const name = String(form.get("name")).trim() || suggestProductName(category, colors);
     if (publish && images.length === 0) return setMessage("Add at least one photo before publishing this product.");
@@ -94,8 +95,7 @@ export function ProductPublisher() {
   }
 
   function suggestName() {
-    const colors = preview.colors.split(",").map((value) => value.trim()).filter(Boolean);
-    setPreview((current) => ({ ...current, name: suggestProductName(current.category, colors) }));
+    setPreview((current) => ({ ...current, name: suggestProductName(current.category, current.colors) }));
   }
 
   return (
@@ -123,9 +123,9 @@ export function ProductPublisher() {
               <Select name="sourceType" label="Collection"><option value="ready-made">Ready-made</option><option value="original">RoseDen Original</option><option value="tailoring-sample">Tailoring sample</option></Select>
               <Field name="sellingPrice" label="Selling price (NLe)" type="number" min="0" step="0.01" value={preview.price} onChange={(event) => setPreview((current) => ({ ...current, price: event.target.value }))} required />
               <Field name="quantity" label="Quantity" type="number" min="0" defaultValue="1" required />
-              <Field name="sizes" label="Sizes" placeholder="S, M, L" value={preview.sizes} onChange={(event) => setPreview((current) => ({ ...current, sizes: event.target.value }))} />
-              <Field name="colors" label="Colors" placeholder="Burgundy, Gold" value={preview.colors} onChange={(event) => setPreview((current) => ({ ...current, colors: event.target.value }))} />
             </div>
+            <ProductOptionsPicker label="Available sizes" options={standardSizes} selected={preview.sizes} onChange={(sizes) => setPreview((current) => ({ ...current, sizes }))} customPlaceholder="Add another size, e.g. 42" />
+            <ProductOptionsPicker label="Available colors" options={commonColors} selected={preview.colors} onChange={(colors) => setPreview((current) => ({ ...current, colors }))} customPlaceholder="Add another color" />
             <div className="rounded-2xl border border-gold/25 bg-gold/10 p-3">
               <Field name="name" label="Product name (optional)" placeholder="RoseDen can suggest one" value={preview.name} onChange={(event) => setPreview((current) => ({ ...current, name: event.target.value }))} />
               <button type="button" onClick={suggestName} className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-white text-sm font-semibold text-burgundy"><WandSparkles size={17} />Suggest simple name</button>
@@ -138,14 +138,17 @@ export function ProductPublisher() {
             <div className="grid grid-cols-2 gap-3"><Field name="costPrice" label="Cost price (NLe)" type="number" min="0" step="0.01" required /><Field name="lowStockAt" label="Low stock alert" type="number" min="0" defaultValue="1" required /></div>
             <Field name="supplier" label="Supplier / source" />
             <Select name="batchId" label="Buying trip"><option value="">No buying trip</option>{data.batches.map((batch) => <option key={batch.id} value={batch.id}>{batch.name}</option>)}</Select>
-            <Field name="tryOnUrl" label="Try-on video link (optional)" type="url" />
+            <div>
+              <Field name="tryOnUrl" label="Short product / try-on video link (optional)" type="url" placeholder="TikTok, Instagram, YouTube, Facebook..." />
+              <p className="mt-1 text-xs leading-5 text-black/45">Paste a public video link. Customers can open it from the product page.</p>
+            </div>
           </section>
 
           <section className="rounded-2xl bg-wine p-4 text-white">
             <div className="flex items-center gap-2"><Eye className="text-gold" size={19} /><p className="font-semibold">Customer preview</p></div>
             <div className="mt-3 flex gap-3 rounded-xl bg-white p-3 text-ink">
               <div className="grid h-28 w-24 shrink-0 place-items-center overflow-hidden rounded-lg bg-marble/50">{images[0] ? <img src={images[0]} alt="" className="h-full w-full object-cover" /> : <ImageIcon className="text-burgundy/20" />}</div>
-              <div className="min-w-0"><p className="text-[9px] font-bold uppercase tracking-wider text-gold">{preview.category}</p><p className="mt-1 font-display text-lg font-semibold text-burgundy">{preview.name || suggestProductName(preview.category, preview.colors.split(",").map((value) => value.trim()).filter(Boolean))}</p><p className="mt-2 font-bold text-gold">{money(Number(preview.price || 0))}</p><p className="mt-2 text-[10px] text-black/45">{preview.sizes || "Sizes"} · {preview.colors || "Colors"}</p></div>
+              <div className="min-w-0"><p className="text-[9px] font-bold uppercase tracking-wider text-gold">{preview.category}</p><p className="mt-1 font-display text-lg font-semibold text-burgundy">{preview.name || suggestProductName(preview.category, preview.colors)}</p><p className="mt-2 font-bold text-gold">{money(Number(preview.price || 0))}</p><p className="mt-2 text-[10px] text-black/45">{preview.sizes.join(", ") || "Sizes"} · {preview.colors.join(", ") || "Colors"}</p></div>
             </div>
           </section>
 
