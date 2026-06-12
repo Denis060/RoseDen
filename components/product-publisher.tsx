@@ -1,11 +1,12 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Camera, CheckCircle2, Eye, ImageIcon, LoaderCircle, Plus, Sparkles, Upload } from "lucide-react";
+import { Camera, CheckCircle2, Eye, ImageIcon, LoaderCircle, Plus, Sparkles, Upload, WandSparkles } from "lucide-react";
 import { useData } from "@/components/data-provider";
 import { Field, Form, Modal, Select, useModal } from "@/components/ui";
 import { money } from "@/lib/format";
 import { prepareProductImage, productSlug } from "@/lib/product-image";
+import { suggestProductName } from "@/lib/product-copy";
 
 const categories = ["dress", "top", "skirt", "shoes", "bag", "accessory", "fabric", "other"];
 
@@ -50,9 +51,10 @@ export function ProductPublisher() {
     if (uploadingIndex !== null) return setMessage("Please wait for the photo upload to finish.");
     const form = new FormData(event.currentTarget);
     const publish = String(form.get("publish")) === "yes";
-    const name = String(form.get("name")).trim();
     const sizes = String(form.get("sizes")).split(",").map((value) => value.trim()).filter(Boolean);
     const colors = String(form.get("colors")).split(",").map((value) => value.trim()).filter(Boolean);
+    const category = String(form.get("category"));
+    const name = String(form.get("name")).trim() || suggestProductName(category, colors);
     if (publish && images.length === 0) return setMessage("Add at least one photo before publishing this product.");
 
     setSaving(true);
@@ -60,7 +62,7 @@ export function ProductPublisher() {
     try {
       await addInventory({
         name,
-        category: String(form.get("category")),
+        category,
         costPrice: Number(form.get("costPrice")),
         sellingPrice: Number(form.get("sellingPrice")),
         quantity: Number(form.get("quantity")),
@@ -91,6 +93,11 @@ export function ProductPublisher() {
     }
   }
 
+  function suggestName() {
+    const colors = preview.colors.split(",").map((value) => value.trim()).filter(Boolean);
+    setPreview((current) => ({ ...current, name: suggestProductName(current.category, colors) }));
+  }
+
   return (
     <>
       <button onClick={open} className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-burgundy text-white shadow-soft" aria-label="Add and publish product"><Plus /></button>
@@ -110,8 +117,7 @@ export function ProductPublisher() {
           </section>
 
           <section className="space-y-4 rounded-2xl bg-white p-4">
-            <p className="font-semibold text-wine">2. Customer details</p>
-            <Field name="name" label="Product name" placeholder="Burgundy occasion dress" value={preview.name} onChange={(event) => setPreview((current) => ({ ...current, name: event.target.value }))} required />
+            <div className="flex items-center justify-between gap-3"><div><p className="font-semibold text-wine">2. Simple product details</p><p className="text-xs text-black/45">A suggested name is enough. It does not need to be a brand name.</p></div><WandSparkles className="shrink-0 text-gold" size={20} /></div>
             <div className="grid grid-cols-2 gap-3">
               <Select name="category" label="Category" value={preview.category} onChange={(event) => setPreview((current) => ({ ...current, category: event.target.value }))}>{categories.map((category) => <option key={category}>{category}</option>)}</Select>
               <Select name="sourceType" label="Collection"><option value="ready-made">Ready-made</option><option value="original">RoseDen Original</option><option value="tailoring-sample">Tailoring sample</option></Select>
@@ -119,6 +125,10 @@ export function ProductPublisher() {
               <Field name="quantity" label="Quantity" type="number" min="0" defaultValue="1" required />
               <Field name="sizes" label="Sizes" placeholder="S, M, L" value={preview.sizes} onChange={(event) => setPreview((current) => ({ ...current, sizes: event.target.value }))} />
               <Field name="colors" label="Colors" placeholder="Burgundy, Gold" value={preview.colors} onChange={(event) => setPreview((current) => ({ ...current, colors: event.target.value }))} />
+            </div>
+            <div className="rounded-2xl border border-gold/25 bg-gold/10 p-3">
+              <Field name="name" label="Product name (optional)" placeholder="RoseDen can suggest one" value={preview.name} onChange={(event) => setPreview((current) => ({ ...current, name: event.target.value }))} />
+              <button type="button" onClick={suggestName} className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-white text-sm font-semibold text-burgundy"><WandSparkles size={17} />Suggest simple name</button>
             </div>
             <label className="block text-sm font-medium text-ink">Customer description<textarea name="description" rows={3} placeholder="Describe the fit, fabric, occasion, or special detail." className="mt-1.5 w-full rounded-xl border border-black/10 bg-cream px-3 py-3 outline-none focus:border-gold" /></label>
           </section>
@@ -135,7 +145,7 @@ export function ProductPublisher() {
             <div className="flex items-center gap-2"><Eye className="text-gold" size={19} /><p className="font-semibold">Customer preview</p></div>
             <div className="mt-3 flex gap-3 rounded-xl bg-white p-3 text-ink">
               <div className="grid h-28 w-24 shrink-0 place-items-center overflow-hidden rounded-lg bg-marble/50">{images[0] ? <img src={images[0]} alt="" className="h-full w-full object-cover" /> : <ImageIcon className="text-burgundy/20" />}</div>
-              <div className="min-w-0"><p className="text-[9px] font-bold uppercase tracking-wider text-gold">{preview.category}</p><p className="mt-1 font-display text-lg font-semibold text-burgundy">{preview.name || "Your product name"}</p><p className="mt-2 font-bold text-gold">{money(Number(preview.price || 0))}</p><p className="mt-2 text-[10px] text-black/45">{preview.sizes || "Sizes"} · {preview.colors || "Colors"}</p></div>
+              <div className="min-w-0"><p className="text-[9px] font-bold uppercase tracking-wider text-gold">{preview.category}</p><p className="mt-1 font-display text-lg font-semibold text-burgundy">{preview.name || suggestProductName(preview.category, preview.colors.split(",").map((value) => value.trim()).filter(Boolean))}</p><p className="mt-2 font-bold text-gold">{money(Number(preview.price || 0))}</p><p className="mt-2 text-[10px] text-black/45">{preview.sizes || "Sizes"} · {preview.colors || "Colors"}</p></div>
             </div>
           </section>
 

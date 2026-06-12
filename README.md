@@ -302,3 +302,18 @@ revenue for each channel.
 This phase records marketing performance but does not automatically publish to
 WhatsApp, Facebook, TikTok, or Instagram. Rosannah remains in control of every
 post.
+
+## Phase 8B smart product posting
+
+Product names are optional when adding inventory. Choose a category and color,
+then tap **Suggest simple name**, or leave the name blank and RoseDen creates a
+clear name automatically.
+
+Every inventory product now has **Prepare post**. RoseDen prepares the product
+photo, caption, price, sizes, colors, and website link for the phone share
+sheet. After Rosannah finishes posting, **I posted it - record channels** adds
+the selected channels to Marketing.
+
+Customers can also open a product and tap **Share this product**. Sharing uses
+the phone's supported apps and always requires the person to confirm the final
+post or message.

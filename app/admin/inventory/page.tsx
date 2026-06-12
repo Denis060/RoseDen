@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useData } from "@/components/data-provider";
 import { Field, Form, Modal, Select, useModal } from "@/components/ui";
 import { ProductPublisher } from "@/components/product-publisher";
+import { ProductPostAssistant } from "@/components/product-post-assistant";
 import { ConfirmDelete } from "@/components/confirm-delete";
 import { money } from "@/lib/format";
 
@@ -102,6 +103,7 @@ export default function InventoryPage() {
                 <button onClick={() => setWebsiteVisibility(item, true, !item.isFeatured)} className={`flex h-11 items-center justify-center gap-2 rounded-xl font-semibold ${item.isFeatured ? "bg-gold/20 text-burgundy" : "border border-gold/25 text-burgundy"}`}>
                   <Star size={16} className={item.isFeatured ? "fill-gold text-gold" : ""} />{item.isFeatured ? "Featured" : "Feature"}
                 </button>
+                <div className="col-span-2"><ProductPostAssistant product={item} /></div>
               </div>}
               <Link href={`/admin/inventory/${item.id}`} className="mx-4 mb-4 flex h-11 items-center justify-center rounded-xl border border-burgundy/15 font-semibold text-burgundy">Open product details</Link>
             </article>

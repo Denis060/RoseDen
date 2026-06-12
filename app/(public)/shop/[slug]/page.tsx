@@ -8,6 +8,7 @@ import { ArrowLeft, Check, ImageIcon, MessageCircle, ShieldCheck, Sparkles } fro
 import { money } from "@/lib/format";
 import { productOrderMessage, usePublicProducts } from "@/components/public-products";
 import { TrackedWhatsAppLink } from "@/components/tracked-whatsapp-link";
+import { ProductShareButton } from "@/components/product-share-button";
 import { useWebsiteContent, websiteWhatsappLink } from "@/components/website-content";
 
 export default function ProductDetailPage() {
@@ -63,6 +64,8 @@ export default function ProductDetailPage() {
             inquiry={{ inventoryId: product.id, productName: product.name, productSlug: product.slug, selectedSize: size, selectedColor: color }}
             className="mt-7 flex h-14 items-center justify-center gap-2 rounded-full bg-burgundy font-semibold text-white shadow-soft"
           ><MessageCircle size={19} />Order selected piece on WhatsApp</TrackedWhatsAppLink> : <a href={websiteWhatsappLink(content.whatsappNumber, `Hello RoseDen Atelier, I saw ${product.name}, but it is ${product.status}. Please show me something similar.`)} target="_blank" rel="noreferrer" className="mt-7 flex h-14 items-center justify-center gap-2 rounded-full bg-gold font-bold text-burgundy"><Sparkles size={19} />Ask for something similar</a>}
+
+          <ProductShareButton product={product} className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-full border border-burgundy/15 bg-white font-semibold text-burgundy" />
 
           <div className="mt-5 flex gap-3 rounded-2xl border border-gold/20 bg-white p-4 text-xs leading-5 text-black/55"><ShieldCheck className="shrink-0 text-gold" size={20} /><p>Confirm availability, delivery or pickup, and payment directly with RoseDen on WhatsApp.</p></div>
         </div>
