@@ -75,9 +75,10 @@ operational data.
 10. Run `supabase/migrations/009_website_content_management.sql`.
 11. Run `supabase/migrations/010_receipts_and_audit_history.sql`.
 12. Run `supabase/migrations/011_staff_roles_and_permissions.sql`.
-13. Optionally run `supabase/seed.sql`.
-14. In Authentication, create Rosannah's user.
-15. If using an email other than `joinriseafrica@gmail.com`, set its profile to admin:
+13. Run migrations `012` through `016` in number order.
+14. Optionally run `supabase/seed.sql`.
+15. In Authentication, create Rosannah's user.
+16. If using an email other than `joinriseafrica@gmail.com`, set its profile to admin:
 
    ```sql
    update public.profiles
@@ -85,7 +86,7 @@ operational data.
    where id = (select id from auth.users where email = 'YOUR_EMAIL');
    ```
 
-16. Add the project URL, anon key, and WhatsApp number to `.env.local`:
+17. Add the project URL, anon key, and WhatsApp number to `.env.local`:
 
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
@@ -287,3 +288,17 @@ outstanding balances, protects destructive actions with confirmation screens,
 includes birthdays in customer exports, and adds public Privacy and Terms
 pages. Dashboard cash figures now mean payments actually received during the
 displayed day or month.
+
+## Phase 8A marketing and content
+
+Run `supabase/migrations/016_marketing_content_workspace.sql` once. It is safe
+to rerun.
+
+Open **Admin -> More -> Marketing** after Rosannah posts a product. Choose the
+product, content type, date, and channels, then save the caption. Later, tap
+**Update results** to record confirmed inquiries, reservations, sales, and
+revenue for each channel.
+
+This phase records marketing performance but does not automatically publish to
+WhatsApp, Facebook, TikTok, or Instagram. Rosannah remains in control of every
+post.

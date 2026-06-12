@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BarChart3, Boxes, ClipboardList, Contact, DatabaseBackup, HeartHandshake, LayoutDashboard, LifeBuoy, MapPinned, MessageCircle, ReceiptText, Settings2, Sparkles, UsersRound, X } from "lucide-react";
+import { BarChart3, Boxes, ClipboardList, Contact, DatabaseBackup, HeartHandshake, LayoutDashboard, LifeBuoy, MapPinned, Megaphone, MessageCircle, ReceiptText, Settings2, Sparkles, UsersRound, X } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { useData } from "./data-provider";
 import { InstallAppButton } from "./pwa-tools";
@@ -55,6 +55,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 ["/admin/advisor", "Advisor", Sparkles],
                 ["/admin/follow-ups", "Follow-ups", HeartHandshake],
                 ["/admin/inquiries", "Product interest", MessageCircle],
+                ["/admin/marketing", "Marketing", Megaphone],
                 ["/admin/batches", "Buying trips", MapPinned],
                 ["/admin/reports", "Reports", BarChart3],
                 ["/admin/backup", "Backup", DatabaseBackup],

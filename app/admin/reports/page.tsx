@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, BarChart3, CircleDollarSign, Download, Megaphone, PackageCheck, Repeat, ShoppingBag, Star, Truck, UserRound } from "lucide-react";
 import { useData } from "@/components/data-provider";
+import { MarketingReport } from "@/components/marketing-report";
 import { PageHeader } from "@/components/ui";
 import { money } from "@/lib/format";
 import { amountReceivedInMonth, businessOutstanding } from "@/lib/financials";
@@ -132,6 +133,8 @@ export default function AdminReportsPage() {
       <section className="mt-7"><h2 className="mb-1 font-display text-xl font-semibold text-wine">Sales by buying trip</h2><p className="mb-3 text-xs text-black/45">See which stock trips produced sales during the selected month.</p><div className="space-y-3 rounded-2xl bg-white p-4 shadow-soft">{batchSales.length === 0 && <EmptyReport>No batch-linked sales for this month.</EmptyReport>}{batchSales.map((item) => <div key={item.id}><Link href={`/admin/batches/${item.id}`} className="flex items-center justify-between gap-3 text-sm"><span className="font-semibold">{item.name}<small className="ml-2 text-black/40">{item.orders} orders</small></span><span className="text-right"><strong className="block text-burgundy">{money(item.revenue)}</strong><small className={item.profit >= 0 ? "text-emerald-700" : "text-burgundy"}>{money(item.profit)} profit</small></span></Link><ProgressBar value={item.revenue} max={maxBatchRevenue} tone="gold" /></div>)}</div></section>
 
       <section className="mt-7"><h2 className="mb-1 font-display text-xl font-semibold text-wine">Sales by channel</h2><p className="mb-3 text-xs text-black/45">Where advertising is turning into orders.</p><div className="space-y-3 rounded-2xl bg-white p-4 shadow-soft">{channelSales.length === 0 && <EmptyReport>No sales recorded for this month.</EmptyReport>}{channelSales.map((item) => <div key={item.channel}><div className="flex items-center justify-between gap-3 text-sm"><span className="font-semibold">{item.channel}<small className="ml-2 text-black/40">{item.orders} orders</small></span><strong className="text-burgundy">{money(item.revenue)}</strong></div><ProgressBar value={item.revenue} max={maxChannelRevenue} tone={item.channel.includes("WhatsApp") ? "green" : "burgundy"} /></div>)}</div></section>
+
+      <MarketingReport month={month} />
 
       <section className="mt-7"><h2 className="mb-1 font-display text-xl font-semibold text-wine">Top customers</h2><p className="mb-3 text-xs text-black/45">Best buyers during the selected month.</p><div className="space-y-3 rounded-2xl bg-white p-4 shadow-soft">{customerTotals.length === 0 && <EmptyReport>No customer sales for this month.</EmptyReport>}{customerTotals.slice(0, 6).map((item, index) => <div key={item.id}><Link href={`/admin/customers/${item.id}`} className="flex items-center justify-between gap-3 text-sm"><span className="flex items-center gap-2"><UserRound size={15} className="text-gold" />{index + 1}. {item.name}<small className="text-black/40">{item.orders} orders</small></span><strong className="text-burgundy">{money(item.total)}</strong></Link><ProgressBar value={item.total} max={maxCustomerRevenue} /></div>)}</div></section>
 
