@@ -6,6 +6,7 @@ import { BarChart3, Boxes, ClipboardList, Contact, DatabaseBackup, HeartHandshak
 import { ReactNode, useState } from "react";
 import { useData } from "./data-provider";
 import { InstallAppButton } from "./pwa-tools";
+import { NetworkStatus } from "./network-status";
 
 const nav = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -19,7 +20,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [moreOpen, setMoreOpen] = useState(false);
-  const { userEmail, userName, userRole, isAdmin, signOut, connectionError } = useData();
+  const { userEmail, userName, userRole, isAdmin, signOut, connectionError, refresh } = useData();
 
   async function handleSignOut() {
     await signOut();
@@ -44,6 +45,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
+      <NetworkStatus onRetry={() => void refresh()} />
       {connectionError && <div className="border-b border-amber-300 bg-amber-50 px-4 py-2 text-center text-xs font-medium text-amber-900">{connectionError}</div>}
       <main className="mx-auto w-full min-w-0 max-w-5xl px-4 pb-28 pt-6 sm:px-6 sm:pt-8">{children}</main>
       {isAdmin && !pathname.endsWith("/receipt") && <>

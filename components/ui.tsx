@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, ReactNode, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { Plus, X } from "lucide-react";
+import { formDraft, readDraft, restoreFormDraft, saveDraft } from "@/lib/form-draft";
 
 export function PageHeader({ title, subtitle, action }: { title: string; subtitle: string; action?: () => void }) {
   return (
@@ -23,8 +24,27 @@ export function Modal({ title, children, onClose }: { title: string; children: R
   );
 }
 
-export function Form({ children, onSubmit, submitLabel = "Save", submitDisabled = false }: { children: ReactNode; onSubmit: (event: FormEvent<HTMLFormElement>) => void; submitLabel?: string; submitDisabled?: boolean }) {
-  return <form onSubmit={onSubmit} className="space-y-4">{children}<button disabled={submitDisabled} className="h-13 w-full rounded-2xl bg-burgundy px-5 py-4 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45">{submitLabel}</button></form>;
+export function Form({ children, onSubmit, submitLabel = "Save", submitDisabled = false, draftKey }: { children: ReactNode; onSubmit: (event: FormEvent<HTMLFormElement>) => void; submitLabel?: string; submitDisabled?: boolean; draftKey?: string }) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [draftRestored, setDraftRestored] = useState(false);
+
+  useEffect(() => {
+    if (!draftKey || !formRef.current) return;
+    const draft = readDraft<Record<string, string | string[]>>(draftKey);
+    if (draft && Object.keys(draft).length > 0) {
+      restoreFormDraft(formRef.current, draft);
+      setDraftRestored(true);
+    }
+  }, [draftKey]);
+
+  return <form ref={formRef} onSubmit={onSubmit} onInput={() => {
+    if (draftKey && formRef.current) saveDraft(draftKey, formDraft(formRef.current));
+  }} className="space-y-4">
+    {draftRestored ? <p className="rounded-xl bg-gold/10 p-3 text-center text-xs font-semibold text-wine">Unfinished information was restored from this phone.</p> : null}
+    {children}
+    <button disabled={submitDisabled} className="h-13 w-full rounded-2xl bg-burgundy px-5 py-4 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45">{submitLabel}</button>
+    {draftKey ? <p className="text-center text-[11px] text-black/40">Your unfinished form is saved automatically on this phone.</p> : null}
+  </form>;
 }
 
 export function Field({ label, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {

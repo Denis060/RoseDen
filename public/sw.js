@@ -1,5 +1,5 @@
-const CACHE = "roseden-shell-v1";
-const SHELL = ["/", "/shop", "/login", "/icons/roseden-icon.svg"];
+const CACHE = "roseden-shell-v2";
+const SHELL = ["/", "/shop", "/login", "/offline", "/icons/roseden-icon.svg"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)));
@@ -55,6 +55,6 @@ self.addEventListener("fetch", (event) => {
         }
         return response;
       })
-      .catch(() => caches.match(request).then((cached) => cached || caches.match("/")))
+      .catch(() => caches.match(request).then((cached) => cached || caches.match("/offline")))
   );
 });

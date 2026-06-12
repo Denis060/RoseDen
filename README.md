@@ -341,3 +341,14 @@ message.
 New uploads are resized to 1000 pixels and compressed before storage. Public
 product cards and galleries request smaller image qualities and cache optimized
 images for at least one day to reduce repeat data use on slower connections.
+
+## Stability and offline drafts
+
+RoseDen detects offline and constrained 2G-style connections and explains what
+is happening instead of showing a database setup error. New orders, customers,
+and expenses save unfinished form information locally on the current phone.
+The draft is removed only after Supabase confirms a successful save.
+
+Private admin pages are intentionally not stored in the public service-worker
+cache. Public pages previously opened by the customer can be reused offline,
+and a dedicated offline page appears when no cached page is available.

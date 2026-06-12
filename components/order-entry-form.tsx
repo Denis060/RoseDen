@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronDown, Minus, Package, Plus, Search, UserRound, X } from "lucide-react";
 import { useData } from "@/components/data-provider";
 import { money } from "@/lib/format";
 import { supabase } from "@/lib/supabase";
 import { OrderStatus, OrderType, SalesChannel } from "@/lib/types";
+import { clearDraft, readDraft, saveDraft } from "@/lib/form-draft";
 
 const channels: SalesChannel[] = ["WhatsApp Status", "Facebook", "TikTok", "Instagram", "Referral", "Walk-in", "Existing Customer", "Website"];
 
@@ -51,6 +52,9 @@ export function OrderEntryForm({ quickSocial, initialProductId, inquiryId, onSav
   const [notes, setNotes] = useState("");
   const [formError, setFormError] = useState("");
   const [saving, setSaving] = useState(false);
+  const draftHydrated = useRef(false);
+  const [draftReady, setDraftReady] = useState(false);
+  const draftKey = quickSocial ? "social-order" : "new-order";
 
   const selectedCustomer = data.customers.find((customer) => customer.id === selectedCustomerId);
   const selectedProduct = data.inventory.find((item) => item.id === selectedInventoryId);
@@ -136,6 +140,56 @@ export function OrderEntryForm({ quickSocial, initialProductId, inquiryId, onSav
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.inventory, initialProductId, selectedInventoryId]);
 
+  useEffect(() => {
+    if (draftHydrated.current) return;
+    draftHydrated.current = true;
+    if (initialProductId || inquiryId) {
+      setDraftReady(true);
+      return;
+    }
+    const draft = readDraft<{
+      customerQuery: string; phone: string; selectedCustomerId: string; walkIn: boolean;
+      productQuery: string; selectedInventoryId: string; customItem: boolean; description: string;
+      type: OrderType; color: string; size: string; quantity: number; unitPrice: number; unitCost: number;
+      paid: number; dueDate: string; deliveryPlan: "pickup" | "delivery"; channel: SalesChannel;
+      status: OrderStatus; notes: string;
+    }>(draftKey);
+    if (!draft) {
+      setDraftReady(true);
+      return;
+    }
+    setCustomerQuery(draft.customerQuery || "");
+    setPhone(draft.phone || "");
+    setSelectedCustomerId(draft.selectedCustomerId || "");
+    setWalkIn(Boolean(draft.walkIn));
+    setProductQuery(draft.productQuery || "");
+    setSelectedInventoryId(draft.selectedInventoryId || "");
+    setCustomItem(Boolean(draft.customItem));
+    setDescription(draft.description || "");
+    setType(draft.type || (quickSocial ? "ready-made" : "tailoring"));
+    setColor(draft.color || "");
+    setSize(draft.size || "");
+    setQuantity(Number(draft.quantity || 1));
+    setUnitPrice(Number(draft.unitPrice || 0));
+    setUnitCost(Number(draft.unitCost || 0));
+    setPaid(Number(draft.paid || 0));
+    setDueDate(draft.dueDate || today());
+    setDeliveryPlan(draft.deliveryPlan || "pickup");
+    setChannel(draft.channel || (quickSocial ? "WhatsApp Status" : "Walk-in"));
+    setStatus(draft.status || "pending");
+    setNotes(draft.notes || "");
+    setDraftReady(true);
+  }, [draftKey, initialProductId, inquiryId, quickSocial]);
+
+  useEffect(() => {
+    if (!draftReady || initialProductId || inquiryId) return;
+    saveDraft(draftKey, {
+      customerQuery, phone, selectedCustomerId, walkIn, productQuery, selectedInventoryId,
+      customItem, description, type, color, size, quantity, unitPrice, unitCost, paid,
+      dueDate, deliveryPlan, channel, status, notes,
+    });
+  }, [channel, color, customItem, customerQuery, deliveryPlan, description, draftKey, draftReady, dueDate, initialProductId, inquiryId, notes, paid, phone, productQuery, quantity, selectedCustomerId, selectedInventoryId, size, status, type, unitCost, unitPrice, walkIn]);
+
   function changeQuantity(next: number) {
     const maximum = selectedProduct?.quantity || 999;
     setQuantity(Math.min(maximum, Math.max(1, next)));
@@ -211,6 +265,7 @@ export function OrderEntryForm({ quickSocial, initialProductId, inquiryId, onSav
       if (inquiryId && supabase) {
         await supabase.from("product_inquiries").update({ status: "converted" }).eq("id", inquiryId);
       }
+      clearDraft(draftKey);
       onSaved();
     } catch (cause) {
       setFormError(cause instanceof Error ? cause.message : "Could not save this order. Check the connection and try again.");
@@ -318,6 +373,7 @@ export function OrderEntryForm({ quickSocial, initialProductId, inquiryId, onSav
       </details>}
 
       {formError && <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-800">{formError}</p>}
+      {!initialProductId && !inquiryId ? <p className="rounded-xl bg-gold/10 p-3 text-center text-xs font-semibold text-wine">This unfinished order is saved automatically on this phone.</p> : null}
       <button disabled={saving || (!selectedProduct && !customItem)} className="h-14 w-full rounded-2xl bg-burgundy px-5 font-bold text-white shadow-soft disabled:cursor-not-allowed disabled:opacity-40">{saving ? "Saving order..." : balance > 0 ? `Reserve · ${money(balance)} balance` : "Save paid order"}</button>
       <p className="text-center text-[11px] leading-4 text-black/40">Product details, totals, cost, balance and stock are calculated automatically.</p>
     </form>

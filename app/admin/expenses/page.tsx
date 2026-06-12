@@ -7,8 +7,10 @@ import { ConfirmDelete } from "@/components/confirm-delete";
 import { IconBox } from "@/components/icons";
 import { Field, Form, Modal, PageHeader, Select, useModal } from "@/components/ui";
 import { money, shortDate } from "@/lib/format";
+import { clearDraft } from "@/lib/form-draft";
 
 const categories = ["transport", "inventory purchase", "rent", "electricity", "internet", "tailoring labor", "marketing", "food", "other"];
+const expenseDraftKey = "new-expense";
 
 export default function AdminExpensesPage() {
   const { data, isAdmin, addExpense, remove } = useData();
@@ -25,6 +27,7 @@ export default function AdminExpensesPage() {
     setError("");
     try {
       await addExpense({ date: String(f.get("date")), category: String(f.get("category")), amount: Number(f.get("amount")), notes: String(f.get("notes")), batchId: String(f.get("batchId")) || undefined });
+      clearDraft(expenseDraftKey);
       modal.hide();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Could not save this expense.");
@@ -37,7 +40,7 @@ export default function AdminExpensesPage() {
     <div>
       <PageHeader title="Expenses" subtitle={`${money(total)} spent this month`} action={modal.show} />
       <div className="space-y-3">{data.expenses.map((expense) => <article key={expense.id} className="flex items-center gap-3 rounded-2xl bg-white p-4"><IconBox icon={expense.category === "transport" ? Bus : ReceiptText} /><div className="min-w-0 flex-1"><h2 className="capitalize font-semibold">{expense.category}</h2><p className="truncate text-xs text-black/45">{shortDate(expense.date)} • {expense.notes || "No notes"}</p></div><p className="font-bold text-wine">{money(expense.amount)}</p>{isAdmin && <ConfirmDelete itemName={`${expense.category} expense`} itemType="expense" onDelete={() => remove("expenses", expense.id)} className="text-black/25" />}</article>)}</div>
-      {modal.open && <Modal title="Record expense" onClose={modal.hide}><Form onSubmit={submit} submitLabel={saving ? "Saving expense..." : "Save expense"} submitDisabled={saving}><Field name="date" label="Date" type="date" defaultValue={new Date().toISOString().slice(0, 10)} required /><Select name="category" label="Category">{categories.map((c) => <option key={c}>{c}</option>)}</Select><Select name="batchId" label="Buying trip (optional)"><option value="">General business expense</option>{data.batches.map((batch) => <option key={batch.id} value={batch.id}>{batch.name}</option>)}</Select><Field name="amount" label="Amount (NLe)" type="number" step="0.01" required /><Field name="notes" label="Notes" />{error && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{error}</p>}</Form></Modal>}
+      {modal.open && <Modal title="Record expense" onClose={modal.hide}><Form draftKey={expenseDraftKey} onSubmit={submit} submitLabel={saving ? "Saving expense..." : "Save expense"} submitDisabled={saving}><Field name="date" label="Date" type="date" defaultValue={new Date().toISOString().slice(0, 10)} required /><Select name="category" label="Category">{categories.map((c) => <option key={c}>{c}</option>)}</Select><Select name="batchId" label="Buying trip (optional)"><option value="">General business expense</option>{data.batches.map((batch) => <option key={batch.id} value={batch.id}>{batch.name}</option>)}</Select><Field name="amount" label="Amount (NLe)" type="number" step="0.01" required /><Field name="notes" label="Notes" />{error && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{error}</p>}</Form></Modal>}
     </div>
   );
 }

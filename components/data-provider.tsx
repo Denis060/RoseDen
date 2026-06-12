@@ -258,8 +258,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
     if (firstError) {
       console.error("Supabase load failed", firstError);
-      setConnectionError("Supabase is connected, but the core RoseDen database setup is incomplete. Run migrations 001 through 005.");
-      setData(emptyData);
+      setConnectionError(typeof navigator !== "undefined" && !navigator.onLine
+        ? "RoseDen could not refresh while offline. Existing information remains available; reconnect and tap Retry."
+        : "RoseDen could not refresh its data. Check the connection and tap Retry.");
       setLoading(false);
       return;
     }
