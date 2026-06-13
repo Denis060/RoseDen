@@ -124,8 +124,8 @@ export function ProductCard({ product, compact = false, index = 0 }: { product: 
         {product.sourceType === "original" && <span className="absolute right-2 top-2 rounded-full bg-burgundy px-2 py-1 text-[8px] font-bold uppercase text-white">One-of-one</span>}
       </Link>
       <div className={compact ? "p-2" : "p-4"}>
-        <p className={`${compact ? "text-[8px]" : "text-[10px]"} font-bold uppercase tracking-[0.12em] text-gold`}>{product.category}</p>
-        <Link href={`/shop/${product.slug}`} className={`${compact ? "mt-0.5 min-h-7 text-[10px]" : "mt-1 min-h-12 text-xl"} block font-display font-semibold leading-tight text-burgundy`}>{product.name}</Link>
+        <p className={`${compact ? "break-words text-[8px]" : "text-[10px]"} font-bold uppercase tracking-[0.12em] text-gold`}>{product.category}</p>
+        <Link href={`/shop/${product.slug}`} className={`${compact ? "mt-0.5 min-h-7 break-words text-[10px]" : "mt-1 min-h-12 text-xl"} block min-w-0 font-display font-semibold leading-tight text-burgundy`}>{product.name}</Link>
         <p className={`${compact ? "mt-1 text-[10px]" : "mt-2"} font-bold text-gold`}>{money(product.price)}</p>
         {!compact && <div className="mt-3 space-y-1 text-[11px] text-black/50"><p className="truncate"><strong className="text-black/65">Sizes:</strong> {product.sizes.join(", ") || "Ask RoseDen"}</p><p className="truncate"><strong className="text-black/65">Colors:</strong> {product.colors.join(", ") || "Ask RoseDen"}</p></div>}
         {!compact && (disabled
@@ -164,7 +164,10 @@ export function ProductGrid({
     return typeof limit === "number" ? filtered.slice(0, limit) : filtered;
   }, [featuredOnly, limit, originalsOnly, products, status]);
 
-  if (loading) return <div className="grid grid-cols-2 gap-4">{[1, 2, 3, 4].map((item) => <div key={item} className="aspect-[3/4] animate-pulse rounded-3xl bg-marble/60" />)}</div>;
+  if (loading) {
+    const placeholders = rail ? Array.from({ length: limit || 8 }, (_, index) => index) : [1, 2, 3, 4];
+    return <div className={`grid ${rail ? "grid-cols-4 gap-2 sm:gap-4" : "grid-cols-2 gap-4"}`}>{placeholders.map((item) => <div key={item} className="aspect-[3/4] animate-pulse rounded-3xl bg-marble/60" />)}</div>;
+  }
   if (visible.length === 0) return (
     <div className="marble-surface rounded-3xl border border-white px-6 py-12 text-center shadow-soft">
       <Sparkles className="mx-auto text-gold" />
@@ -174,6 +177,6 @@ export function ProductGrid({
     </div>
   );
 
-  if (rail) return <div className="grid grid-cols-4 gap-2 sm:gap-4">{visible.map((product, index) => <ProductCard key={product.id} product={product} compact index={index} />)}</div>;
+  if (rail) return <div className="grid min-w-0 max-w-full grid-cols-4 gap-2 overflow-hidden sm:gap-4">{visible.map((product, index) => <ProductCard key={product.id} product={product} compact index={index} />)}</div>;
   return <div className="grid min-w-0 grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{visible.map((product, index) => <ProductCard key={product.id} product={product} index={index} />)}</div>;
 }
