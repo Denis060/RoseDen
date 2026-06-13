@@ -49,20 +49,21 @@ function PhotoField({ label, value, uploading, onUpload }: { label: string; valu
   return (
     <div>
       <p className="text-sm font-medium">{label}</p>
-      <div className="mt-2 overflow-hidden rounded-2xl border border-dashed border-burgundy/20 bg-white">
+      <label className="mt-2 block cursor-pointer overflow-hidden rounded-2xl border border-dashed border-burgundy/20 bg-white transition active:scale-[0.99]">
         <div className="relative grid h-40 place-items-center bg-marble/35">
           {value ? <img src={value} alt="" className="h-full w-full object-cover" /> : <ImagePlus className="text-burgundy/25" size={36} />}
           {uploading && <div className="absolute inset-0 grid place-items-center bg-black/45 text-white"><LoaderCircle className="animate-spin" /></div>}
+          {!uploading && <span className="absolute bottom-3 rounded-full bg-burgundy/90 px-4 py-2 text-xs font-bold text-white shadow-sm">{value ? "Tap to change photo" : "Tap to add photo"}</span>}
         </div>
-        <label className="flex h-12 cursor-pointer items-center justify-center gap-2 font-semibold text-burgundy">
-          <ImagePlus size={18} />{value ? "Change photo" : "Take or choose photo"}
-          <input type="file" accept="image/*" capture="environment" className="hidden" disabled={uploading} onChange={(event) => {
+        <span className="flex h-12 items-center justify-center gap-2 font-semibold text-burgundy">
+          <ImagePlus size={18} />{uploading ? "Uploading photo..." : value ? "Change photo" : "Take or choose photo"}
+          <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={(event) => {
             const file = event.target.files?.[0];
             if (file) onUpload(file);
             event.target.value = "";
           }} />
-        </label>
-      </div>
+        </span>
+      </label>
     </div>
   );
 }
@@ -115,12 +116,28 @@ export default function WebsiteAdminPage() {
     setContent((current) => ({ ...current, [key]: value }));
   }
 
+  const photoColumns = {
+    heroImageUrl: "hero_image_url",
+    aboutImageUrl: "about_image_url",
+    rosannahImageUrl: "rosannah_image_url",
+    denisImageUrl: "denis_image_url",
+    tailoringImageUrl: "tailoring_image_url",
+    contactImageUrl: "contact_image_url",
+  } as const;
+
   async function upload(key: "heroImageUrl" | "aboutImageUrl" | "rosannahImageUrl" | "denisImageUrl" | "tailoringImageUrl" | "contactImageUrl", file: File) {
     setUploading(key);
     setMessage("");
     try {
       const url = await uploadProductImage(await prepareImage(file));
+      if (!supabase) throw new Error("The database is not connected.");
+      const { error } = await supabase.from("business_settings").update({
+        [photoColumns[key]]: url,
+        updated_at: new Date().toISOString(),
+      }).eq("id", "roseden");
+      if (error) throw error;
       set(key, url);
+      setMessage(`${key === "rosannahImageUrl" ? "Rosannah's" : key === "denisImageUrl" ? "Denis's" : "Website"} photo changed successfully.`);
     } catch (cause) {
       setMessage(cause instanceof Error ? cause.message : "Photo upload failed.");
     } finally {
@@ -135,7 +152,14 @@ export default function WebsiteAdminPage() {
       const url = await uploadProductImage(await prepareImage(file));
       const images = [...content.atelierImages];
       images[index] = url;
+      if (!supabase) throw new Error("The database is not connected.");
+      const { error } = await supabase.from("business_settings").update({
+        atelier_images: images.filter(Boolean),
+        updated_at: new Date().toISOString(),
+      }).eq("id", "roseden");
+      if (error) throw error;
       set("atelierImages", images);
+      setMessage(`Atelier photo ${index + 1} changed successfully.`);
     } catch (cause) {
       setMessage(cause instanceof Error ? cause.message : "Photo upload failed.");
     } finally {
@@ -196,7 +220,7 @@ export default function WebsiteAdminPage() {
         <Link href="/" target="_blank" className="flex h-12 items-center justify-center gap-2 rounded-xl border border-burgundy/15 bg-white text-sm font-semibold text-burgundy"><ExternalLink size={17} />View website</Link>
         <button type="submit" disabled={saving || Boolean(uploading)} className="flex h-12 items-center justify-center gap-2 rounded-xl bg-burgundy text-sm font-semibold text-white disabled:opacity-50">{saving ? <LoaderCircle size={17} className="animate-spin" /> : <Save size={17} />}Save changes</button>
       </div>
-      {message && <p className={`rounded-xl p-3 text-sm font-medium ${message.startsWith("Website saved") ? "bg-emerald-50 text-emerald-800" : "bg-amber-50 text-amber-900"}`}>{message}</p>}
+      {message && <p className={`rounded-xl p-3 text-sm font-medium ${message.includes("successfully") || message.startsWith("Website saved") ? "bg-emerald-50 text-emerald-800" : "bg-amber-50 text-amber-900"}`}>{message}</p>}
 
       <section className="rounded-3xl bg-white p-4 shadow-soft sm:p-6">
         <h2 className="font-display text-2xl font-semibold text-burgundy">Homepage</h2>
@@ -222,7 +246,7 @@ export default function WebsiteAdminPage() {
           <TextField label="About heading" value={content.aboutTitle} onChange={(value) => set("aboutTitle", value)} />
           <TextArea label="About story" value={content.aboutBody} onChange={(value) => set("aboutBody", value)} />
           <PhotoField label="About page photo" value={content.aboutImageUrl} uploading={uploading === "aboutImageUrl"} onUpload={(file) => upload("aboutImageUrl", file)} />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <PhotoField label="Rosannah's photo" value={content.rosannahImageUrl} uploading={uploading === "rosannahImageUrl"} onUpload={(file) => upload("rosannahImageUrl", file)} />
             <PhotoField label="Denis's photo" value={content.denisImageUrl} uploading={uploading === "denisImageUrl"} onUpload={(file) => upload("denisImageUrl", file)} />
           </div>
