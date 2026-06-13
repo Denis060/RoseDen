@@ -8,6 +8,10 @@ export const commonColors = [
   "Black", "White", "Burgundy", "Red", "Blue", "Green", "Pink", "Cream",
   "Gold", "Brown", "Grey", "Purple", "Orange", "Yellow", "Multi-color",
 ] as const;
+export const commonOccasions = [
+  "Party", "Birthday", "Wedding", "Date night", "Work", "Church",
+  "Casual outing", "Graduation", "Everyday wear", "Holiday",
+] as const;
 
 type Props = {
   label: string;

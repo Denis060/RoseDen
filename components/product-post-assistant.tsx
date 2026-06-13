@@ -24,6 +24,7 @@ export function ProductPostAssistant({ product }: { product: InventoryItem }) {
     category: product.category,
     colors: productColors,
     sizes: productSizes,
+    occasions: product.occasions,
     price: product.sellingPrice,
     slug: product.slug,
     description: product.publicDescription,

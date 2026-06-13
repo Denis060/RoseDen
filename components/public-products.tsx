@@ -21,6 +21,7 @@ export type PublicProduct = {
   status: "available" | "reserved" | "sold";
   sizes: string[];
   colors: string[];
+  occasions: string[];
   sourceType: string;
   featured: boolean;
   quantity: number;
@@ -58,6 +59,7 @@ function mapProduct(row: any): PublicProduct {
     status: row.public_status || "available",
     sizes: row.sizes || [],
     colors: row.colors || [],
+    occasions: row.occasions || [],
     sourceType: row.source_type || "ready-made",
     featured: Boolean(row.is_featured),
     quantity: Number(row.quantity || 0),
@@ -75,7 +77,7 @@ export function usePublicProducts() {
       if (!supabase) return setLoading(false);
       const videoResult = await supabase
         .from("inventory")
-        .select("id,product_name,slug,category,selling_price,public_description,shop_photo_url,supplier_photo_url,photo_url,product_images,public_status,sizes,colors,source_type,is_featured,quantity,created_at,try_on_url")
+        .select("id,product_name,slug,category,selling_price,public_description,shop_photo_url,supplier_photo_url,photo_url,product_images,public_status,sizes,colors,occasions,source_type,is_featured,quantity,created_at,try_on_url")
         .eq("is_public", true)
         .neq("public_status", "hidden")
         .order("created_at", { ascending: false });

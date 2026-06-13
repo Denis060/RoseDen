@@ -68,6 +68,7 @@ function upgradeData(saved: Partial<AppData>): AppData {
       slug: item.slug || "",
       sizes: item.sizes || (item.size ? [item.size] : []),
       colors: item.colors || (item.color ? [item.color] : []),
+      occasions: item.occasions || [],
       sourceType: item.sourceType || "ready-made",
     })),
     orders: (saved.orders || seedData.orders).map((order) => ({
@@ -133,6 +134,7 @@ function mapInventory(row: any, summary?: any): InventoryItem {
     slug: row.slug || "",
     sizes: row.sizes || (row.size ? [row.size] : []),
     colors: row.colors || (row.color ? [row.color] : []),
+    occasions: row.occasions || [],
     sourceType: row.source_type || "ready-made",
   };
 }
@@ -700,6 +702,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           slug: item.slug || null,
           sizes: item.sizes,
           colors: item.colors,
+          occasions: item.occasions || [],
           source_type: item.sourceType,
         }).select("id").single();
         if (error) throw error;
@@ -760,6 +763,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           slug: item.slug || null,
           sizes: item.sizes,
           colors: item.colors,
+          occasions: item.occasions || [],
           source_type: item.sourceType,
         }).eq("id", inventoryId);
         if (error) throw error;

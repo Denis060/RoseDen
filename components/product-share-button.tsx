@@ -11,6 +11,7 @@ type Props = {
     category: string;
     colors: string[];
     sizes: string[];
+    occasions?: string[];
     price: number;
     slug: string;
     description: string;

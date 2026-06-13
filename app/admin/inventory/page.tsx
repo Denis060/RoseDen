@@ -68,6 +68,7 @@ export default function InventoryPage() {
       slug: item.slug || "",
       sizes: item.sizes || (item.size ? [item.size] : []),
       colors: item.colors || (item.color ? [item.color] : []),
+      occasions: item.occasions || [],
       sourceType: item.sourceType || "ready-made",
     });
   }

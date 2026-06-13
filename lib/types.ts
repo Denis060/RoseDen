@@ -72,6 +72,7 @@ export type InventoryItem = {
   slug?: string;
   sizes?: string[];
   colors?: string[];
+  occasions?: string[];
   sourceType?: "ready-made" | "original" | "tailoring-sample";
 };
 

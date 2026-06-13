@@ -352,3 +352,12 @@ The draft is removed only after Supabase confirms a successful save.
 Private admin pages are intentionally not stored in the public service-worker
 cache. Public pages previously opened by the customer can be reused offline,
 and a dedicated offline page appears when no cached page is available.
+
+## Product occasions and styling
+
+Run `supabase/migrations/018_product_occasions.sql` once. It is safe to rerun.
+
+Inventory now includes **Shorts** as a category. When adding or editing a
+product, staff can tap occasions such as Party, Birthday, Wedding, Work,
+Church, Date night, or add a custom occasion. Published product pages show
+these under **Perfect for**, and prepared sharing captions include them.

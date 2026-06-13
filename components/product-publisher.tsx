@@ -4,12 +4,12 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { Camera, CheckCircle2, Eye, ImageIcon, LoaderCircle, Plus, Sparkles, Upload, WandSparkles } from "lucide-react";
 import { useData } from "@/components/data-provider";
 import { Field, Form, Modal, Select, useModal } from "@/components/ui";
-import { commonColors, ProductOptionsPicker, standardSizes } from "@/components/product-options-picker";
+import { commonColors, commonOccasions, ProductOptionsPicker, standardSizes } from "@/components/product-options-picker";
 import { money } from "@/lib/format";
 import { prepareProductImage, productSlug } from "@/lib/product-image";
 import { suggestProductName } from "@/lib/product-copy";
 
-const categories = ["dress", "top", "skirt", "shoes", "bag", "accessory", "fabric", "other"];
+const categories = ["dress", "top", "skirt", "shorts", "shoes", "bag", "accessory", "fabric", "other"];
 
 export function ProductPublisher() {
   const { data, addInventory, uploadProductImage } = useData();
@@ -18,12 +18,12 @@ export function ProductPublisher() {
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
-  const [preview, setPreview] = useState({ name: "", price: "", category: "dress", sizes: [] as string[], colors: [] as string[] });
+  const [preview, setPreview] = useState({ name: "", price: "", category: "dress", sizes: [] as string[], colors: [] as string[], occasions: [] as string[] });
 
   function open() {
     setImages([]);
     setMessage("");
-    setPreview({ name: "", price: "", category: "dress", sizes: [], colors: [] });
+    setPreview({ name: "", price: "", category: "dress", sizes: [], colors: [], occasions: [] });
     modal.show();
   }
 
@@ -84,6 +84,7 @@ export function ProductPublisher() {
         slug: productSlug(name),
         sizes,
         colors,
+        occasions: preview.occasions,
         sourceType: String(form.get("sourceType")) as "ready-made" | "original" | "tailoring-sample",
       });
       modal.hide();
@@ -126,6 +127,7 @@ export function ProductPublisher() {
             </div>
             <ProductOptionsPicker label="Available sizes" options={standardSizes} selected={preview.sizes} onChange={(sizes) => setPreview((current) => ({ ...current, sizes }))} customPlaceholder="Add another size, e.g. 42" />
             <ProductOptionsPicker label="Available colors" options={commonColors} selected={preview.colors} onChange={(colors) => setPreview((current) => ({ ...current, colors }))} customPlaceholder="Add another color" />
+            <ProductOptionsPicker label="Perfect for" options={commonOccasions} selected={preview.occasions} onChange={(occasions) => setPreview((current) => ({ ...current, occasions }))} customPlaceholder="Add another occasion" />
             <div className="rounded-2xl border border-gold/25 bg-gold/10 p-3">
               <Field name="name" label="Product name (optional)" placeholder="RoseDen can suggest one" value={preview.name} onChange={(event) => setPreview((current) => ({ ...current, name: event.target.value }))} />
               <button type="button" onClick={suggestName} className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-white text-sm font-semibold text-burgundy"><WandSparkles size={17} />Suggest simple name</button>

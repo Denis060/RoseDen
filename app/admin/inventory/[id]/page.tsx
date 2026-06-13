@@ -5,12 +5,12 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { ArrowLeft, Camera, CheckCircle2, History, ImageIcon, LoaderCircle, Pencil, Upload } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useData } from "@/components/data-provider";
-import { commonColors, ProductOptionsPicker, standardSizes } from "@/components/product-options-picker";
+import { commonColors, commonOccasions, ProductOptionsPicker, standardSizes } from "@/components/product-options-picker";
 import { Empty, Field, Form, Modal, Select, useModal } from "@/components/ui";
 import { money, shortDate } from "@/lib/format";
 import { ProductStatus } from "@/lib/types";
 
-const categories = ["dress", "top", "skirt", "shoes", "bag", "accessory", "fabric", "other"];
+const categories = ["dress", "top", "skirt", "shorts", "shoes", "bag", "accessory", "fabric", "other"];
 
 async function resizeProductImage(file: File) {
   if (!file.type.startsWith("image/")) throw new Error("Please choose a photo.");
@@ -51,6 +51,7 @@ export default function InventoryDetailPage() {
   const [uploadComplete, setUploadComplete] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedOccasions, setSelectedOccasions] = useState<string[]>([]);
   const [error, setError] = useState("");
   const item = data.inventory.find((entry) => entry.id === params.id);
 
@@ -71,6 +72,7 @@ export default function InventoryDetailPage() {
     setPreviewUrl(item!.shopPhotoUrl);
     setSelectedSizes(item!.sizes?.length ? item!.sizes : item!.size ? item!.size.split(",").map((value) => value.trim()).filter(Boolean) : []);
     setSelectedColors(item!.colors?.length ? item!.colors : item!.color ? item!.color.split(/[,/]/).map((value) => value.trim()).filter(Boolean) : []);
+    setSelectedOccasions(item!.occasions || []);
     setUploadComplete(false);
     setError("");
     modal.show();
@@ -135,6 +137,7 @@ export default function InventoryDetailPage() {
         slug: String(form.get("slug")),
         sizes: selectedSizes,
         colors: selectedColors,
+        occasions: selectedOccasions,
         sourceType: String(form.get("sourceType")) as "ready-made" | "original" | "tailoring-sample",
       });
       modal.hide();
@@ -188,6 +191,7 @@ export default function InventoryDetailPage() {
         <div className="grid grid-cols-2 gap-3"><Select name="category" label="Category" defaultValue={item.category}>{categories.map((category) => <option key={category}>{category}</option>)}</Select><Select name="status" label="Product status" defaultValue={item.status}><option value="available">Available</option><option value="cancelled">Inactive</option></Select></div>
         <ProductOptionsPicker label="Available sizes" options={standardSizes} selected={selectedSizes} onChange={setSelectedSizes} customPlaceholder="Add another size, e.g. 42" />
         <ProductOptionsPicker label="Available colors" options={commonColors} selected={selectedColors} onChange={setSelectedColors} customPlaceholder="Add another color" />
+        <ProductOptionsPicker label="Perfect for" options={commonOccasions} selected={selectedOccasions} onChange={setSelectedOccasions} customPlaceholder="Add another occasion" />
         <div className="grid grid-cols-2 gap-3"><Field name="costPrice" label="Cost price (NLe)" type="number" min="0" step="0.01" defaultValue={item.costPrice} required /><Field name="sellingPrice" label="Selling price" type="number" min="0" step="0.01" defaultValue={item.sellingPrice} required /><Field name="lowStockAt" label="Low stock alert" type="number" min="0" defaultValue={item.lowStockAt} required /></div>
         <Field name="supplier" label="Supplier / source" defaultValue={item.supplier} />
         <div className="rounded-2xl border border-gold/25 bg-gold/10 p-4"><p className="font-display text-lg font-semibold text-wine">Website visibility</p><div className="mt-3 grid grid-cols-2 gap-2"><label className="flex min-h-11 items-center gap-2 rounded-xl bg-white px-3 text-sm"><input type="checkbox" name="isPublic" defaultChecked={item.isPublic} className="accent-burgundy" />Show on website</label><label className="flex min-h-11 items-center gap-2 rounded-xl bg-white px-3 text-sm"><input type="checkbox" name="isFeatured" defaultChecked={item.isFeatured} className="accent-burgundy" />Featured product</label></div><div className="mt-3 grid grid-cols-2 gap-3"><Select name="publicStatus" label="Website status" defaultValue={item.publicStatus || "hidden"}><option value="available">Available</option><option value="reserved">Reserved</option><option value="sold">Sold</option><option value="hidden">Hidden</option></Select><Select name="sourceType" label="Source type" defaultValue={item.sourceType || "ready-made"}><option value="ready-made">Ready-made</option><option value="original">RoseDen Original</option><option value="tailoring-sample">Tailoring sample</option></Select></div><Field name="slug" label="Product web code / slug" defaultValue={item.slug || ""} placeholder="adire-wrap-dress" /><Field name="publicDescription" label="Public description" defaultValue={item.publicDescription || ""} /></div>

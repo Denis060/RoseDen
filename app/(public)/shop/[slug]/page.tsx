@@ -55,6 +55,11 @@ export default function ProductDetailPage() {
             <span className="min-w-0 flex-1"><strong className="block text-sm">Watch product video</strong><span className="block truncate text-xs text-black/45">See the fit, movement, or try-on</span></span>
             <ExternalLink size={17} />
           </a> : null}
+          {product.occasions.length > 0 ? <section className="mt-5 rounded-2xl bg-white p-4 shadow-soft">
+            <p className="text-xs font-bold uppercase tracking-wider text-gold">Perfect for</p>
+            <div className="mt-2 flex flex-wrap gap-2">{product.occasions.map((occasion) => <span key={occasion} className="rounded-full bg-burgundy/8 px-3 py-1.5 text-xs font-semibold text-burgundy">{occasion}</span>)}</div>
+            <p className="mt-3 text-xs leading-5 text-black/45">Ask RoseDen for styling ideas to complete the look.</p>
+          </section> : null}
 
           {product.sizes.length > 0 && <fieldset className="mt-7"><legend className="text-sm font-bold text-wine">Choose size</legend><div className="mt-2 flex flex-wrap gap-2">{product.sizes.map((option) => <button type="button" key={option} onClick={() => setSize(option)} className={`min-h-11 rounded-xl border px-4 text-sm font-semibold ${size === option ? "border-burgundy bg-burgundy text-white" : "border-burgundy/15 bg-white text-burgundy"}`}>{option}</button>)}</div></fieldset>}
           {product.colors.length > 0 && <fieldset className="mt-5"><legend className="text-sm font-bold text-wine">Choose color</legend><div className="mt-2 flex flex-wrap gap-2">{product.colors.map((option) => <button type="button" key={option} onClick={() => setColor(option)} className={`min-h-11 rounded-xl border px-4 text-sm font-semibold ${color === option ? "border-gold bg-gold text-burgundy" : "border-gold/25 bg-white text-burgundy"}`}>{color === option && <Check className="mr-1 inline" size={15} />}{option}</button>)}</div></fieldset>}
