@@ -86,7 +86,7 @@ export default function HomePage() {
           </div>
           <Link href="/shop" className="shrink-0 whitespace-nowrap pb-0.5 text-xs font-bold text-burgundy sm:text-sm">View all →</Link>
         </MotionReveal>
-        <ProductGrid rail limit={8} />
+        <ProductGrid featuredOnly rail limit={8} />
       </section>
 
       <section className="bg-white px-4 py-14 sm:px-6 sm:py-20">
@@ -98,7 +98,7 @@ export default function HomePage() {
             </div>
             <Link href="/originals" className="shrink-0 whitespace-nowrap pb-0.5 text-xs font-bold text-burgundy sm:text-sm">Explore →</Link>
           </MotionReveal>
-          <ProductGrid originalsOnly rail limit={8} />
+          <ProductGrid featuredOnly originalsOnly rail limit={8} />
         </div>
       </section>
 

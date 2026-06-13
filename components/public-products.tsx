@@ -24,6 +24,7 @@ export type PublicProduct = {
   occasions: string[];
   sourceType: string;
   featured: boolean;
+  homepageOrder: number | null;
   quantity: number;
   createdAt: string;
   tryOnUrl: string;
@@ -62,6 +63,7 @@ function mapProduct(row: any): PublicProduct {
     occasions: row.occasions || [],
     sourceType: row.source_type || "ready-made",
     featured: Boolean(row.is_featured),
+    homepageOrder: row.homepage_order == null ? null : Number(row.homepage_order),
     quantity: Number(row.quantity || 0),
     createdAt: row.created_at || "",
     tryOnUrl: row.try_on_url || "",
@@ -77,7 +79,7 @@ export function usePublicProducts() {
       if (!supabase) return setLoading(false);
       const videoResult = await supabase
         .from("inventory")
-        .select("id,product_name,slug,category,selling_price,public_description,shop_photo_url,supplier_photo_url,photo_url,product_images,public_status,sizes,colors,occasions,source_type,is_featured,quantity,created_at,try_on_url")
+        .select("id,product_name,slug,category,selling_price,public_description,shop_photo_url,supplier_photo_url,photo_url,product_images,public_status,sizes,colors,occasions,source_type,is_featured,homepage_order,quantity,created_at,try_on_url")
         .eq("is_public", true)
         .neq("public_status", "hidden")
         .order("created_at", { ascending: false });
@@ -156,11 +158,15 @@ export function ProductGrid({
   const content = useWebsiteContent();
   const { products, loading } = usePublicProducts();
   const visible = useMemo(() => {
+    const merchandisingReady = products.some((product) => product.homepageOrder !== null);
     const filtered = products.filter((product) =>
-      (!featuredOnly || product.featured) &&
+      (!featuredOnly || !merchandisingReady || product.featured) &&
       (!originalsOnly || product.sourceType === "original") &&
       (status === "all" || product.status === status)
-    );
+    ).sort((a, b) => {
+      if (merchandisingReady && featuredOnly) return (a.homepageOrder ?? 1000) - (b.homepageOrder ?? 1000);
+      return b.createdAt.localeCompare(a.createdAt);
+    });
     return typeof limit === "number" ? filtered.slice(0, limit) : filtered;
   }, [featuredOnly, limit, originalsOnly, products, status]);
 

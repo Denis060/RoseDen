@@ -27,6 +27,7 @@ type Store = {
   addPayment: (orderId: string, payment: Omit<Payment, "id" | "orderId" | "paidAt">) => Promise<void>;
   addInventory: (item: Omit<InventoryItem, "id" | "availableQuantity" | "reservedQuantity" | "soldQuantity" | "totalQuantity">) => Promise<void>;
   updateInventory: (id: string, item: Omit<InventoryItem, "id" | "quantity" | "availableQuantity" | "reservedQuantity" | "soldQuantity" | "totalQuantity">) => Promise<void>;
+  reorderHomepage: (orderedIds: string[]) => Promise<void>;
   uploadProductImage: (file: File) => Promise<string>;
   restockInventory: (inventoryId: string, entry: Omit<StockEntry, "id" | "inventoryId" | "stockedAt">) => Promise<void>;
   adjustInventory: (id: string, amount: number) => Promise<void>;
@@ -63,6 +64,7 @@ function upgradeData(saved: Partial<AppData>): AppData {
       totalQuantity: item.totalQuantity ?? item.quantity,
       isPublic: item.isPublic ?? false,
       isFeatured: item.isFeatured ?? false,
+      homepageOrder: item.homepageOrder ?? 1000,
       publicStatus: item.publicStatus || "hidden",
       publicDescription: item.publicDescription || "",
       slug: item.slug || "",
@@ -129,6 +131,7 @@ function mapInventory(row: any, summary?: any): InventoryItem {
     totalQuantity: Number(summary?.total_quantity ?? available + reserved + sold),
     isPublic: Boolean(row.is_public),
     isFeatured: Boolean(row.is_featured),
+    homepageOrder: Number(row.homepage_order ?? 1000),
     publicStatus: row.public_status || "hidden",
     publicDescription: row.public_description || "",
     slug: row.slug || "",
@@ -697,6 +700,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           batch_id: item.batchId || null,
           is_public: item.isPublic,
           is_featured: item.isFeatured,
+          homepage_order: item.homepageOrder ?? 1000,
           public_status: item.publicStatus,
           public_description: item.publicDescription,
           slug: item.slug || null,
@@ -758,6 +762,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           batch_id: item.batchId || null,
           is_public: item.isPublic,
           is_featured: item.isFeatured,
+          homepage_order: item.homepageOrder,
           public_status: item.publicStatus,
           public_description: item.publicDescription,
           slug: item.slug || null,
@@ -773,6 +778,24 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setData((d) => ({
         ...d,
         inventory: d.inventory.map((inventory) => inventory.id === inventoryId ? { ...inventory, ...item, id: inventoryId } : inventory),
+      }));
+    },
+    reorderHomepage: async (orderedIds) => {
+      if (!isAdmin) throw new Error("Only an administrator can arrange homepage products.");
+      if (useSupabase && supabase) {
+        const client = supabase;
+        const results = await Promise.all(orderedIds.map((inventoryId, index) =>
+          client.from("inventory").update({ homepage_order: (index + 1) * 10 }).eq("id", inventoryId)
+        ));
+        const failed = results.find((result) => result.error);
+        if (failed?.error) throw new Error(`${failed.error.message}. Run migration 020 first.`);
+        await refresh();
+        return;
+      }
+      const orderById = new Map(orderedIds.map((inventoryId, index) => [inventoryId, (index + 1) * 10]));
+      setData((current) => ({
+        ...current,
+        inventory: current.inventory.map((item) => orderById.has(item.id) ? { ...item, homepageOrder: orderById.get(item.id) } : item),
       }));
     },
     uploadProductImage: async (file) => {

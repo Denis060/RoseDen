@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { AlertTriangle, Eye, EyeOff, History, ImageIcon, Minus, Plus, RotateCcw, Star } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp, Eye, EyeOff, History, ImageIcon, Minus, Plus, RotateCcw, Star } from "lucide-react";
 import Link from "next/link";
 import { useData } from "@/components/data-provider";
 import { Field, Form, Modal, Select, useModal } from "@/components/ui";
@@ -11,7 +11,7 @@ import { ConfirmDelete } from "@/components/confirm-delete";
 import { money } from "@/lib/format";
 
 export default function InventoryPage() {
-  const { data, isAdmin, restockInventory, adjustInventory, updateInventory, remove } = useData();
+  const { data, isAdmin, restockInventory, adjustInventory, updateInventory, reorderHomepage, remove } = useData();
   const restockModal = useModal();
   const [restockId, setRestockId] = useState("");
   const [query, setQuery] = useState("");
@@ -21,6 +21,9 @@ export default function InventoryPage() {
   const visibleInventory = data.inventory.filter((item) =>
     `${item.name} ${item.category} ${item.color} ${item.size} ${item.supplier}`.toLowerCase().includes(query.toLowerCase())
   );
+  const homepageProducts = data.inventory
+    .filter((item) => item.isPublic && item.isFeatured && item.publicStatus !== "hidden")
+    .sort((a, b) => (a.homepageOrder ?? 1000) - (b.homepageOrder ?? 1000));
 
   async function submitRestock(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -63,7 +66,8 @@ export default function InventoryPage() {
       batchId: item.batchId,
       isPublic,
       isFeatured,
-      publicStatus: isPublic ? "available" : "hidden",
+      homepageOrder: item.homepageOrder ?? 1000,
+      publicStatus: isPublic ? (item.publicStatus === "hidden" ? "available" : item.publicStatus || "available") : "hidden",
       publicDescription: item.publicDescription || "",
       slug: item.slug || "",
       sizes: item.sizes || (item.size ? [item.size] : []),
@@ -73,10 +77,25 @@ export default function InventoryPage() {
     });
   }
 
+  async function moveHomepage(itemId: string, direction: -1 | 1) {
+    const currentIndex = homepageProducts.findIndex((item) => item.id === itemId);
+    const targetIndex = currentIndex + direction;
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= homepageProducts.length) return;
+    const orderedIds = homepageProducts.map((item) => item.id);
+    [orderedIds[currentIndex], orderedIds[targetIndex]] = [orderedIds[targetIndex], orderedIds[currentIndex]];
+    setFormError("");
+    try {
+      await reorderHomepage(orderedIds);
+    } catch (cause) {
+      setFormError(cause instanceof Error ? cause.message : "Could not rearrange homepage products.");
+    }
+  }
+
   return (
     <div>
       <div className="mb-6 flex items-start justify-between gap-4"><div><h1 className="font-display text-3xl font-semibold text-wine">Inventory</h1><p className="mt-1 text-sm text-black/55">{isAdmin ? `${data.inventory.length} products · ${money(value)} at cost` : `${data.inventory.length} products available to sell`}</p></div>{isAdmin && <ProductPublisher />}</div>
       <div className="mb-5 flex items-center rounded-2xl border border-black/10 bg-white px-4"><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Find a product to view or restock" className="h-12 min-w-0 flex-1 bg-transparent outline-none" />{query && <button onClick={() => setQuery("")} className="text-xs font-semibold text-burgundy">Clear</button>}</div>
+      {formError && !restockModal.open && <p className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-800">{formError}</p>}
       <div className="space-y-3">
         {visibleInventory.map((item) => {
           const low = item.quantity <= item.lowStockAt;
@@ -102,8 +121,15 @@ export default function InventoryPage() {
                   {item.isPublic ? <Eye size={16} /> : <EyeOff size={16} />}{item.isPublic ? "On website" : "Publish"}
                 </button>
                 <button onClick={() => setWebsiteVisibility(item, true, !item.isFeatured)} className={`flex h-11 items-center justify-center gap-2 rounded-xl font-semibold ${item.isFeatured ? "bg-gold/20 text-burgundy" : "border border-gold/25 text-burgundy"}`}>
-                  <Star size={16} className={item.isFeatured ? "fill-gold text-gold" : ""} />{item.isFeatured ? "Featured" : "Feature"}
+                  <Star size={16} className={item.isFeatured ? "fill-gold text-gold" : ""} />{item.isFeatured ? "On homepage" : "Add to homepage"}
                 </button>
+                {item.isPublic && item.isFeatured && <div className="col-span-2 flex items-center justify-between rounded-xl bg-cream px-3 py-2">
+                  <p className="text-xs font-semibold text-burgundy">Homepage position {homepageProducts.findIndex((product) => product.id === item.id) + 1}</p>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => moveHomepage(item.id, -1)} disabled={homepageProducts[0]?.id === item.id} className="grid h-10 w-10 place-items-center rounded-xl bg-white text-burgundy disabled:opacity-30" aria-label={`Move ${item.name} up on homepage`}><ArrowUp size={17} /></button>
+                    <button type="button" onClick={() => moveHomepage(item.id, 1)} disabled={homepageProducts[homepageProducts.length - 1]?.id === item.id} className="grid h-10 w-10 place-items-center rounded-xl bg-white text-burgundy disabled:opacity-30" aria-label={`Move ${item.name} down on homepage`}><ArrowDown size={17} /></button>
+                  </div>
+                </div>}
                 <div className="col-span-2"><ProductPostAssistant product={item} /></div>
               </div>}
               <Link href={`/admin/inventory/${item.id}`} className="mx-4 mb-4 flex h-11 items-center justify-center rounded-xl border border-burgundy/15 font-semibold text-burgundy">Open product details</Link>

@@ -79,6 +79,7 @@ export function ProductPublisher() {
         batchId: String(form.get("batchId")) || undefined,
         isPublic: publish,
         isFeatured: form.get("isFeatured") === "on",
+        homepageOrder: 1000,
         publicStatus: publish ? "available" : "hidden",
         publicDescription: String(form.get("description")),
         slug: productSlug(name),
@@ -160,7 +161,7 @@ export function ProductPublisher() {
               <label className="flex min-h-14 items-center gap-2 rounded-xl border border-burgundy/15 bg-white px-3 text-sm font-semibold"><input type="radio" name="publish" value="no" defaultChecked className="accent-burgundy" />Save privately</label>
               <label className="flex min-h-14 items-center gap-2 rounded-xl bg-gold px-3 text-sm font-bold text-burgundy"><input type="radio" name="publish" value="yes" className="accent-burgundy" />Publish now</label>
             </div>
-            <label className="mt-2 flex min-h-12 items-center gap-2 rounded-xl bg-white px-3 text-sm"><input type="checkbox" name="isFeatured" className="accent-burgundy" /><Sparkles size={17} className="text-gold" />Feature on homepage</label>
+            <label className="mt-2 flex min-h-12 items-center gap-2 rounded-xl bg-white px-3 text-sm"><input type="checkbox" name="isFeatured" className="accent-burgundy" /><Sparkles size={17} className="text-gold" />Show on homepage</label>
           </section>
 
           {images.length > 0 && <p className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-700"><CheckCircle2 size={15} />Photos uploaded and optimized for mobile.</p>}

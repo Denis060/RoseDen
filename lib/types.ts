@@ -67,6 +67,7 @@ export type InventoryItem = {
   totalQuantity: number;
   isPublic?: boolean;
   isFeatured?: boolean;
+  homepageOrder?: number;
   publicStatus?: "available" | "reserved" | "sold" | "hidden";
   publicDescription?: string;
   slug?: string;

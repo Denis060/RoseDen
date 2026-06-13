@@ -177,6 +177,11 @@ WhatsApp number without editing code.
 Run `supabase/migrations/019_about_people_photos.sql` to add separate,
 admin-editable photos for Rosannah and Denis on the public About page.
 
+Run `supabase/migrations/020_homepage_merchandising.sql` to let the admin choose
+homepage products with **Feature** and arrange them using the up/down buttons in
+Inventory. New Arrivals and RoseDen Originals each show up to eight selected
+products.
+
 Each inventory product can also hold up to three public photos. Open a product
 in Admin Inventory, tap Edit, add its photos, then choose **Show on website**
 and optionally **Featured product**.
