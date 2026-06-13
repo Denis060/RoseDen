@@ -39,7 +39,7 @@ export function PublicHeader() {
       <div className="h-1 brand-divider" />
       <div className="relative mx-auto flex h-[64px] max-w-6xl items-center justify-between px-4 sm:h-[72px] sm:px-6">
         <details ref={menuRef} open={menuOpen} onToggle={(event) => setMenuOpen(event.currentTarget.open)} className="group relative md:hidden">
-          <summary className="grid h-10 w-10 cursor-pointer list-none place-items-center rounded-full text-ink transition hover:bg-cream" aria-label={menuOpen ? "Close menu" : "Open menu"}>
+          <summary className="pressable grid h-10 w-10 cursor-pointer list-none place-items-center rounded-full text-ink hover:bg-cream" aria-label={menuOpen ? "Close menu" : "Open menu"}>
             <Menu size={24} />
           </summary>
           <nav className="absolute left-0 top-12 z-50 w-44 rounded-2xl border border-burgundy/10 bg-white p-2 text-sm font-semibold shadow-soft">
@@ -68,7 +68,7 @@ export function PublicHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <a href={websiteWhatsappLink(content.whatsappNumber, "Hello RoseDen Atelier, I would like to make an inquiry.")} target="_blank" rel="noreferrer" className="hidden h-11 w-11 place-items-center rounded-full bg-gold text-burgundy sm:grid" aria-label="WhatsApp RoseDen">
+          <a href={websiteWhatsappLink(content.whatsappNumber, "Hello RoseDen Atelier, I would like to make an inquiry.")} target="_blank" rel="noreferrer" className="pressable hidden h-11 w-11 place-items-center rounded-full bg-gold text-burgundy shadow-sm sm:grid" aria-label="WhatsApp RoseDen">
             <MessageCircle size={19} />
           </a>
           <Link href="/shop" className="grid h-10 w-10 place-items-center text-ink md:hidden" aria-label="Open shop">

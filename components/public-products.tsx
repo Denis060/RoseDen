@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { CSSProperties, useEffect, useMemo, useState } from "react";
 import { ImageIcon, MessageCircle, Sparkles } from "lucide-react";
 import { money } from "@/lib/format";
 import { supabase } from "@/lib/supabase";
@@ -109,12 +109,15 @@ function statusStyle(status: PublicProduct["status"]) {
   return "bg-white/95 text-emerald-700";
 }
 
-export function ProductCard({ product, compact = false }: { product: PublicProduct; compact?: boolean }) {
+export function ProductCard({ product, compact = false, index = 0 }: { product: PublicProduct; compact?: boolean; index?: number }) {
   const content = useWebsiteContent();
   const message = productOrderMessage(product);
   const disabled = product.status !== "available";
   return (
-    <article className={`group w-full min-w-0 max-w-full overflow-hidden border border-gold/35 bg-white shadow-soft ${compact ? "rounded-lg" : "rounded-[22px]"}`}>
+    <article
+      className={`product-card-enter group w-full min-w-0 max-w-full overflow-hidden border border-gold/35 bg-white shadow-soft transition-shadow duration-300 hover:shadow-xl ${compact ? "rounded-lg" : "rounded-[22px]"}`}
+      style={{ "--card-index": index } as CSSProperties}
+    >
       <Link href={`/shop/${product.slug}`} className="relative grid aspect-[4/5] place-items-center overflow-hidden bg-marble/45">
         {product.image ? <Image src={product.image} alt={product.name} fill quality={compact ? 45 : 55} sizes={compact ? "(max-width: 640px) 25vw, 220px" : "(max-width: 768px) 50vw, 280px"} className={`object-cover transition duration-500 group-hover:scale-105 ${product.status === "sold" ? "grayscale-[35%]" : ""}`} /> : <ImageIcon size={42} className="text-burgundy/20" />}
         <span className={`absolute left-2 top-2 rounded-full px-2 py-1 text-[8px] font-bold uppercase shadow-sm ${statusStyle(product.status)}`}>{product.status}</span>
@@ -171,6 +174,6 @@ export function ProductGrid({
     </div>
   );
 
-  if (rail) return <div className="grid grid-cols-4 gap-2 sm:gap-4">{visible.map((product) => <ProductCard key={product.id} product={product} compact />)}</div>;
-  return <div className="grid min-w-0 grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{visible.map((product) => <ProductCard key={product.id} product={product} />)}</div>;
+  if (rail) return <div className="grid grid-cols-4 gap-2 sm:gap-4">{visible.map((product, index) => <ProductCard key={product.id} product={product} compact index={index} />)}</div>;
+  return <div className="grid min-w-0 grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{visible.map((product, index) => <ProductCard key={product.id} product={product} index={index} />)}</div>;
 }

@@ -55,3 +55,83 @@ button { touch-action: manipulation; }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+.motion-reveal {
+  opacity: 1;
+}
+
+@supports (animation-timeline: view()) {
+  .motion-reveal {
+    animation: section-reveal 1ms cubic-bezier(.22, 1, .36, 1) both;
+    animation-delay: var(--reveal-delay, 0ms);
+    animation-timeline: view();
+    animation-range: entry 5% cover 24%;
+  }
+}
+
+.hero-copy-enter {
+  animation: hero-copy-enter 700ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.hero-image-enter {
+  animation: hero-image-enter 900ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.product-card-enter {
+  animation: product-card-enter 520ms cubic-bezier(.22, 1, .36, 1) both;
+  animation-delay: calc(var(--card-index, 0) * 70ms);
+}
+
+.pressable {
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.pressable:hover {
+  transform: translateY(-2px);
+}
+
+.pressable:active {
+  transform: scale(.97);
+}
+
+.image-lift img {
+  transition: transform 650ms cubic-bezier(.22, 1, .36, 1), filter 300ms ease;
+}
+
+.image-lift:hover img {
+  transform: scale(1.035);
+}
+
+@keyframes hero-copy-enter {
+  from { opacity: 0; transform: translateX(-18px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes hero-image-enter {
+  from { opacity: .45; transform: scale(1.025); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes product-card-enter {
+  from { opacity: 0; transform: translateY(14px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes section-reveal {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-reveal,
+  .hero-copy-enter,
+  .hero-image-enter,
+  .product-card-enter,
+  .image-lift img,
+  .pressable {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
