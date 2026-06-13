@@ -108,7 +108,7 @@ export default function HomePage() {
           <div className="mt-5 grid grid-cols-3 gap-1 sm:mt-8 sm:gap-3">
             {atelierImages.slice(0, 3).map((image, index) => (
               <MotionReveal key={`${image}-${index}`} delay={index * 90} className="image-lift relative aspect-[4/3] overflow-hidden rounded-lg border-2 border-white shadow-soft sm:rounded-3xl sm:border-4">
-                <Image src={image} alt="Inside the RoseDen Atelier boutique" fill quality={52} sizes="(max-width: 640px) 33vw, 360px" className="object-cover" />
+                <Image src={image} alt="Inside the RoseDen Atelier boutique" fill quality={55} sizes="(max-width: 640px) 33vw, 360px" className="object-cover" />
               </MotionReveal>
             ))}
           </div>
