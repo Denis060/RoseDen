@@ -24,15 +24,15 @@ export default function AboutPage() {
       <div className="h-3 stripe-accent" />
 
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
-        <h2 className="font-display text-3xl font-semibold text-burgundy sm:text-5xl">The people behind RoseDen</h2>
+        <h2 className="font-display text-3xl font-semibold leading-tight text-burgundy sm:text-5xl">The people behind RoseDen</h2>
         <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-6">
-          <article className="overflow-hidden rounded-2xl bg-white shadow-soft">
-            <div className="relative aspect-[4/3]"><Image src="/images/roseden-boutique-concept.png" alt="Inside RoseDen Atelier" fill className="object-cover object-[70%_center]" /></div>
-            <div className="p-4 sm:p-6"><Heart className="text-gold" size={20} /><h3 className="mt-3 font-display text-xl font-semibold text-burgundy sm:text-3xl">Rosannah</h3><p className="mt-2 text-[11px] leading-5 text-black/55 sm:text-sm sm:leading-6">The eye for fashion, styling, sourcing, tailoring, and the personal customer experience.</p></div>
+          <article className="min-w-0 overflow-hidden rounded-2xl bg-white shadow-soft">
+            <div className="relative aspect-[4/3]"><Image src={content.rosannahImageUrl} alt="Rosannah of RoseDen Atelier" fill quality={55} sizes="(max-width: 640px) 50vw, 560px" className="object-cover" /></div>
+            <div className="min-w-0 p-4 sm:p-6"><Heart className="text-gold" size={20} /><h3 className="mt-3 font-display text-xl font-semibold text-burgundy sm:text-3xl">Rosannah</h3><p className="mt-2 break-words text-[11px] leading-5 text-black/55 sm:text-sm sm:leading-6">The eye for fashion, styling, sourcing, tailoring, and the personal customer experience.</p></div>
           </article>
-          <article className="overflow-hidden rounded-2xl bg-marble shadow-soft">
-            <div className="relative aspect-[4/3]"><Image src="/images/showcase/original-patchwork.png" alt="RoseDen Original fashion piece" fill className="object-cover" /></div>
-            <div className="p-4 sm:p-6"><Lightbulb className="text-gold" size={20} /><h3 className="mt-3 font-display text-xl font-semibold text-burgundy sm:text-3xl">Ibrahim</h3><p className="mt-2 text-[11px] leading-5 text-black/55 sm:text-sm sm:leading-6">The systems, technology, data, and digital tools helping RoseDen grow and serve customers better.</p></div>
+          <article className="min-w-0 overflow-hidden rounded-2xl bg-marble shadow-soft">
+            <div className="relative aspect-[4/3]"><Image src={content.denisImageUrl} alt="Denis of RoseDen Atelier" fill quality={55} sizes="(max-width: 640px) 50vw, 560px" className="object-cover" /></div>
+            <div className="min-w-0 p-4 sm:p-6"><Lightbulb className="text-gold" size={20} /><h3 className="mt-3 font-display text-xl font-semibold text-burgundy sm:text-3xl">Denis</h3><p className="mt-2 break-words text-[11px] leading-5 text-black/55 sm:text-sm sm:leading-6">The systems, technology, data, and digital tools helping RoseDen grow and serve customers better.</p></div>
           </article>
         </div>
       </section>

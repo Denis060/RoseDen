@@ -21,6 +21,8 @@ export type WebsiteContent = {
   aboutTitle: string;
   aboutBody: string;
   aboutImageUrl: string;
+  rosannahImageUrl: string;
+  denisImageUrl: string;
   tailoringTitle: string;
   tailoringBody: string;
   tailoringImageUrl: string;
@@ -45,6 +47,8 @@ export const defaultWebsiteContent: WebsiteContent = {
   aboutTitle: "Fashion with heart, personality, and purpose.",
   aboutBody: "RoseDen brings together creative styling, thoughtful tailoring, carefully chosen pieces, and one-of-one Originals.",
   aboutImageUrl: "/images/showcase/arrival-burgundy.png",
+  rosannahImageUrl: "/images/roseden-boutique-concept.png",
+  denisImageUrl: "/images/showcase/original-patchwork.png",
   tailoringTitle: "Tailored to feel like you.",
   tailoringBody: "Personal measurements, thoughtful fittings, and occasion pieces made with care.",
   tailoringImageUrl: "/images/showcase/original-gold.png",
@@ -80,6 +84,8 @@ function mapSettings(row: any): WebsiteContent {
     aboutTitle: row.about_title || defaultWebsiteContent.aboutTitle,
     aboutBody: row.about_body || defaultWebsiteContent.aboutBody,
     aboutImageUrl: row.about_image_url || defaultWebsiteContent.aboutImageUrl,
+    rosannahImageUrl: row.rosannah_image_url || defaultWebsiteContent.rosannahImageUrl,
+    denisImageUrl: row.denis_image_url || defaultWebsiteContent.denisImageUrl,
     tailoringTitle: row.tailoring_title || defaultWebsiteContent.tailoringTitle,
     tailoringBody: row.tailoring_body || defaultWebsiteContent.tailoringBody,
     tailoringImageUrl: row.tailoring_image_url || defaultWebsiteContent.tailoringImageUrl,
@@ -117,4 +123,3 @@ export function websiteWhatsappLink(number: string, message: string) {
   const recipient = number.replace(/\D/g, "");
   return `https://wa.me/${recipient}?text=${encodeURIComponent(message)}`;
 }
-

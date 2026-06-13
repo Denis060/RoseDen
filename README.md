@@ -174,6 +174,9 @@ Rosannah can change the homepage words, public photos, About and Tailoring
 introductions, services, customer reviews, contact details, social links, and
 WhatsApp number without editing code.
 
+Run `supabase/migrations/019_about_people_photos.sql` to add separate,
+admin-editable photos for Rosannah and Denis on the public About page.
+
 Each inventory product can also hold up to three public photos. Open a product
 in Admin Inventory, tap Edit, add its photos, then choose **Show on website**
 and optionally **Featured product**.

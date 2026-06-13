@@ -95,6 +95,8 @@ export default function WebsiteAdminPage() {
           aboutTitle: data.about_title || defaultWebsiteContent.aboutTitle,
           aboutBody: data.about_body || defaultWebsiteContent.aboutBody,
           aboutImageUrl: data.about_image_url || defaultWebsiteContent.aboutImageUrl,
+          rosannahImageUrl: data.rosannah_image_url || defaultWebsiteContent.rosannahImageUrl,
+          denisImageUrl: data.denis_image_url || defaultWebsiteContent.denisImageUrl,
           tailoringTitle: data.tailoring_title || defaultWebsiteContent.tailoringTitle,
           tailoringBody: data.tailoring_body || defaultWebsiteContent.tailoringBody,
           tailoringImageUrl: data.tailoring_image_url || defaultWebsiteContent.tailoringImageUrl,
@@ -113,7 +115,7 @@ export default function WebsiteAdminPage() {
     setContent((current) => ({ ...current, [key]: value }));
   }
 
-  async function upload(key: "heroImageUrl" | "aboutImageUrl" | "tailoringImageUrl" | "contactImageUrl", file: File) {
+  async function upload(key: "heroImageUrl" | "aboutImageUrl" | "rosannahImageUrl" | "denisImageUrl" | "tailoringImageUrl" | "contactImageUrl", file: File) {
     setUploading(key);
     setMessage("");
     try {
@@ -170,6 +172,8 @@ export default function WebsiteAdminPage() {
       about_title: content.aboutTitle,
       about_body: content.aboutBody,
       about_image_url: content.aboutImageUrl,
+      rosannah_image_url: content.rosannahImageUrl,
+      denis_image_url: content.denisImageUrl,
       tailoring_title: content.tailoringTitle,
       tailoring_body: content.tailoringBody,
       tailoring_image_url: content.tailoringImageUrl,
@@ -179,7 +183,7 @@ export default function WebsiteAdminPage() {
       tailoring_services: content.tailoringServices,
       updated_at: new Date().toISOString(),
     }).eq("id", "roseden");
-    setMessage(error ? `Could not save: ${error.message}. Run migration 009 first.` : "Website saved. The public pages will update automatically.");
+    setMessage(error ? `Could not save: ${error.message}. Make sure website migrations through 019 have been run.` : "Website saved. The public pages will update automatically.");
     setSaving(false);
   }
 
@@ -218,6 +222,10 @@ export default function WebsiteAdminPage() {
           <TextField label="About heading" value={content.aboutTitle} onChange={(value) => set("aboutTitle", value)} />
           <TextArea label="About story" value={content.aboutBody} onChange={(value) => set("aboutBody", value)} />
           <PhotoField label="About page photo" value={content.aboutImageUrl} uploading={uploading === "aboutImageUrl"} onUpload={(file) => upload("aboutImageUrl", file)} />
+          <div className="grid grid-cols-2 gap-3">
+            <PhotoField label="Rosannah's photo" value={content.rosannahImageUrl} uploading={uploading === "rosannahImageUrl"} onUpload={(file) => upload("rosannahImageUrl", file)} />
+            <PhotoField label="Denis's photo" value={content.denisImageUrl} uploading={uploading === "denisImageUrl"} onUpload={(file) => upload("denisImageUrl", file)} />
+          </div>
         </div>
       </section>
 
