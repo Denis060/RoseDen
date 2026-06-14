@@ -77,23 +77,25 @@ export function usePublicProducts() {
   useEffect(() => {
     async function load() {
       if (!supabase) return setLoading(false);
-      const videoResult = await supabase
+      const currentSelection = "id,product_name,slug,category,selling_price,public_description,shop_photo_url,supplier_photo_url,photo_url,product_images,public_status,sizes,colors,occasions,source_type,is_featured,homepage_order,quantity,created_at,try_on_url";
+      const compatibleSelection = "id,product_name,slug,category,selling_price,public_description,shop_photo_url,supplier_photo_url,photo_url,product_images,public_status,sizes,colors,source_type,is_featured,homepage_order,quantity,created_at,try_on_url";
+      const currentResult = await supabase
         .from("inventory")
-        .select("id,product_name,slug,category,selling_price,public_description,shop_photo_url,supplier_photo_url,photo_url,product_images,public_status,sizes,colors,occasions,source_type,is_featured,homepage_order,quantity,created_at,try_on_url")
+        .select(currentSelection)
         .eq("is_public", true)
         .neq("public_status", "hidden")
         .order("created_at", { ascending: false });
-      let rows: any[] = videoResult.data || [];
-      let loadError = videoResult.error;
-      if (loadError) {
-        const legacyResult = await supabase
+      let rows: any[] = currentResult.data || [];
+      let loadError: { message: string } | null = currentResult.error;
+      if (currentResult.error) {
+        const compatibleResult = await supabase
           .from("inventory")
-          .select("id,product_name,slug,category,selling_price,public_description,shop_photo_url,supplier_photo_url,photo_url,product_images,public_status,sizes,colors,source_type,is_featured,quantity,created_at")
+          .select(compatibleSelection)
           .eq("is_public", true)
           .neq("public_status", "hidden")
           .order("created_at", { ascending: false });
-        rows = legacyResult.data || [];
-        loadError = legacyResult.error;
+        rows = compatibleResult.data || [];
+        loadError = compatibleResult.error;
       }
       if (loadError) console.error("Could not load public products:", loadError.message);
       setProducts(rows.map(mapProduct));

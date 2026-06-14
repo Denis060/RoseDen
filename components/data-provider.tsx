@@ -682,7 +682,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     addInventory: async (item) => {
       if (!isAdmin) throw new Error("Only an administrator can add inventory.");
       if (useSupabase && supabase) {
-        const { data: inserted, error } = await supabase.from("inventory").insert({
+        const inventoryPayload: Record<string, unknown> = {
           product_name: item.name,
           category: item.category,
           cost_price: item.costPrice,
@@ -708,7 +708,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
           colors: item.colors,
           occasions: item.occasions || [],
           source_type: item.sourceType,
-        }).select("id").single();
+        };
+        let insertResult = await supabase.from("inventory").insert(inventoryPayload).select("id").single();
+        if (insertResult.error?.message.includes("occasions")) {
+          if (item.occasions?.length) throw new Error("Run migration 018 before saving Perfect for tags.");
+          delete inventoryPayload.occasions;
+          insertResult = await supabase.from("inventory").insert(inventoryPayload).select("id").single();
+        }
+        if (insertResult.error?.message.includes("homepage_order")) {
+          delete inventoryPayload.homepage_order;
+          insertResult = await supabase.from("inventory").insert(inventoryPayload).select("id").single();
+        }
+        const { data: inserted, error } = insertResult;
         if (error) throw error;
         if (item.quantity > 0) {
           await supabase.from("inventory_stock_entries").insert({
@@ -745,7 +756,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     updateInventory: async (inventoryId, item) => {
       if (!isAdmin) throw new Error("Only an administrator can edit inventory.");
       if (useSupabase && supabase) {
-        const { error } = await supabase.from("inventory").update({
+        const inventoryPayload: Record<string, unknown> = {
           product_name: item.name,
           category: item.category,
           cost_price: item.costPrice,
@@ -770,7 +781,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
           colors: item.colors,
           occasions: item.occasions || [],
           source_type: item.sourceType,
-        }).eq("id", inventoryId);
+        };
+        let updateResult = await supabase.from("inventory").update(inventoryPayload).eq("id", inventoryId);
+        if (updateResult.error?.message.includes("occasions")) {
+          if (item.occasions?.length) throw new Error("Run migration 018 before saving Perfect for tags.");
+          delete inventoryPayload.occasions;
+          updateResult = await supabase.from("inventory").update(inventoryPayload).eq("id", inventoryId);
+        }
+        if (updateResult.error?.message.includes("homepage_order")) {
+          delete inventoryPayload.homepage_order;
+          updateResult = await supabase.from("inventory").update(inventoryPayload).eq("id", inventoryId);
+        }
+        const { error } = updateResult;
         if (error) throw error;
         await refresh();
         return;

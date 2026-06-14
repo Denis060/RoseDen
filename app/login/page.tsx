@@ -77,7 +77,7 @@ function LoginForm() {
         <Link href="/" className="text-sm font-semibold text-burgundy">← Back to website</Link>
         <div className="mb-7 mt-5 text-center"><div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-burgundy font-display text-2xl font-bold text-white">R</div><h1 className="mt-4 font-display text-3xl font-bold text-wine">RoseDen OS</h1><p className="mt-1 text-sm text-black/50">Private staff sign in</p></div>
         <form onSubmit={recoveryMode ? sendRecovery : handleAuth} className="min-w-0 space-y-4">
-          <Field name="email" label="Email" type="email" defaultValue="joinriseafrica@gmail.com" required />
+          <Field name="email" label="Email" type="email" autoComplete="email" required />
           {!recoveryMode && <div>
             <Field name="password" label="Password" type={showPassword ? "text" : "password"} autoComplete="current-password" required />
             <button type="button" onClick={() => setShowPassword((current) => !current)} className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-burgundy">

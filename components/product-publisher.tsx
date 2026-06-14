@@ -112,7 +112,7 @@ export function ProductPublisher() {
                 <label key={index} className="relative grid aspect-[4/5] cursor-pointer place-items-center overflow-hidden rounded-xl border border-dashed border-burgundy/20 bg-white">
                   {images[index] ? <img src={images[index]} alt={`Product view ${index + 1}`} className="h-full w-full object-cover" /> : <span className="px-2 text-center text-[10px] font-semibold text-burgundy/50"><Upload className="mx-auto mb-1" size={19} />Photo {index + 1}</span>}
                   {uploadingIndex === index && <span className="absolute inset-0 grid place-items-center bg-black/50 text-white"><LoaderCircle className="animate-spin" /></span>}
-                  <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" capture="environment" onChange={(event) => upload(event, index)} className="hidden" />
+                  <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={(event) => upload(event, index)} className="hidden" />
                 </label>
               ))}
             </div>

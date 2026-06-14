@@ -173,7 +173,7 @@ export default function InventoryDetailPage() {
           <div className="grid grid-cols-3 gap-2">
             {[0, 1, 2].map((index) => <label key={index} className="relative grid aspect-square cursor-pointer place-items-center overflow-hidden rounded-xl bg-burgundy/5">
               {productImages[index] ? <img src={productImages[index]} alt={`Product view ${index + 1}`} className="h-full w-full object-cover" /> : <span className="px-2 text-center text-[10px] font-semibold text-burgundy/45"><Upload size={18} className="mx-auto mb-1" />Photo {index + 1}</span>}
-              <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" capture="environment" onChange={(event) => upload(event, index)} className="hidden" disabled={uploading} />
+              <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={(event) => upload(event, index)} className="hidden" disabled={uploading} />
             </label>)}
           </div>
           <p className="mt-2 text-center text-xs text-black/45">The first photo is the main shop photo.</p>
@@ -183,7 +183,7 @@ export default function InventoryDetailPage() {
             {previewUrl ? <img src={previewUrl} alt="Selected product preview" className="h-full w-full object-cover" /> : <Camera size={36} className="text-burgundy/25" />}
             {uploading && <div className="absolute inset-0 grid place-items-center bg-black/45 text-white"><div className="flex items-center gap-2 rounded-full bg-black/35 px-4 py-2 text-sm font-semibold"><LoaderCircle size={18} className="animate-spin" />Preparing and uploading</div></div>}
           </div>
-          <label className={`mt-3 flex h-12 items-center justify-center gap-2 rounded-xl bg-gold/15 font-semibold text-wine ${uploading ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}><Upload size={18} />{previewUrl ? "Choose a different photo" : "Take or choose photo"}<input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" capture="environment" onChange={upload} className="hidden" disabled={uploading} /></label>
+          <label className={`mt-3 flex h-12 items-center justify-center gap-2 rounded-xl bg-gold/15 font-semibold text-wine ${uploading ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}><Upload size={18} />{previewUrl ? "Choose a different photo" : "Take or choose photo"}<input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={upload} className="hidden" disabled={uploading} /></label>
           {uploadComplete && <p className="mt-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-700"><CheckCircle2 size={15} />Photo uploaded. Tap Save product.</p>}
           {!uploadComplete && !error && <p className="mt-2 text-center text-xs text-black/45">The photo previews immediately and is resized for mobile data before upload.</p>}
           {error && <p className="mt-2 rounded-xl bg-red-50 p-3 text-sm font-medium text-red-800">{error}</p>}

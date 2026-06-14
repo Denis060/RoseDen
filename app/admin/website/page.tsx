@@ -181,7 +181,7 @@ export default function WebsiteAdminPage() {
     if (!supabase) return;
     setSaving(true);
     setMessage("");
-    const { error } = await supabase.from("business_settings").update({
+    const settingsPayload = {
       whatsapp_number: content.whatsappNumber,
       phone_number: content.phoneNumber,
       email: content.email,
@@ -206,7 +206,17 @@ export default function WebsiteAdminPage() {
       testimonials: content.testimonials,
       tailoring_services: content.tailoringServices,
       updated_at: new Date().toISOString(),
-    }).eq("id", "roseden");
+    };
+    let saveResult = await supabase.from("business_settings").update(settingsPayload).eq("id", "roseden");
+    if (saveResult.error && /rosannah_image_url|denis_image_url/.test(saveResult.error.message)) {
+      const {
+        rosannah_image_url: _rosannahImageUrl,
+        denis_image_url: _denisImageUrl,
+        ...legacyPayload
+      } = settingsPayload;
+      saveResult = await supabase.from("business_settings").update(legacyPayload).eq("id", "roseden");
+    }
+    const { error } = saveResult;
     setMessage(error ? `Could not save: ${error.message}. Make sure website migrations through 019 have been run.` : "Website saved. The public pages will update automatically.");
     setSaving(false);
   }
